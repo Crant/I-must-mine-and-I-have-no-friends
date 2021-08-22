@@ -1,4 +1,5 @@
 #include "../Include/World.h"
+using namespace IMM;
 
 
 World::World(int width, int height, TileType* newWorld, std::string newName)
@@ -7,11 +8,17 @@ World::World(int width, int height, TileType* newWorld, std::string newName)
 	nHeight = height;
 	nWorld = newWorld;
 	sWorldName = newName;
+    Instance = this;
 };
+//World* World::GetWorld()
+//{
+//    return Instance;
+//}
 
 World::~World()
 {
 	delete[] nWorld;
+    delete Instance;
 }
 
 void World::SetTile(int index, TileType value)

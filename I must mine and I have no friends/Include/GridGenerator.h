@@ -1,14 +1,22 @@
 #pragma once
-class GridGenerator
+#include "../Include/World.h"
+
+namespace IMM 
 {
-public:
+	class GridGenerator
+	{
+	public:
 
-
-
-public:
-
-	int nGridWidth;
-	int nGridHeight;
-	
-};
-
+		GridGenerator(std::string name);
+		~GridGenerator();
+		TileType* GenerateWorld(int width, int height);
+		TileType* RandomFillMap(TileType* world, int width, int height);
+		//int FillArea(int x, int y, float nPseudoRandNumber);	
+		//TileType* SmoothMap(TileType* world, int width, int height);
+		//int GetSurroundingWallCount(int gridX, int gridY, TileType* world, int width, int height);
+		
+	private:
+		std::string sName;
+		
+	};
+}
