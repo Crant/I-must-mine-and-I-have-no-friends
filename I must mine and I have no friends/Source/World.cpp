@@ -2,14 +2,10 @@
 using namespace IMM;
 
 
-World::World(int width, int height, TileType* newWorld, std::string newName)
+World::World()
 {
-	nWidth = width;
-	nHeight = height;
-	nWorld = newWorld;
-	sWorldName = newName;
-    Instance = this;
-};
+    nWorld = NULL;
+}
 //World* World::GetWorld()
 //{
 //    return Instance;
@@ -17,10 +13,17 @@ World::World(int width, int height, TileType* newWorld, std::string newName)
 
 World::~World()
 {
-	delete[] nWorld;
+    delete[] nWorld;
     delete Instance;
 }
-
+void World::SetWorld(int width, int height, TileType* newWorld, std::string newName)
+{
+    nWidth = width;
+    nHeight = height;
+    nWorld = newWorld;
+    sWorldName = newName;
+    Instance = this;
+}
 void World::SetTile(int index, TileType value)
 {
     nWorld[index] = value;

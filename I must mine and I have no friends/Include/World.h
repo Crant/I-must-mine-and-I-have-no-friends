@@ -13,16 +13,17 @@ namespace IMM
 	class World
 	{
 	public:
-		World(int width, int height, TileType* newWorld, std::string name);
+		World();
 		~World();
 		
 		static World* GetWorld()
 		{
 			if (Instance == nullptr)
-				Instance = new World(0, 0, 0, "");
+				Instance = new World();
 
 			return Instance;
 		}
+		void SetWorld(int width, int height, TileType* newWorld, std::string name);
 		void SetTile(int index, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);
 		TileType GetTile(int index);
@@ -41,7 +42,7 @@ namespace IMM
 
 
 	private:
-		 static World* Instance;
+		 static inline World* Instance;
 		 TileType* nWorld;
 		 std::string sWorldName;
 

@@ -1,5 +1,7 @@
 #define OLC_PGE_APPLICATION
 #include "../Include/olcPixelGameEngine.h"
+#include "../Include/World.h"
+#include "../Include/GridGenerator.h"
 
 namespace IMM 
 {
@@ -16,6 +18,10 @@ namespace IMM
 		bool OnUserCreate() override
 		{
 			// Called once at the start, so create things here
+			GridGenerator gridGen("Bruh", 100, 100);
+			//TileType* tihnd = gridGen.GenerateWorld();
+		    World::GetWorld()->SetWorld(100, 100, gridGen.GenerateWorld(), "Bruh");
+
 			
 			return true;
 		}
@@ -33,9 +39,6 @@ namespace IMM
 
 		if (game.Construct(640, 480, 2, 2))
 			game.Start();
-
-		//std::string meme = "MEMEMEME";
-		//int nigs = std::hash<std::string>()(meme);
 
 		return 0;
 	}
