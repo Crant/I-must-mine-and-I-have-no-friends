@@ -2,10 +2,14 @@
 using namespace IMM;
 
 
-World::World()
-{
-    nWorld = NULL;
-}
+//World::World(int width, int height, TileType* newWorld, std::string newName)
+//{
+//    nWidth = width;
+//    nHeight = height;
+//    nWorld = newWorld;
+//    sWorldName = newName;
+//    Instance = this;
+//}
 //World* World::GetWorld()
 //{
 //    return Instance;
@@ -20,6 +24,7 @@ void World::SetWorld(int width, int height, TileType* newWorld, std::string newN
 {
     nWidth = width;
     nHeight = height;
+    nSize = width * height;
     nWorld = newWorld;
     sWorldName = newName;
     Instance = this;
@@ -58,7 +63,7 @@ int World::GetSize()
 }
 int World::Index(float x, float y)
 {
-    return std::clamp(nHeight *  (int)x + (int)y, 0, (nWidth * nHeight) - 1);
+    return std::clamp(nHeight * (int)x + (int)y, 0, (nWidth * nHeight) - 1);
 }
 int World::Index(olc::vf2d pos)
 {

@@ -2,6 +2,9 @@
 #include "../Include/olcPixelGameEngine.h"
 #include "../Include/World.h"
 #include "../Include/GridGenerator.h"
+#include "../Renderer.h"
+
+using namespace IMM;
 
 namespace IMM 
 {
@@ -18,24 +21,28 @@ namespace IMM
 		bool OnUserCreate() override
 		{
 			// Called once at the start, so create things here
-			GridGenerator gridGen("Bruh", 100, 100);
-			//TileType* tihnd = gridGen.GenerateWorld();
-		    World::GetWorld()->SetWorld(100, 100, gridGen.GenerateWorld(), "Bruh");
-
+			GridGenerator gridGen("Bruh", worldWidth, worldHeight);
+		    World::GetWorld()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 			
+			renderer.SetCamera(this);
 			return true;
 		}
 
 		bool OnUserUpdate(float fElapsedTime) override
 		{
 			// called once per frame
+			renderer.MoveCamera(this);
 			return true;
 		}
+	private:
+		Renderer renderer;
+		int worldWidth = 500;
+		int worldHeight = 500;
 	};
 }
 	int main()
 	{
-		IMM::Game game;
+		Game game;
 
 		if (game.Construct(640, 480, 2, 2))
 			game.Start();

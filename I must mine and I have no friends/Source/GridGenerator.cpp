@@ -79,7 +79,7 @@ int GridGenerator::GetSurroundingWallCount(int gridX, int gridY)
             {
                 if (neighbourX != gridX || neighbourY != gridY)
                 {
-                    wallCount += 1;
+                    wallCount += (int)newWorld[neighbourX * height + neighbourY];
                 }
             }
 

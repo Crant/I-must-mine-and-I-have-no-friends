@@ -13,7 +13,8 @@ namespace IMM
 	class World
 	{
 	public:
-		World();
+		//World(int width, int height, TileType* newWorld, std::string newName);
+		World(){}
 		~World();
 		
 		static World* GetWorld()
@@ -46,9 +47,9 @@ namespace IMM
 		 TileType* nWorld;
 		 std::string sWorldName;
 
-		 int nWidth;
-		 int nHeight;
-		 int nSize;
+		 int nWidth = 0;
+		 int nHeight = 0;
+		 int nSize = 0;
 	};
 }
 
