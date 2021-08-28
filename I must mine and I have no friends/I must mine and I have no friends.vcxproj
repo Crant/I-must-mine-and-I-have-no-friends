@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AssetsManager.cpp" />
     <ClCompile Include="BaseUnit.cpp" />
     <ClCompile Include="GFX.cpp" />
     <ClCompile Include="olcPixelGameEngine.cpp" />
@@ -26,17 +27,27 @@
     <ClCompile Include="Source\GridGenerator.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\World.cpp" />
+    <ClCompile Include="TileController.cpp" />
+    <ClCompile Include="TilePhysics.cpp" />
+    <ClCompile Include="Tiles.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetsManager.h" />
     <ClInclude Include="BaseUnit.h" />
     <ClInclude Include="GFX.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\olcPixelGameEngine.h" />
     <ClInclude Include="Include\World.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="TileController.h" />
+    <ClInclude Include="TilePhysics.h" />
+    <ClInclude Include="Tiles.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\Debug\I must mine and I have no friends.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Assets\fuckit.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -122,6 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +163,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

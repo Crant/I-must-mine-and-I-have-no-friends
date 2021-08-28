@@ -9,16 +9,19 @@ namespace IMM
 
 		GridGenerator(std::string name, int width, int height);
 		~GridGenerator();
-		TileType* GenerateWorld();
+		void GenerateWorld();
 		void RandomFillMap();
 		//int FillArea(int x, int y, float nPseudoRandNumber);	
 		void SmoothMap();
 		int GetSurroundingWallCount(int gridX, int gridY);
+		void GenerateNeighbours();
+		World* GetWorld();
 		
 	private:
 		std::string sName;
 		int width;
 		int height;
-		TileType* newWorld;
+		const int nFillPercentage = 50;
+		World* sWorldToBeGenerated;
 	};
 }

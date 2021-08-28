@@ -1,6 +1,7 @@
 #pragma once
 #include "../I must mine and I have no friends/Include/olcPixelGameEngine.h"
 #include "Include/World.h"
+#include "AssetsManager.h"
 
 namespace IMM 
 {
@@ -10,19 +11,41 @@ namespace IMM
 	public:
 		Renderer(){}
 
-		void MoveCamera(olc::PixelGameEngine* pge);
+		void UpdateCamera();
 		void SetCamera(olc::PixelGameEngine* pge);
 	private:
 		float fCameraPosX = 50.0f;
 		float fCameraPosY = 50.0f;
+
+		float fMousePosX;
+		float fMousePosY;
 
 		int nVisibleTilesX;
 		int nVisibleTilesY;
 
 		float fOffsetX;
 		float fOffsetY;
+		/*
+		olc::vf2d pos = olc::vf2d(x * tileSize - fTileOffsetX, y * tileSize - fTileOffsetY); Position att rendera
 
-		int tileSize = 8;
+		x + fOffsetX, y + fOffsetY För att få ut vilken vilken tile som påverkas
+		
+		
+		
+		
+		
+		
+		*/
+		int tileSize = 16;
+		int pixelSize = 32;
+		float tileScale = 0.0f;
+
+		olc::PixelGameEngine* pge;
+		olc::Sprite* sDirt;
+		olc::Decal* dDirt;
+
+		void MoveCamera();
+		void RenderCamera();
 	};
 
 }
