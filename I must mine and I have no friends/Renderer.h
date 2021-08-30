@@ -2,6 +2,7 @@
 #include "../I must mine and I have no friends/Include/olcPixelGameEngine.h"
 #include "Include/World.h"
 #include "AssetsManager.h"
+#include "TileController.h"
 
 namespace IMM 
 {
@@ -12,7 +13,7 @@ namespace IMM
 		Renderer(){}
 
 		void UpdateCamera();
-		void SetCamera(olc::PixelGameEngine* pge);
+		void SetCamera();
 	private:
 		float fCameraPosX = 50.0f;
 		float fCameraPosY = 50.0f;
@@ -25,6 +26,8 @@ namespace IMM
 
 		float fOffsetX;
 		float fOffsetY;
+
+		float fTimer = 0.0f;
 		/*
 		olc::vf2d pos = olc::vf2d(x * tileSize - fTileOffsetX, y * tileSize - fTileOffsetY); Position att rendera
 
@@ -43,6 +46,7 @@ namespace IMM
 		olc::PixelGameEngine* pge;
 		olc::Sprite* sDirt;
 		olc::Decal* dDirt;
+		TileController tileCont;
 
 		void MoveCamera();
 		void RenderCamera();

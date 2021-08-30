@@ -19,10 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActiveItem.cpp" />
+    <ClCompile Include="ActiveTile.cpp" />
     <ClCompile Include="AssetsManager.cpp" />
     <ClCompile Include="BaseUnit.cpp" />
+    <ClCompile Include="DamageAble.cpp" />
+    <ClCompile Include="DamageObj.cpp" />
     <ClCompile Include="GFX.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="olcPixelGameEngine.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Source\GridGenerator.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -32,12 +38,17 @@
     <ClCompile Include="Tiles.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActiveItem.h" />
     <ClInclude Include="AssetsManager.h" />
     <ClInclude Include="BaseUnit.h" />
+    <ClInclude Include="DamageAble.h" />
+    <ClInclude Include="DamageObj.h" />
     <ClInclude Include="GFX.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\olcPixelGameEngine.h" />
     <ClInclude Include="Include\World.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="TileController.h" />
     <ClInclude Include="TilePhysics.h" />

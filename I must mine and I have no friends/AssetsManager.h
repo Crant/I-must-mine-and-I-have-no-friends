@@ -21,9 +21,9 @@ namespace IMM
 		//{
 		//	return mTiles[tile];
 		//}
-		olc::Decal* GetSpriteDecal(TileType tile)
+		olc::Decal* GetSpriteDecal(TileType* tile)
 		{
-			return mTiles[tile];
+			return mTiles[*tile];
 		}
 		olc::Sprite* GetTileSheet()
 		{
@@ -36,7 +36,6 @@ namespace IMM
 		~Assets() {}
 
 	private:
-		std::unordered_map<TileType, olc::Sprite*> sLoadedSprites;
 		std::unordered_map<TileType, olc::Decal*> mTiles;
 		olc::Sprite* sprDemo = nullptr;
 		olc::Sprite* sTileSheet = nullptr;

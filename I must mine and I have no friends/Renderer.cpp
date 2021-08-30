@@ -5,22 +5,23 @@ void Renderer::MoveCamera()
 {
 	fMousePosX = ((float)pge->GetMouseX() / tileSize) + fOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
 	fMousePosY = ((float)pge->GetMouseY() / tileSize) + fOffsetY;
+	
 
 	if (pge->IsFocused())
 	{
-		if (pge->GetMouse(0).bHeld && !(World::Main()->IsBlock(fMousePosX, fMousePosY)))
+		pge->DrawStringDecal(olc::vf2d(pge->GetMouseX() + 10, pge->GetMouseY()), std::to_string(TileController::nActiveTiles.size()));
+		if (pge->GetMouse(1).bHeld && !(World::Main()->IsBlock(fMousePosX, fMousePosY)))
 		{
-			World::Main()->SetTile(fMousePosX, fMousePosY, TileType::Dirt);
+			TileController::CreateBlock(olc::vf2d(fMousePosX, fMousePosY), TileType::Dirt);
 		}
-		if (pge->GetMouse(1).bHeld)
+		if (pge->GetMouse(0).bHeld && World::Main()->IsBlock(fMousePosX, fMousePosY) && fTimer > 0.2f)
 		{
-			pge->DrawStringDecal(olc::vf2d(pge->GetMouseX() + 10, pge->GetMouseY()), std::to_string(fMousePosX));
-			pge->DrawStringDecal(olc::vf2d(pge->GetMouseX() + 10, pge->GetMouseY() + 10), std::to_string(fMousePosY));
-			pge->DrawStringDecal(olc::vf2d(pge->GetMouseX() + 10, pge->GetMouseY() + 30), std::to_string((int)World::Main()->GetNbour(fMousePosX, fMousePosY)));
+			TileController::DamageBlock(World::Main()->Coordinates(World::Main()->Index(fMousePosX, fMousePosY)), 0.5f);
+			fTimer = 0.0f;
 		}
 		if (pge->GetKey(olc::Key::W).bHeld)
 		{
-			fCameraPosY -= 10.0f * pge->GetElapsedTime();
+			fCameraPosY += 10.0f * pge->GetElapsedTime();
 		}
 		if (pge->GetKey(olc::Key::A).bHeld)
 		{
@@ -32,10 +33,11 @@ void Renderer::MoveCamera()
 		}
 		if (pge->GetKey(olc::Key::S).bHeld)
 		{
-			fCameraPosY += 10.0f * pge->GetElapsedTime();
+			fCameraPosY -= 10.0f * pge->GetElapsedTime();
 		}
-	}
 
+	}
+	fTimer += pge->GetElapsedTime();
 }
 void Renderer::RenderCamera()
 {
@@ -52,28 +54,27 @@ void Renderer::RenderCamera()
 		{
 			if (World::Main()->IsBlock(x + fOffsetX, y + fOffsetY))
 			{
-				TileType tile = World::Main()->GetTile(olc::vf2d(x + fOffsetX, y + fOffsetY));
+				TileType* tile = World::Main()->GetTile(olc::vf2d(x + fOffsetX, y + fOffsetY));
 				int tileNbour = (int)World::Main()->GetNbour(olc::vf2d(x + fOffsetX, y + fOffsetY));
 				olc::vf2d pos = olc::vf2d(x * tileSize - fTileOffsetX, y * tileSize - fTileOffsetY);
 
 				pge->DrawPartialDecal(pos, Assets::get().GetSpriteDecal(tile), olc::vi2d(0, pixelSize * tileNbour), olc::vi2d(pixelSize, pixelSize), olc::vf2d(tileScale, tileScale));
-				//pge->DrawStringDecal(pos, std::to_string(tileNbour));
 			}
-
 		}
 	}
 }
 void Renderer::UpdateCamera()
 {
-	MoveCamera();
 	RenderCamera();
+	MoveCamera();
 }
-void Renderer::SetCamera(olc::PixelGameEngine* pge)
+void Renderer::SetCamera()
 {
-	 nVisibleTilesX = pge->ScreenWidth() / tileSize;
-	 nVisibleTilesY = pge->ScreenHeight() / tileSize;
+	this->pge = World::get();
+	nVisibleTilesX = pge->ScreenWidth() / tileSize;
+	nVisibleTilesY = pge->ScreenHeight() / tileSize;
 
-	 this->pge = pge;
+
 	 //sDirt = Assets::get().Get(TileType::Dirt);
 	 //dDirt = new olc::Decal(sDirt);
 	 tileScale = ((float)tileSize / (float)pixelSize);

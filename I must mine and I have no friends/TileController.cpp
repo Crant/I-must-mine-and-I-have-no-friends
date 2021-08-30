@@ -1,38 +1,53 @@
-//#include "TileController.h"
-//using TileMap = std::unordered_map<int, TileData>;
-//TileController::TileController()
-//{
-//    nKeys = new std::vector<int>;
-//    nActiveTiles = new TileMap;
-//}
-//
-//void TileController::CheckActiveTiles()
-//{
-//    //nkeys.AddRange(World.GetActiveKeys());
-//
-//    for (TileMap::const_iterator it = nActiveTiles->begin();it != nActiveTiles->end(); it++)
-//    {
-//        auto& key = it->first;
-//
-//        sTileData = it->second;
-//        sTileData.fTimeAlive += f
-//    }
-//
-//    //for (int i = 0; i < keys.Count; i++)
-//    //{
-//    //    //Debug.Log(keys[i] + " key at index " + i);
-//    //    tile = World.GetTileData(keys[i]);
-//    //    tile.timeAlive += Time.deltaTime;
-//    //    World.SetTileData(keys[i], tile);
-//    //    if (World.GetTileData(keys[i]).timeAlive >= resetTimer)
-//    //    {
-//    //        World.DeactivateTileData(keys[i]);
-//    //    }
-//    //    else if (World.GetTileData(keys[i]).miningHp <= 0 || World.GetTileData(keys[i]).hitPoints <= 0)
-//    //    {
-//    //        World.DeactivateTileData(keys[i]);
-//    //        World.SetTile(keys[i], TileType.Empty);
-//    //    }
-//    //}
-//    //keys.Clear();
-//}
+#include "TileController.h"
+#include "../I must mine and I have no friends/Include/olcPixelGameEngine.h"
+TileController::TileController()
+{
+    pge = World::get();
+}
+
+void TileController::CheckActiveTiles()
+{
+    for (std::unordered_map<int, TileData>::const_iterator it = nActiveTiles.begin();it != nActiveTiles.end();)
+    {
+        auto& key = it->first;
+        nActiveTiles[key].fHitPoints += nActiveTiles[key].fHitPoints * 0.02f;
+        if (nActiveTiles[key].fHitPoints >= nActiveTiles[key].fMaxHP)
+        {
+            nActiveTiles.erase(it++);
+        }
+        else if (nActiveTiles[key].fHitPoints <= 0)
+        {
+            nActiveTiles.erase(it++);
+            World::Main()->SetTile(key, TileType::Empty);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+void TileController::DamageBlock(olc::vf2d fBlockPos, float fDmg)
+{
+    if (!World::Main()->IsBlock(fBlockPos))
+        return;
+
+    int tileIndex = World::Main()->Index(fBlockPos);
+    if (nActiveTiles.find(tileIndex) == nActiveTiles.end())
+    {
+        TileData* nTile = new TileData(Tiles::GetData(World::Main()->GetTile(tileIndex)).fHitPoints, Tiles::GetData(World::Main()->GetTile(tileIndex)).fMaxHP);
+        nActiveTiles[tileIndex] = *nTile;
+
+    }       
+    nActiveTiles[tileIndex].fHitPoints -= fDmg;
+}
+void TileController::DamageBlockAOE(olc::vf2d fBlockPos, float fDmg, int nAoe)
+{
+
+}
+ void TileController::CreateBlock(olc::vf2d pos, TileType tile)
+    {
+        if (!World::Main()->IsBlock(pos))
+        {
+            World::Main()->SetTile(pos, tile);
+        }
+    }

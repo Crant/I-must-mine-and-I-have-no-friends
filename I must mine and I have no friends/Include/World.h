@@ -4,15 +4,16 @@
 
 namespace IMM 
 {
-
-
 	class World
 	{
 	public:
 		//World(int width, int height, TileType* newWorld, std::string newName);
 		World(){}
 		~World();
-		
+		static olc::PixelGameEngine* get()
+		{
+			return pge;
+		}
 		static World* Main()
 		{
 			if (Instance == nullptr)
@@ -20,14 +21,14 @@ namespace IMM
 
 			return Instance;
 		}
-		void SetWorld(int width, int height, Tile* newWorld, std::string name);
+		void SetWorld(int width, int height, Tile* newWorld, std::string name, olc::PixelGameEngine* pge);
 		void SetTile(int index, TileType value);
 		void SetTile(float x, float y, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);
 		void SetTileGeneration(int index, TileType value);
-		TileType GetTile(int index);
-		TileType GetTile(int x, int y);
-		TileType GetTile(olc::vf2d pos);
+		TileType* GetTile(int index);
+		TileType* GetTile(int x, int y);
+		TileType* GetTile(olc::vf2d pos);
 		TileNeighbours GetNbour(int index);
 		TileNeighbours GetNbour(int x, int y);
 		TileNeighbours GetNbour(olc::vf2d pos);
@@ -48,6 +49,7 @@ namespace IMM
 
 	private:
 		 static inline World* Instance;
+		 static inline olc::PixelGameEngine* pge;
 		 Tile* nWorld;
 		 std::string sWorldName;
 

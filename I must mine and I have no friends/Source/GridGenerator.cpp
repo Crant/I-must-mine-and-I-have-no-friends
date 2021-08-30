@@ -4,7 +4,7 @@ using namespace IMM;
 
 
 
-GridGenerator::GridGenerator(std::string name, int width, int height)
+GridGenerator::GridGenerator(std::string name, int width, int height, olc::PixelGameEngine* pge)
 {
     if (name == "")
     {
@@ -20,7 +20,7 @@ GridGenerator::GridGenerator(std::string name, int width, int height)
     int worldSize = width * height;
 
     sWorldToBeGenerated = new World();
-    sWorldToBeGenerated->SetWorld(width, height, new Tile[worldSize], sName);
+    sWorldToBeGenerated->SetWorld(width, height, new Tile[worldSize], sName, pge);
     GenerateWorld();
     GenerateNeighbours();
 }

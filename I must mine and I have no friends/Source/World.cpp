@@ -20,13 +20,14 @@ World::~World()
     delete[] nWorld;
     delete Instance;
 }
-void World::SetWorld(int width, int height, Tile* newWorld, std::string newName)
+void World::SetWorld(int width, int height, Tile* newWorld, std::string newName, olc::PixelGameEngine* pge)
 {
     nWidth = width;
     nHeight = height;
     nSize = width * height;
     nWorld = newWorld;
     sWorldName = newName;
+    this->pge = pge;
     Instance = this;
 }
 void World::SetTile(int index, TileType value)
@@ -48,17 +49,17 @@ void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATIO
 {
     nWorld[index].type = value;
 }
-TileType World::GetTile(int index)
+TileType* World::GetTile(int index)
 {
-    return nWorld[index].type;
+    return &nWorld[index].type;
 }
-TileType World::GetTile(int x, int y)
+TileType* World::GetTile(int x, int y)
 {
-    return nWorld[Index(x, y)].type;
+    return &nWorld[Index(x, y)].type;
 }
-TileType World::GetTile(olc::vf2d pos)
+TileType* World::GetTile(olc::vf2d pos)
 {
-    return nWorld[Index(pos)].type;
+    return &nWorld[Index(pos)].type;
 }
 TileNeighbours World::GetNbour(int index)
 {
@@ -175,25 +176,25 @@ void World::SetNeighbours(olc::vf2d pos)
 void World::SetNeighbours(int index)
 {
     int nTileNeighbours = 0;
-    if (IsBlock(index + nHeight) > 0)
-    {
-        nTileNeighbours += 1;
-        nWorld[index + nHeight].Nbrs = SetNeighboursNotRecursive(index + nHeight);
-    }
     if (IsBlock(index + 1) > 0)
     {
-        nTileNeighbours += 2;
+        nTileNeighbours += 1;
         nWorld[index + 1].Nbrs = SetNeighboursNotRecursive(index + 1);
     }
-    if (IsBlock(index - nHeight) > 0)
+    if (IsBlock(index + nWidth) > 0)
     {
-        nTileNeighbours += 4;
-        nWorld[index - nHeight].Nbrs = SetNeighboursNotRecursive(index - nHeight);
+        nTileNeighbours += 2;
+        nWorld[index + nWidth].Nbrs = SetNeighboursNotRecursive(index + nWidth);
     }
     if (IsBlock(index - 1) > 0)
     {
-        nTileNeighbours += 8;
+        nTileNeighbours += 4;
         nWorld[index - 1].Nbrs = SetNeighboursNotRecursive(index - 1);
+    }
+    if (IsBlock(index - nWidth) > 0)
+    {
+        nTileNeighbours += 8;
+        nWorld[index - nWidth].Nbrs = SetNeighboursNotRecursive(index - nWidth);
     }
     nWorld[index].Nbrs = (TileNeighbours)nTileNeighbours;
 }
@@ -242,19 +243,19 @@ TileNeighbours World::SetNeighboursNotRecursive(olc::vf2d pos)
 TileNeighbours World::SetNeighboursNotRecursive(int index)
 {
     int nTileNeighbours = 0;
-    if (IsBlock(index + nHeight) > 0)
+    if (IsBlock(index + 1) > 0)
     {
         nTileNeighbours += 1;
     }
-    if (IsBlock(index + 1) > 0)
+    if (IsBlock(index + nWidth) > 0)
     {
         nTileNeighbours += 2;
     }
-    if (IsBlock(index - nHeight) > 0)
+    if (IsBlock(index - 1) > 0)
     {
         nTileNeighbours += 4;
     }
-    if (IsBlock(index - 1) > 0)
+    if (IsBlock(index - nWidth) > 0)
     {
         nTileNeighbours += 8;
     }
