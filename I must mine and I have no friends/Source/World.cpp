@@ -1,4 +1,5 @@
 #include "../Include/World.h"
+
 using namespace IMM;
 
 
@@ -20,14 +21,13 @@ World::~World()
     delete[] nWorld;
     delete Instance;
 }
-void World::SetWorld(int width, int height, Tile* newWorld, std::string newName, olc::PixelGameEngine* pge)
+void World::SetWorld(int width, int height, Tile* newWorld, std::string newName)
 {
     nWidth = width;
     nHeight = height;
     nSize = width * height;
     nWorld = newWorld;
     sWorldName = newName;
-    this->pge = pge;
     Instance = this;
 }
 void World::SetTile(int index, TileType value)

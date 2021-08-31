@@ -7,7 +7,6 @@ namespace IMM
 {
 	class TileController
 	{
-		olc::PixelGameEngine* pge;
 	public:
 		TileController();
 		~TileController(){}

@@ -2,8 +2,6 @@
 #include "../Include/World.h"
 using namespace IMM;
 
-
-
 GridGenerator::GridGenerator(std::string name, int width, int height, olc::PixelGameEngine* pge)
 {
     if (name == "")
@@ -20,18 +18,21 @@ GridGenerator::GridGenerator(std::string name, int width, int height, olc::Pixel
     int worldSize = width * height;
 
     sWorldToBeGenerated = new World();
-    sWorldToBeGenerated->SetWorld(width, height, new Tile[worldSize], sName, pge);
+    sWorldToBeGenerated->SetWorld(width, height, new Tile[worldSize], sName);
     GenerateWorld();
     GenerateNeighbours();
 }
+
 GridGenerator::~GridGenerator() 
 {
 
 }
+
 World* GridGenerator::GetWorld() 
 {
     return sWorldToBeGenerated;
 }
+
 void GridGenerator::GenerateNeighbours()
 {
     for (size_t x = 0; x < World::Main()->GetWidth(); x++)
@@ -42,6 +43,7 @@ void GridGenerator::GenerateNeighbours()
         }
     }
 }
+
 void GridGenerator::GenerateWorld()
 {
     RandomFillMap();
@@ -50,6 +52,7 @@ void GridGenerator::GenerateWorld()
         SmoothMap();
     }
 }
+
 void GridGenerator::RandomFillMap()
 {
     int pseudoRandomGenerator = std::hash<std::string>()(sName);
@@ -64,6 +67,7 @@ void GridGenerator::RandomFillMap()
         }
     }
 }
+
 void GridGenerator::SmoothMap()
 {
     for (int x = 0; x < width; x++)
@@ -87,6 +91,7 @@ void GridGenerator::SmoothMap()
         }
     }
 }
+
 int GridGenerator::GetSurroundingWallCount(int gridX, int gridY)
 {
     int wallCount = 0;
@@ -109,5 +114,3 @@ int GridGenerator::GetSurroundingWallCount(int gridX, int gridY)
 
     return wallCount;
 }
-
-

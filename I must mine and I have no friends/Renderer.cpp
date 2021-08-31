@@ -1,43 +1,45 @@
 #include "../I must mine and I have no friends/Renderer.h"
+#include "Include/Game.h"
+
 using namespace IMM;
 
 void Renderer::MoveCamera()
 {
-	fMousePosX = ((float)pge->GetMouseX() / tileSize) + fOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
-	fMousePosY = ((float)pge->GetMouseY() / tileSize) + fOffsetY;
+	fMousePosX = ((float)Game::Main()->GetMouseX() / tileSize) + fOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
+	fMousePosY = ((float)Game::Main()->GetMouseY() / tileSize) + fOffsetY;
 	
 
-	if (pge->IsFocused())
+	if (Game::Main()->IsFocused())
 	{
-		pge->DrawStringDecal(olc::vf2d(pge->GetMouseX() + 10, pge->GetMouseY()), std::to_string(TileController::nActiveTiles.size()));
-		if (pge->GetMouse(1).bHeld && !(World::Main()->IsBlock(fMousePosX, fMousePosY)))
+		Game::Main()->DrawStringDecal(olc::vf2d(Game::Main()->GetMouseX() + 10, Game::Main()->GetMouseY()), std::to_string(TileController::nActiveTiles.size()));
+		if (Game::Main()->GetMouse(1).bHeld && !(World::Main()->IsBlock(fMousePosX, fMousePosY)))
 		{
 			TileController::CreateBlock(olc::vf2d(fMousePosX, fMousePosY), TileType::Dirt);
 		}
-		if (pge->GetMouse(0).bHeld && World::Main()->IsBlock(fMousePosX, fMousePosY) && fTimer > 0.2f)
+		if (Game::Main()->GetMouse(0).bHeld && World::Main()->IsBlock(fMousePosX, fMousePosY) && fTimer > 0.2f)
 		{
 			TileController::DamageBlock(World::Main()->Coordinates(World::Main()->Index(fMousePosX, fMousePosY)), 0.5f);
 			fTimer = 0.0f;
 		}
-		if (pge->GetKey(olc::Key::W).bHeld)
+		if (Game::Main()->GetKey(olc::Key::W).bHeld)
 		{
-			fCameraPosY += 10.0f * pge->GetElapsedTime();
+			fCameraPosY += 10.0f * Game::Main()->GetElapsedTime();
 		}
-		if (pge->GetKey(olc::Key::A).bHeld)
+		if (Game::Main()->GetKey(olc::Key::A).bHeld)
 		{
-			fCameraPosX -= 10.0f * pge->GetElapsedTime();
+			fCameraPosX -= 10.0f * Game::Main()->GetElapsedTime();
 		}
-		if (pge->GetKey(olc::Key::D).bHeld)
+		if (Game::Main()->GetKey(olc::Key::D).bHeld)
 		{
-			fCameraPosX += 10.0f * pge->GetElapsedTime();
+			fCameraPosX += 10.0f * Game::Main()->GetElapsedTime();
 		}
-		if (pge->GetKey(olc::Key::S).bHeld)
+		if (Game::Main()->GetKey(olc::Key::S).bHeld)
 		{
-			fCameraPosY -= 10.0f * pge->GetElapsedTime();
+			fCameraPosY -= 10.0f * Game::Main()->GetElapsedTime();
 		}
 
 	}
-	fTimer += pge->GetElapsedTime();
+	fTimer += Game::Main()->GetElapsedTime();
 }
 void Renderer::RenderCamera()
 {
@@ -58,7 +60,7 @@ void Renderer::RenderCamera()
 				int tileNbour = (int)World::Main()->GetNbour(olc::vf2d(x + fOffsetX, y + fOffsetY));
 				olc::vf2d pos = olc::vf2d(x * tileSize - fTileOffsetX, y * tileSize - fTileOffsetY);
 
-				pge->DrawPartialDecal(pos, Assets::get().GetSpriteDecal(tile), olc::vi2d(0, pixelSize * tileNbour), olc::vi2d(pixelSize, pixelSize), olc::vf2d(tileScale, tileScale));
+				Game::Main()->DrawPartialDecal(pos, Assets::get().GetSpriteDecal(tile), olc::vi2d(0, pixelSize * tileNbour), olc::vi2d(pixelSize, pixelSize), olc::vf2d(tileScale, tileScale));
 			}
 		}
 	}
@@ -70,9 +72,9 @@ void Renderer::UpdateCamera()
 }
 void Renderer::SetCamera()
 {
-	this->pge = World::get();
-	nVisibleTilesX = pge->ScreenWidth() / tileSize;
-	nVisibleTilesY = pge->ScreenHeight() / tileSize;
+	//this->pge = World::get();
+	nVisibleTilesX = Game::Main()->ScreenWidth() / tileSize;
+	nVisibleTilesY = Game::Main()->ScreenHeight() / tileSize;
 
 
 	 //sDirt = Assets::get().Get(TileType::Dirt);

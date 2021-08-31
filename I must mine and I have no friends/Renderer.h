@@ -43,7 +43,6 @@ namespace IMM
 		int pixelSize = 32;
 		float tileScale = 0.0f;
 
-		olc::PixelGameEngine* pge;
 		olc::Sprite* sDirt;
 		olc::Decal* dDirt;
 		TileController tileCont;

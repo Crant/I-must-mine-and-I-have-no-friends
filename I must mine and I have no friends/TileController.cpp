@@ -1,8 +1,8 @@
 #include "TileController.h"
 #include "../I must mine and I have no friends/Include/olcPixelGameEngine.h"
+
 TileController::TileController()
 {
-    pge = World::get();
 }
 
 void TileController::CheckActiveTiles()
@@ -17,8 +17,8 @@ void TileController::CheckActiveTiles()
         }
         else if (nActiveTiles[key].fHitPoints <= 0)
         {
-            nActiveTiles.erase(it++);
             World::Main()->SetTile(key, TileType::Empty);
+            nActiveTiles.erase(it++);
         }
         else
         {
@@ -26,6 +26,7 @@ void TileController::CheckActiveTiles()
         }
     }
 }
+
 void TileController::DamageBlock(olc::vf2d fBlockPos, float fDmg)
 {
     if (!World::Main()->IsBlock(fBlockPos))
@@ -40,14 +41,16 @@ void TileController::DamageBlock(olc::vf2d fBlockPos, float fDmg)
     }       
     nActiveTiles[tileIndex].fHitPoints -= fDmg;
 }
+
 void TileController::DamageBlockAOE(olc::vf2d fBlockPos, float fDmg, int nAoe)
 {
 
 }
+
  void TileController::CreateBlock(olc::vf2d pos, TileType tile)
+{
+    if (!World::Main()->IsBlock(pos))
     {
-        if (!World::Main()->IsBlock(pos))
-        {
-            World::Main()->SetTile(pos, tile);
-        }
+        World::Main()->SetTile(pos, tile);
     }
+}
