@@ -11,6 +11,7 @@ namespace IMM
 		public:
 			TsQueue() = default;
 			TsQueue(const TsQueue<T>&) = delete;
+			virtual ~TsQueue() { clear(); }
 		
 		public:
 			// Returns and maintains item at front of Queue
@@ -98,6 +99,8 @@ namespace IMM
 		protected:
 			std::mutex muxQueue;
 			std::deque<T> deqQueue;
+			std::condition_variable cvBlocking;
+			std::mutex muxBlocking;
 		};
 	}
 }

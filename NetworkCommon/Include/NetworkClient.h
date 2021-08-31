@@ -31,17 +31,20 @@ namespace IMM
 			{
 				try
 				{
-					// Create connection
-					mConnection = std::make_unique<Connection<T>>(); //TODO
-
-					// Resolve hostname / ip-address into tangiable physical address
+					// Resolve hostname/ip-address into tangiable physical address
 					asio::ip::tcp::resolver resolver(mContext);
-					mEndpoints = resolver.resolve(host, std::to_string(port));
+					asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
 
-					// Tell the connection object to connect to the server
-					mConnection->ConnectToServer(mEndpoints);
+					// Create connection
+					mConnection = std::make_unique<Connection<T>>(
+						Connection<T>::Owner::Client,
+						mContext, asio::ip::tcp::socket(mContext), 
+						mQMessagesIn);
 
-					// Start the context thread
+					// Tell the connection object to connect to server
+					mConnection->ConnectToServer(endpoints);
+
+					// Start Context Thread
 					mThreadContext = std::thread([this]() { mContext.run(); });
 				}
 				catch (std::exception& e)
@@ -76,15 +79,22 @@ namespace IMM
 			bool IsConnected()
 			{
 				if (mConnection)
-					return mConnection.IsConnected();
+					return mConnection->IsConnected();
 				else
 					return false;
+			}
+
+			// Send message to server
+			void Send(const Message<T>& msg)
+			{
+				if (IsConnected())
+					mConnection->Send(msg);
 			}
 
 			// Retrieve the queue of messages from the server
 			TsQueue<OwnedMessage<T>>& Incoming()
 			{
-				return mQueueMessagesIn;
+				return mQMessagesIn;
 			}
 
 		protected:
@@ -102,7 +112,7 @@ namespace IMM
 
 		private:
 			// This is the thread safe queue of incoming messages from server
-			TsQueue<OwnedMessage<T>> mQueueMessagesIn;
+			TsQueue<OwnedMessage<T>> mQMessagesIn;
 		};
 	}
 }

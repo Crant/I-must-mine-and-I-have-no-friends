@@ -89,23 +89,22 @@ namespace IMM
 				// Return the target message so it can be "chained"
 				return msg;
 			}
+		};
+		//Forward declare the connection
+		template <typename T>
+		class Connection;
 
-			//Forward declare the connection
-			template <typename T>
-			class Connection;
+		template <typename T>
+		struct OwnedMessage
+		{
+			std::shared_ptr<Connection<T>> remote = nullptr;
+			Message<T> msg;
 
-			template <typename T>
-			struct OwnedMessage
+			friend std::ostream& operator<<(std::ostream& os, const OwnedMessage<T>& msg)
 			{
-				std::shared_ptr<Connection<T>> remote = nullptr;
-				Message<T> msg;
-
-				friend std::ostream& operator<<(std::ostream& os, const owned_message<T>& msg)
-				{
-					os << msg.msg;
-					return os;
-				}
-			};
+				os << msg.msg;
+				return os;
+			}
 		};
 	}
 }
