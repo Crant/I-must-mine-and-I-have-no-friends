@@ -72,9 +72,10 @@ void Renderer::UpdateCamera()
 }
 void Renderer::SetCamera()
 {
-	//this->pge = World::get();
 	nVisibleTilesX = Game::Main()->ScreenWidth() / tileSize;
 	nVisibleTilesY = Game::Main()->ScreenHeight() / tileSize;
+	
+	
 
 
 	 //sDirt = Assets::get().Get(TileType::Dirt);

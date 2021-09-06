@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NetworkCommon.h"
+#include <iostream>
 
 namespace IMM
 {
@@ -28,7 +29,7 @@ namespace IMM
 			//returns size of entire message packet in bytes
 			size_t size() const
 			{
-				return sizeof(Message_Header<T>) + mBody.size();
+				return mBody.size();
 			}
 
 			// Override for std::cout compatibility
@@ -53,6 +54,8 @@ namespace IMM
 
 				// Cache current size of vector, as this will be the point we insert the data
 				size_t i = msg.mBody.size();
+				
+				std::cout << "Current size of body: " << i << "\n";
 
 				// Resize the vector by the size of the data being pushed
 				msg.mBody.resize(msg.mBody.size() + sizeof(DataType));
@@ -62,6 +65,8 @@ namespace IMM
 
 				// Recalculate the message size
 				msg.mHeader.size = msg.size();
+
+				std::cout << "New size of body: " << msg.size() << "\n";
 
 				// Return the target message so it can be "chained"
 				return msg;
@@ -85,6 +90,8 @@ namespace IMM
 
 				// Recalculate the message size
 				msg.mHeader.size = msg.size();
+
+				std::cout << "New size of body: " << msg.size() << "\n";
 
 				// Return the target message so it can be "chained"
 				return msg;

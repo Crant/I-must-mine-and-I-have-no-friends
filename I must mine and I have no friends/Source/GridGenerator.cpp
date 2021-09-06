@@ -1,8 +1,9 @@
 #include "../Include/GridGenerator.h"
-#include "../Include/World.h"
+#include "../Include/RandomGen.h"
+
 using namespace IMM;
 
-GridGenerator::GridGenerator(std::string name, int width, int height, olc::PixelGameEngine* pge)
+GridGenerator::GridGenerator(std::string name, int width, int height)
 {
     if (name == "")
     {
@@ -55,15 +56,19 @@ void GridGenerator::GenerateWorld()
 
 void GridGenerator::RandomFillMap()
 {
-    int pseudoRandomGenerator = std::hash<std::string>()(sName);
-    srand(pseudoRandomGenerator);
+    //int pseudoRandomGenerator = std::hash<std::string>()(sName);
+    //srand(pseudoRandomGenerator);
+
+    Utils::Random::Srand(sName);
+    
+    //std::cout << "Seed: " << Utils::Random::randomGen. << "\n";
 
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
             //[x * height + y].type = rand() % 100 < nFillPercentage ? TileType::Dirt : TileType::Empty;
-            sWorldToBeGenerated->SetTileGeneration(x * height + y, rand() % 100 < nFillPercentage ? TileType::Dirt : TileType::Empty);
+            sWorldToBeGenerated->SetTileGeneration(x * height + y, Utils::Random::Rand() % 100 < nFillPercentage ? TileType::Dirt : TileType::Empty);
         }
     }
 }

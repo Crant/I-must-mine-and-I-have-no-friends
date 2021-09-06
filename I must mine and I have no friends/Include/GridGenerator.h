@@ -7,7 +7,7 @@ namespace IMM
 	{
 	public:
 
-		GridGenerator(std::string name, int width, int height, olc::PixelGameEngine* pge);
+		GridGenerator(std::string name, int width, int height);
 		~GridGenerator();
 		void GenerateWorld();
 		void RandomFillMap();

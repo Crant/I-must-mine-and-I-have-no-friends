@@ -49,6 +49,7 @@ void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATIO
 {
     nWorld[index].type = value;
 }
+
 TileType* World::GetTile(int index)
 {
     return &nWorld[index].type;
@@ -84,6 +85,11 @@ int World::GetHeight()
 int World::GetSize()
 {
     return nSize;
+}
+
+std::string World::GetName()
+{
+    return sWorldName;
 }
 int World::Index(float x, float y)
 {
