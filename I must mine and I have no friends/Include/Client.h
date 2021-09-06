@@ -9,6 +9,7 @@ namespace IMM
 		void PingServer();
 
 		void MessageAll();
-		void RequestWorld();
+		void RequestWorldInfo();
+		void RequestWorldData();
 	};
 }

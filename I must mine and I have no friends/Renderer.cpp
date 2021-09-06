@@ -60,7 +60,12 @@ void Renderer::RenderCamera()
 				int tileNbour = (int)World::Main()->GetNbour(olc::vf2d(x + fOffsetX, y + fOffsetY));
 				olc::vf2d pos = olc::vf2d(x * tileSize - fTileOffsetX, y * tileSize - fTileOffsetY);
 
-				Game::Main()->DrawPartialDecal(pos, Assets::get().GetSpriteDecal(tile), olc::vi2d(0, pixelSize * tileNbour), olc::vi2d(pixelSize, pixelSize), olc::vf2d(tileScale, tileScale));
+				Game::Main()->DrawPartialDecal(
+					pos, 
+					Assets::Main()->GetSpriteDecal(tile), 
+					olc::vi2d(0, pixelSize * tileNbour), 
+					olc::vi2d(pixelSize, pixelSize), 
+					olc::vf2d(tileScale, tileScale));
 			}
 		}
 	}
@@ -75,9 +80,6 @@ void Renderer::SetCamera()
 	nVisibleTilesX = Game::Main()->ScreenWidth() / tileSize;
 	nVisibleTilesY = Game::Main()->ScreenHeight() / tileSize;
 	
-	
-
-
 	 //sDirt = Assets::get().Get(TileType::Dirt);
 	 //dDirt = new olc::Decal(sDirt);
 	 tileScale = ((float)tileSize / (float)pixelSize);

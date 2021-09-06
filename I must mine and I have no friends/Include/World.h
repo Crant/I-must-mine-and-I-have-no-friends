@@ -4,14 +4,6 @@
 
 namespace IMM 
 {
-	struct WorldInfo
-	{
-		int width;
-		int height;
-
-		char seed[10];
-	};
-
 	class World
 	{
 	public:

@@ -87,46 +87,67 @@ void IMM::Game::HandleNetworkMessages()
 
 			break;
 		case NetworkMessageTypes::ServerPing:
-
-			break;
+		{
+			// Server has responded to a ping request
+			std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+			std::chrono::system_clock::time_point timeThen;
+			msg >> timeThen;
+			std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
+		}
+		break;
 		case NetworkMessageTypes::ServerSendWorldChanges:
 		{
 			mGameState = GameState::GameLoopState;
 		}
 		break;
-		case NetworkMessageTypes::ServerSendWorldWidth:
-		{
-			int width;
-			msg >> width;
-		}
-		break;
 		case NetworkMessageTypes::ServerSendWorldSeed:
 		{
-			std::string seedName;
-			int width;
-			int height;
+			std::string seedName = "";
+			int width = 0;
+			int height = 0;
+			int size = 0;
+			msg >> size;
 
-			WorldInfo wi;
-			
-			msg >> wi;
-			//msg >> width;
-			//msg >> height;
+			for (int i = 0; i < size; i++)
+			{
+				char value;
+				msg >> value;
 
-			//seedName = wi.seed;
+				seedName.push_back(value);
+			}
 
-			std::cout << "World header received\n";
-			Init(wi.seed, wi.width, wi.height);
+			msg >> height >> width;
+
+			Init(seedName, width, height);
 		}	
 		break;
 		case NetworkMessageTypes::ServerSendWorldFull:
+		{
+			int width = 0;
+			int height = 0;
 
-			break;
+			msg >> height >> width;
+
+			Tile* world = new Tile[width * height];
+			for (int i = 0; i < width * height; i++)
+			{
+				msg >> world[i];
+			}
+
+			World::Main()->SetWorld(width, height, world, "");
+
+			Tiles::LoadTiles();
+			renderer.SetCamera();
+
+			mGameState = GameState::GameLoopState;
+		}
+		break;
 		case NetworkMessageTypes::ServerAccept:
 		{
 			// Server has responded to a ping request				
 			std::cout << "Server Accepted Connection\n";
 			if (!mIsServer)
-				mClient->RequestWorld();
+				mClient->RequestWorldData();
 		}
 		break;
 		default:
@@ -140,7 +161,7 @@ bool Game::OnUserCreate()
 {
 	// Called once at the start, so create things here
 
-	Assets::get().LoadSprites();
+	Assets::Main()->LoadSprites();
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	
 	return true;
@@ -167,8 +188,6 @@ bool Game::OnUserUpdate(float fElapsedTime)
 	default:
 		break;
 	}
-
-
 
 	return true;
 }

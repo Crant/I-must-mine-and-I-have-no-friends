@@ -51,35 +51,47 @@ void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMess
 
 		}
 		break;
-		case NetworkMessageTypes::ClientRequestWorld:
+		case NetworkMessageTypes::ClientRequestWorldInfo:
 		{
+			std::cout << "[" << client->GetID() << "]: Requested World Info\n";
+
 			IMM::Network::Message<NetworkMessageTypes> msg;
 			msg.mHeader.mID = NetworkMessageTypes::ServerSendWorldSeed;
 
-			//IMM::Network::Message<NetworkMessageTypes> msg;
-			//msg.mHeader.mID = NetworkMessageTypes::ServerSendWorldWidth;
-
-			//uint32_t w = 250;
-			//msg << w;
-
 			std::string seedName = World::Main()->GetName();
 
-			WorldInfo wi;
-			wi.height = World::Main()->GetHeight();
-			wi.width = World::Main()->GetWidth();
+			msg << World::Main()->GetWidth();
+			msg << World::Main()->GetHeight();
 
-			//wi.seed = World::Main()->GetSeed();
-			for (int i = 0; i < seedName.size(); i++)
+			for (int i = seedName.size() - 1; i >= 0; i--)
 			{
-				wi.seed[i] = seedName[i];
+				msg << seedName[i];
 			}
-			msg << wi;
-			//msg << wi.height;
-			//msg << wi.width;
+			msg << seedName.size();
 			
 			MessageClient(client, msg);
-			std::cout << "Sending data: " << msg << std::endl;
-			
 		}
+		break;
+		case NetworkMessageTypes::ClientRequestWorldData:
+		{
+			std::cout << "[" << client->GetID() << "]: Requested World Data\n";
+
+			IMM::Network::Message<NetworkMessageTypes> msg;
+			msg.mHeader.mID = NetworkMessageTypes::ServerSendWorldFull;
+
+			Tile* worldData = World::Main()->GetWorld();
+			int worldSize = World::Main()->GetSize();
+			for (int i = worldSize; i >= 0; i--)
+			{
+				msg << worldData[i];
+				//msg << worldData[i].type << worldData[i].Nbrs;
+			}
+			
+			msg << World::Main()->GetWidth();
+			msg << World::Main()->GetHeight();
+
+			MessageClient(client, msg);
+		}
+		break;
 	}
 }

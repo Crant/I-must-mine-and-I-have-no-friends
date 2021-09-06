@@ -21,9 +21,16 @@ void Client::MessageAll()
 	Send(msg);
 }
 
-void Client::RequestWorld()
+void Client::RequestWorldInfo()
 {
 	IMM::Network::Message<NetworkMessageTypes> msg;
-	msg.mHeader.mID = NetworkMessageTypes::ClientRequestWorld;
+	msg.mHeader.mID = NetworkMessageTypes::ClientRequestWorldInfo;
+	Send(msg);
+}
+
+void Client::RequestWorldData()
+{
+	IMM::Network::Message<NetworkMessageTypes> msg;
+	msg.mHeader.mID = NetworkMessageTypes::ClientRequestWorldData;
 	Send(msg);
 }
