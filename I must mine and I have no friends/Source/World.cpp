@@ -203,11 +203,17 @@ void World::RemoveRegions()
         }
     }
     std::vector<int> funfun;
-    for (auto it = std::begin(*vRemainRegions); it != std::end(*vRemainRegions); it++)
+    olc::vf2d vBestDistance;
+    olc::vf2d vFirstDistance;
+    olc::vf2d vSecondDistance;
+
+    
+
+    for (auto regionA = std::begin(*vRemainRegions); regionA != std::end(*vRemainRegions); regionA++)
     {
-        int& nRegionA = it->back();
-        int& nRegionB = it->back();
-        for (auto it = std::begin(*vRemainRegions); it != std::end(*vRemainRegions); it++)
+        int& nRegionA = regionA->back();
+        int& nRegionB = regionA->back();
+        for (auto regionB = std::begin(*vRemainRegions); regionB != std::end(*vRemainRegions); regionB++)
         {
 
         }
