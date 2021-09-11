@@ -24,7 +24,7 @@ World::~World()
     delete[] nWorld;
     delete Instance;
 }
-void World::SetWorld(int width, int height, Tile* newWorld, std::string newName)
+void World::Init(int width, int height, Tile* newWorld, std::string newName)
 {
     nWidth = width;
     nHeight = height;
@@ -52,6 +52,7 @@ void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATIO
 {
     nWorld[std::clamp(index, 0, nHeight * nWidth - 1)].type = value;
 }
+
 TileType* World::GetTile(int index)
 {
     return &nWorld[index].type;
@@ -87,6 +88,11 @@ int World::GetHeight()
 int World::GetSize()
 {
     return nSize;
+}
+
+std::string World::GetName()
+{
+    return sWorldName;
 }
 int World::Index(float x, float y)
 {

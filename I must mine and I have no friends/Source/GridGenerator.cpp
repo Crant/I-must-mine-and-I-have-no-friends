@@ -1,8 +1,9 @@
 #include "../Include/GridGenerator.h"
-#include "../Include/World.h"
+#include "../Include/RandomGen.h"
+
 using namespace IMM;
 
-GridGenerator::GridGenerator(std::string name, int width, int height, olc::PixelGameEngine* pge)
+GridGenerator::GridGenerator(std::string name, int width, int height)
 {
     if (name == "")
     {
@@ -18,8 +19,7 @@ GridGenerator::GridGenerator(std::string name, int width, int height, olc::Pixel
     int worldSize = width * height;
 
     sWorldToBeGenerated = new World();
-    sWorldToBeGenerated->SetWorld(width, height, new Tile[worldSize], sName);
-
+    sWorldToBeGenerated->Init(width, height, new Tile[worldSize], sName);
     nHeightWalkPre = new float[width];
     nHeightWalkPerlin = new float[width];
     nTemporaryArray = new TileType[worldSize];
@@ -175,6 +175,7 @@ void GridGenerator::CreateCave(int nWidth, int nHeight, int nPosX, int nPosY)
 }
 void GridGenerator::RandomFillMap()
 {
+    Utils::Random::Srand(sName);
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)

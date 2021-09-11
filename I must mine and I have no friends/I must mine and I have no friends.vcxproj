@@ -30,11 +30,14 @@
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Source\Client.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\GridGenerator.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\NetServer.cpp" />
     <ClCompile Include="Source\olcPixelGameEngine.cpp" />
+    <ClCompile Include="Source\RandomGen.cpp" />
+    <ClCompile Include="Source\Server.cpp" />
     <ClCompile Include="Source\World.cpp" />
     <ClCompile Include="TileController.cpp" />
     <ClCompile Include="TilePhysics.cpp" />
@@ -47,9 +50,14 @@
     <ClInclude Include="DamageAble.h" />
     <ClInclude Include="DamageObj.h" />
     <ClInclude Include="GFX.h" />
+    <ClInclude Include="Include\Client.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\GridGenerator.h" />
+    <ClInclude Include="Include\NetworkMessages.h" />
+    <ClInclude Include="Include\Observer.h" />
     <ClInclude Include="Include\olcPixelGameEngine.h" />
+    <ClInclude Include="Include\RandomGen.h" />
+    <ClInclude Include="Include\Server.h" />
     <ClInclude Include="Include\World.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="PerlinNoise.h" />
@@ -120,6 +128,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>E:\SDK\asio-1.18.2\include;F:\Documents\Visual Studio\Projects\I must mine and I have no friends\NetworkCommon\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -145,6 +155,13 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /Y "$(SolutionDir)WorkingDir\Assets\*" "$(OutDir)Assets\"</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -175,6 +192,13 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /Y "$(ProjectDir)Resources\Assets\*" "$(TargetDir)Resources\Assets\"</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

@@ -10,7 +10,11 @@ namespace IMM
 	{
 
 	public:
-		Renderer(){}
+		Renderer() 
+		{ 
+			this->sDirt = nullptr; 
+			this->dDirt = nullptr;
+		}
 
 		void UpdateCamera();
 		void SetCamera();

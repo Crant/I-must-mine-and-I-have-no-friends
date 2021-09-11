@@ -3,53 +3,53 @@
 
 namespace IMM
 {
-	    enum class TileType : unsigned char
-	    {
-		    Empty,
-		    Dirt,
-		    Stone,
-	    };
-        enum class TileNeighbours : unsigned char
+	enum class TileType : unsigned char
+	{
+		Empty,
+		Dirt,
+		Stone,
+	};
+    enum class TileNeighbours : unsigned char
+    {
+        NONE,
+        S,
+        E,
+        SE,
+        N,
+        NS,
+        NE,
+        NSE,
+        W,
+        WS,
+        WE,
+        WSE,
+        WN,
+        WNS,
+        WNE,
+        ALL
+    };
+	class TileData
+	{
+    public:
+		float fHitPoints;
+		float fMaxHP;
+        TileData(float fHitPoints, float fMaxHP)
         {
-            NONE,
-            S,
-            E,
-            SE,
-            N,
-            NS,
-            NE,
-            NSE,
-            W,
-            WS,
-            WE,
-            WSE,
-            WN,
-            WNS,
-            WNE,
-            ALL
+            this->fHitPoints = fHitPoints;
+            this->fMaxHP = fMaxHP;
         };
-	    class TileData
-	    {
-        public:
-		    float fHitPoints;
-		    float fMaxHP;
-            TileData(float fHitPoints, float fMaxHP)
-            {
-                this->fHitPoints = fHitPoints;
-                this->fMaxHP = fMaxHP;
-            };
-            TileData()
-            {
-                this->fHitPoints = 0.0f;
-                this->fMaxHP = 0.0f;
-            }
-            ~TileData(){}
-	    };
-        struct Tile
+        TileData()
         {
-            TileType type;
-            TileNeighbours Nbrs;
-        };
+            this->fHitPoints = 0.0f;
+            this->fMaxHP = 0.0f;
+        }
+        ~TileData(){}
+	};
+    struct Tile
+    {
+        TileType type;
+        TileNeighbours Nbrs;
+    };
 
 
     class Tiles

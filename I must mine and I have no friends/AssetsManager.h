@@ -8,10 +8,12 @@ namespace IMM
 	class Assets
 	{
 	public:
-		static Assets& get()
+		static Assets* Main()
 		{
-			static Assets instance;
-			return instance;
+			if (Instance == nullptr)
+				Instance = new Assets();
+
+			return Instance;
 		}
 
 		Assets(Assets const&) = delete;
@@ -25,6 +27,7 @@ namespace IMM
 		{
 			return mTiles[*tile];
 		}
+
 		olc::Sprite* GetTileSheet()
 		{
 			return sTileSheet;
@@ -36,6 +39,8 @@ namespace IMM
 		~Assets() {}
 
 	private:
+		static inline Assets* Instance;
+
 		std::unordered_map<TileType, olc::Decal*> mTiles;
 		olc::Sprite* sprDemo = nullptr;
 		olc::Sprite* sTileSheet = nullptr;

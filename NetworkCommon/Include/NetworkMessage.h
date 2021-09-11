@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NetworkCommon.h"
+#include <iostream>
 
 namespace IMM
 {
@@ -28,7 +29,7 @@ namespace IMM
 			//returns size of entire message packet in bytes
 			size_t size() const
 			{
-				return sizeof(Message_Header<T>) + mBody.size();
+				return mBody.size();
 			}
 
 			// Override for std::cout compatibility
@@ -53,7 +54,7 @@ namespace IMM
 
 				// Cache current size of vector, as this will be the point we insert the data
 				size_t i = msg.mBody.size();
-
+				
 				// Resize the vector by the size of the data being pushed
 				msg.mBody.resize(msg.mBody.size() + sizeof(DataType));
 

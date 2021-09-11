@@ -10,7 +10,7 @@ namespace IMM
 	{
 	public:
 		//World(int width, int height, TileType* newWorld, std::string newName);
-		World(){}
+		World() { this->nWorld = nullptr; }
 		~World();
 
 		static World* Main()
@@ -20,7 +20,7 @@ namespace IMM
 
 			return Instance;
 		}
-		void SetWorld(int width, int height, Tile* newWorld, std::string name);
+		void Init(int width, int height, Tile* newWorld, std::string name);
 		void SetTile(int index, TileType value);
 		void SetTile(float x, float y, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);
@@ -31,11 +31,16 @@ namespace IMM
 		TileNeighbours GetNbour(int index);
 		TileNeighbours GetNbour(int x, int y);
 		TileNeighbours GetNbour(olc::vf2d pos);
+
+		inline Tile* GetWorld() { return nWorld; }
+		std::string GetName();
+
 		int GetWidth();
 		int GetHeight();
 		int GetSize();
 		int Index(float x, float y);
 		int Index(olc::vf2d pos);
+
 		olc::vi2d Coordinates(int flatIndex);
 		bool IsInside(olc::vf2d tile, olc::vf2d check);
 		bool IsInside(int tileIndex, olc::vf2d check);
@@ -59,7 +64,6 @@ namespace IMM
 		 int nWidth = 0;
 		 int nHeight = 0;
 		 int nSize = 0;
-
 
 		 TileNeighbours SetNeighboursNotRecursive(float x, float y);
 		 TileNeighbours SetNeighboursNotRecursive(olc::vf2d pos);

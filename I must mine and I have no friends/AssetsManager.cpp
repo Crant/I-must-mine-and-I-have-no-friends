@@ -2,6 +2,6 @@
 
 void Assets::LoadSprites()
 {
-	olc::Sprite* lolDirt = new olc::Sprite("./Resources/Assets/Dirt.png");
+	olc::Sprite* lolDirt = new olc::Sprite("Assets/Dirt.png");
 	mTiles[TileType::Dirt] = new olc::Decal(lolDirt);
 }
