@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Include/NetworkMessages.h"
+#include "NetworkMessages.h"
 namespace IMM
 {
 	class Client : public IMM::Network::ClientInterface<NetworkMessageTypes>

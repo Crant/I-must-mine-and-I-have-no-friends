@@ -1,9 +1,9 @@
-#include "../Include/GridGenerator.h"
-#include "../Include/RandomGen.h"
+#include "GridGenerator.h"
+#include "RandomGen.h"
 
 using namespace IMM;
 
-GridGenerator::GridGenerator(std::string name, int width, int height)
+GridGenerator::GridGenerator(const std::string& name, int width, int height)
 {
     if (name == "")
     {
@@ -18,13 +18,11 @@ GridGenerator::GridGenerator(std::string name, int width, int height)
     this->height = height;
     int worldSize = width * height;
 
-    sWorldToBeGenerated = new World();
-    sWorldToBeGenerated->Init(width, height, new Tile[worldSize], sName);
+    World::Main()->Init(width, height, new Tile[worldSize], sName);
+
     nHeightWalkPre = new float[width];
     nHeightWalkPerlin = new float[width];
     nTemporaryArray = new TileType[worldSize];
-    int pseudoRandomGenerator = std::hash<std::string>()(sName);
-    srand(pseudoRandomGenerator);
 
     for (size_t h = 0; h < width; h++)
     {
@@ -64,29 +62,8 @@ GridGenerator::~GridGenerator()
 
 }
 
-World* GridGenerator::GetWorld() 
-{
-    return sWorldToBeGenerated;
-}
-
 void GridGenerator::PerlinTry()
 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //int* heightMap = new int[width];
     //int heightHalf = height / 2;
     //for (size_t i = 0; i < width; i++)
@@ -118,7 +95,7 @@ void GridGenerator::GenerateWorld()
 {
     CreateWorld();
     CreateCave(width, height, 0, 0);
-    sWorldToBeGenerated->RemoveRegions();
+    World::Main()->RemoveRegions();
     //for (size_t i = 0; i < 5; i++)
     //{
     //    SmoothMap();
@@ -133,13 +110,13 @@ void GridGenerator::CreateWorld()
         {
             if (y < nHeightWalkPerlin[x])
             {
-                nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = TileType::Empty;
-                sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Empty);
+                nTemporaryArray[World::Main()->Index(x, y)] = TileType::Empty;
+                World::Main()->SetTileGeneration(x * height + y, TileType::Empty);
             }
             else
             {
-                nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = TileType::Dirt;
-                sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Dirt);
+                nTemporaryArray[World::Main()->Index(x, y)] = TileType::Dirt;
+                World::Main()->SetTileGeneration(x * height + y, TileType::Dirt);
             }
 
         }
@@ -151,18 +128,18 @@ void GridGenerator::CreateCave(int nWidth, int nHeight, int nPosX, int nPosY)
     {
         for (int y = nPosY; y < nHeight + nPosY; y++)
         {
-            if (sWorldToBeGenerated->IsBlock(x, y))
+            if (World::Main()->IsBlock(x, y))
             {
                 if (x == 0 || x == nWidth - 1 || y == 0 || y == nHeight - 1)
                 {
-                    nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = TileType::Dirt;
-                    sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Dirt);
+                    nTemporaryArray[World::Main()->Index(x, y)] = TileType::Dirt;
+                    World::Main()->SetTileGeneration(x * height + y, TileType::Dirt);
                 }
                 else
                 {
-                    int nRand = rand() % 100;
-                    nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = nRand < (nFillPercentage) ? TileType::Dirt : TileType::Empty;
-                    sWorldToBeGenerated->SetTileGeneration(x * height + y, (nRand < (nFillPercentage) ? TileType::Dirt : TileType::Empty));
+                    int nRand = Utils::Random::Rand() % 100;
+                    nTemporaryArray[World::Main()->Index(x, y)] = nRand < (nFillPercentage) ? TileType::Dirt : TileType::Empty;
+                    World::Main()->SetTileGeneration(x * height + y, (nRand < (nFillPercentage) ? TileType::Dirt : TileType::Empty));
                 }
             }
 
@@ -184,15 +161,15 @@ void GridGenerator::RandomFillMap()
             if (y < nHeightWalkPerlin[x])
             {
                 //sWorldToBeGenerated->SetTileGeneration(x * height + y, rand() % 100 < nFillPercentage ? TileType::Dirt : TileType::Empty);
-                nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = TileType::Empty;
-                sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Empty);
+                nTemporaryArray[World::Main()->Index(x, y)] = TileType::Empty;
+                World::Main()->SetTileGeneration(x * height + y, TileType::Empty);
             }
             else
             {
                 //sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Dirt);
-                int nRand = rand() % 100;
-                nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = nRand < (nFillPercentage) ? TileType::Dirt : TileType::Empty;
-                sWorldToBeGenerated->SetTileGeneration(x * height + y, (nRand < (nFillPercentage)? TileType::Dirt : TileType::Empty));
+                int nRand = Utils::Random::Rand() % 100;
+                nTemporaryArray[World::Main()->Index(x, y)] = nRand < (nFillPercentage) ? TileType::Dirt : TileType::Empty;
+                World::Main()->SetTileGeneration(x * height + y, (nRand < (nFillPercentage)? TileType::Dirt : TileType::Empty));
             }
 
         }
@@ -210,13 +187,13 @@ void GridGenerator::SmoothMap()
 
             if (neighbourWallTiles > 4)
             {
-                nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = TileType::Dirt;
+                nTemporaryArray[World::Main()->Index(x, y)] = TileType::Dirt;
                 //sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Dirt);
             }
 
             else if (neighbourWallTiles < 4)
             {
-                nTemporaryArray[sWorldToBeGenerated->Index(x, y)] = TileType::Empty;
+                nTemporaryArray[World::Main()->Index(x, y)] = TileType::Empty;
                 //sWorldToBeGenerated->SetTileGeneration(x * height + y, TileType::Empty);
             }
 
@@ -224,7 +201,7 @@ void GridGenerator::SmoothMap()
     }
     for (size_t i = 0; i < worldSize; i++)
     {
-        sWorldToBeGenerated->SetTileGeneration(i, nTemporaryArray[i]);
+        World::Main()->SetTileGeneration(i, nTemporaryArray[i]);
     }
 }
 
@@ -240,7 +217,7 @@ int GridGenerator::GetSurroundingWallCount(int gridX, int gridY)
                 if (neighbourX != gridX || neighbourY != gridY)
                 {
                     //wallCount += (int)newWorld[neighbourX * height + neighbourY].type;
-                    if (sWorldToBeGenerated->IsBlock(neighbourX * height + neighbourY))
+                    if (World::Main()->IsBlock(neighbourX * height + neighbourY))
                         wallCount += 1;
                 }
             }

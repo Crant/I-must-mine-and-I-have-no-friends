@@ -19,59 +19,57 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ActiveItem.cpp" />
-    <ClCompile Include="ActiveTile.cpp" />
-    <ClCompile Include="AssetsManager.cpp" />
-    <ClCompile Include="BaseUnit.cpp" />
-    <ClCompile Include="DamageAble.cpp" />
-    <ClCompile Include="DamageObj.cpp" />
-    <ClCompile Include="GFX.cpp" />
-    <ClCompile Include="Item.cpp" />
-    <ClCompile Include="PerlinNoise.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Source\Client.cpp" />
-    <ClCompile Include="Source\Game.cpp" />
-    <ClCompile Include="Source\GridGenerator.cpp" />
-    <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\NetServer.cpp" />
-    <ClCompile Include="Source\olcPixelGameEngine.cpp" />
-    <ClCompile Include="Source\RandomGen.cpp" />
-    <ClCompile Include="Source\Server.cpp" />
-    <ClCompile Include="Source\World.cpp" />
-    <ClCompile Include="TileController.cpp" />
-    <ClCompile Include="TilePhysics.cpp" />
-    <ClCompile Include="Tiles.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ActiveItem.h" />
-    <ClInclude Include="AssetsManager.h" />
-    <ClInclude Include="BaseUnit.h" />
-    <ClInclude Include="DamageAble.h" />
-    <ClInclude Include="DamageObj.h" />
-    <ClInclude Include="GFX.h" />
-    <ClInclude Include="Include\Client.h" />
-    <ClInclude Include="Include\Game.h" />
-    <ClInclude Include="Include\GridGenerator.h" />
-    <ClInclude Include="Include\NetworkMessages.h" />
-    <ClInclude Include="Include\Observer.h" />
-    <ClInclude Include="Include\olcPixelGameEngine.h" />
-    <ClInclude Include="Include\RandomGen.h" />
-    <ClInclude Include="Include\Server.h" />
-    <ClInclude Include="Include\World.h" />
-    <ClInclude Include="Item.h" />
-    <ClInclude Include="PerlinNoise.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="TileController.h" />
-    <ClInclude Include="TilePhysics.h" />
-    <ClInclude Include="Tiles.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\x64\Debug\I must mine and I have no friends.pdb" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Assets\fuckit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\AssetsManager.cpp" />
+    <ClCompile Include="Source\BaseUnit.cpp" />
+    <ClCompile Include="Source\Client.cpp" />
+    <ClCompile Include="Source\DamageAble.cpp" />
+    <ClCompile Include="Source\DamageObj.cpp" />
+    <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\GFX.cpp" />
+    <ClCompile Include="Source\GridGenerator.cpp" />
+    <ClCompile Include="Source\Item.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\NetServer.cpp" />
+    <ClCompile Include="Source\olcPixelGameEngine.cpp" />
+    <ClCompile Include="Source\PerlinNoise.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\RandomGen.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="Source\Server.cpp" />
+    <ClCompile Include="Source\TileController.cpp" />
+    <ClCompile Include="Source\TilePhysics.cpp" />
+    <ClCompile Include="Source\Tiles.cpp" />
+    <ClCompile Include="Source\Weapons.cpp" />
+    <ClCompile Include="Source\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\AssetsManager.h" />
+    <ClInclude Include="Include\BaseUnit.h" />
+    <ClInclude Include="Include\Client.h" />
+    <ClInclude Include="Include\DamageAble.h" />
+    <ClInclude Include="Include\DamageObj.h" />
+    <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\GFX.h" />
+    <ClInclude Include="Include\GridGenerator.h" />
+    <ClInclude Include="Include\Item.h" />
+    <ClInclude Include="Include\NetworkMessages.h" />
+    <ClInclude Include="Include\Observer.h" />
+    <ClInclude Include="Include\olcPixelGameEngine.h" />
+    <ClInclude Include="Include\PerlinNoise.h" />
+    <ClInclude Include="Include\Player.h" />
+    <ClInclude Include="Include\RandomGen.h" />
+    <ClInclude Include="Include\Renderer.h" />
+    <ClInclude Include="Include\Server.h" />
+    <ClInclude Include="Include\TileController.h" />
+    <ClInclude Include="Include\TilePhysics.h" />
+    <ClInclude Include="Include\Tiles.h" />
+    <ClInclude Include="Include\World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -127,7 +125,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\SDK\asio-1.18.2\include;F:\Documents\Visual Studio\Projects\I must mine and I have no friends\NetworkCommon\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\asio-1.18.2\include;$(SolutionDir)\NetworkCommon\Include;$(SolutionDir)\I must mine and I have no friends\Include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>

@@ -1,5 +1,5 @@
-#include "../Include/Server.h"
-#include "../Include/Game.h"
+#include "Server.h"
+#include "Game.h"
 
 IMM::Server::Server(uint16_t nPort) : IMM::Network::ServerInterface<NetworkMessageTypes>(nPort)
 {

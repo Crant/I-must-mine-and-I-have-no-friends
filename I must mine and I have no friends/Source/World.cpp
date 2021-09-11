@@ -1,4 +1,4 @@
-#include "../Include/World.h"
+#include "World.h"
 
 #include <queue>
 #include <memory>
@@ -31,7 +31,6 @@ void World::Init(int width, int height, Tile* newWorld, std::string newName)
     nSize = width * height;
     nWorld = newWorld;
     sWorldName = newName;
-    Instance = this;
 }
 void World::SetTile(int index, TileType value)
 {
@@ -208,22 +207,22 @@ void World::RemoveRegions()
             vRemainRegions->push_back(*it);
         }
     }
-    std::vector<int> funfun;
-    olc::vf2d vBestDistance;
-    olc::vf2d vFirstDistance;
-    olc::vf2d vSecondDistance;
+    //std::vector<int> funfun;
+    //olc::vf2d vBestDistance;
+    //olc::vf2d vFirstDistance;
+    //olc::vf2d vSecondDistance;
 
-    
+    //
 
-    for (auto regionA = std::begin(*vRemainRegions); regionA != std::end(*vRemainRegions); regionA++)
-    {
-        int& nRegionA = regionA->back();
-        int& nRegionB = regionA->back();
-        for (auto regionB = std::begin(*vRemainRegions); regionB != std::end(*vRemainRegions); regionB++)
-        {
+    //for (auto regionA = std::begin(*vRemainRegions); regionA != std::end(*vRemainRegions); regionA++)
+    //{
+    //    int& nRegionA = regionA->back();
+    //    int& nRegionB = regionA->back();
+    //    for (auto regionB = std::begin(*vRemainRegions); regionB != std::end(*vRemainRegions); regionB++)
+    //    {
 
-        }
-    }
+    //    }
+    //}
     //for (auto it = std::begin(*vRemainRegions); it != std::end(*vRemainRegions); it++)
     //{
     //    //CreateRegion(*it);

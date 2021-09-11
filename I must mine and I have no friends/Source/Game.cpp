@@ -1,5 +1,5 @@
-#include "../Include/Game.h"
-#include "../Include/NetworkMessages.h"
+#include "Game.h"
+#include "NetworkMessages.h"
 
 Game::Game()
 {
@@ -28,8 +28,7 @@ Game::~Game()
 	{
 		mServer->Stop();
 		delete mServer;
-	}
-		
+	}		
 }
 
 bool Game::IsServer()
@@ -67,7 +66,7 @@ void IMM::Game::Init(const std::string& seedName, int worldWidth, int worldHeigh
 	this->worldWidth = worldWidth;
 	this->worldHeight = worldHeight;
 
-	GridGenerator gridGen(seedName, worldWidth, worldHeight);
+	GridGenerator gridGen = GridGenerator(seedName, worldWidth, worldHeight);
 	Tiles::LoadTiles();
 	renderer.SetCamera();
 

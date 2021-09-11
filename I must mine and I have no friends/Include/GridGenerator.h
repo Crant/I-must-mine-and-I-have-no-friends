@@ -1,5 +1,5 @@
 #pragma once
-#include "../Include/World.h"
+#include "World.h"
 
 namespace IMM 
 {
@@ -7,7 +7,7 @@ namespace IMM
 	{
 	public:
 
-		GridGenerator(std::string name, int width, int height);
+		GridGenerator(const std::string& name, int width, int height);
 		~GridGenerator();
 		void GenerateWorld();
 		void RandomFillMap();
@@ -17,7 +17,6 @@ namespace IMM
 		void GenerateNeighbours();
 		void PerlinTry();
 		void PerlinNoise1D(int nCount, float* fSeed, int nOctaves, float* fOutput);
-		World* GetWorld();
 
 		void CreateWorld();
 		void CreateCave(int nWidth, int nHeight, int nPosX, int nPosY);
@@ -28,7 +27,7 @@ namespace IMM
 		int height;
 		int pseudoRandomGenerator;
 		const int nFillPercentage = 55;
-		World* sWorldToBeGenerated;
+
 		float* nHeightWalkPre = nullptr;
 		float* nHeightWalkPerlin = nullptr;
 		TileType* nTemporaryArray = nullptr;

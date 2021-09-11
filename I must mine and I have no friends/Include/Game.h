@@ -1,14 +1,14 @@
 #pragma once
 
 #include "olcPixelGameEngine.h"
-#include "../Include/World.h"
-#include "../Include/GridGenerator.h"
-#include "../Renderer.h"
-#include "../TilePhysics.h"
-#include "../TileController.h"
+#include "World.h"
+#include "GridGenerator.h"
+#include "Renderer.h"
+#include "TilePhysics.h"
+#include "TileController.h"
 #include "Server.h"
 #include "Client.h"
-#include "../PerlinNoise.h"
+#include "PerlinNoise.h"
 
 namespace IMM
 {

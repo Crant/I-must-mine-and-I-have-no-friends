@@ -1,11 +1,9 @@
 #pragma once
 #include "olcPixelGameEngine.h";
-#include "../Tiles.h"
+#include "Tiles.h"
 
 namespace IMM 
 {
-
-
 	class World
 	{
 	public:
