@@ -1,7 +1,10 @@
 #include "TileController.h"
 
+using namespace IMM;
+
 TileController::TileController()
 {
+
 }
 
 void TileController::CheckActiveTiles()

@@ -125,7 +125,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)External\asio-1.18.2\include;$(SolutionDir)\NetworkCommon\Include;$(SolutionDir)\I must mine and I have no friends\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\asio-1.18.2\include;$(SolutionDir)NetworkCommon\Include;$(SolutionDir)I must mine and I have no friends\Include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>
