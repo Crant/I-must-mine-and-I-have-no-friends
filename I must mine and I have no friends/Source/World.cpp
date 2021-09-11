@@ -21,7 +21,7 @@ World::~World()
     delete[] nWorld;
     delete Instance;
 }
-void World::SetWorld(int width, int height, Tile* newWorld, std::string newName)
+void World::Init(int width, int height, Tile* newWorld, std::string newName)
 {
     nWidth = width;
     nHeight = height;

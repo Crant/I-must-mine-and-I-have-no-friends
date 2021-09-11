@@ -18,7 +18,7 @@ namespace IMM
 
 			return Instance;
 		}
-		void SetWorld(int width, int height, Tile* newWorld, std::string name);
+		void Init(int width, int height, Tile* newWorld, std::string name);
 		void SetTile(int index, TileType value);
 		void SetTile(float x, float y, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);

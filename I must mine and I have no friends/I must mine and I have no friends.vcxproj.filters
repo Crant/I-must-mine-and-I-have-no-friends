@@ -158,6 +158,9 @@
     <ClInclude Include="Include\RandomGen.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\Debug\I must mine and I have no friends.pdb" />

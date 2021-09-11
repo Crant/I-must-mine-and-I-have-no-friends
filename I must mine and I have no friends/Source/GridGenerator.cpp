@@ -19,7 +19,7 @@ GridGenerator::GridGenerator(std::string name, int width, int height)
     int worldSize = width * height;
 
     sWorldToBeGenerated = new World();
-    sWorldToBeGenerated->SetWorld(width, height, new Tile[worldSize], sName);
+    sWorldToBeGenerated->Init(width, height, new Tile[worldSize], sName);
     GenerateWorld();
     GenerateNeighbours();
 }

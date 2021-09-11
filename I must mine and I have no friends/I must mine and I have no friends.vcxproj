@@ -53,6 +53,7 @@
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\NetworkMessages.h" />
+    <ClInclude Include="Include\Observer.h" />
     <ClInclude Include="Include\olcPixelGameEngine.h" />
     <ClInclude Include="Include\RandomGen.h" />
     <ClInclude Include="Include\Server.h" />

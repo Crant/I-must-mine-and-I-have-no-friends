@@ -100,27 +100,27 @@ void IMM::Game::HandleNetworkMessages()
 			mGameState = GameState::GameLoopState;
 		}
 		break;
-		case NetworkMessageTypes::ServerSendWorldSeed:
-		{
-			std::string seedName = "";
-			int width = 0;
-			int height = 0;
-			int size = 0;
-			msg >> size;
-
-			for (int i = 0; i < size; i++)
-			{
-				char value;
-				msg >> value;
-
-				seedName.push_back(value);
-			}
-
-			msg >> height >> width;
-
-			Init(seedName, width, height);
-		}	
-		break;
+		//case NetworkMessageTypes::ServerSendWorldSeed:
+		//{
+		//	std::string seedName = "";
+		//	int width = 0;
+		//	int height = 0;
+		//	int size = 0;
+		//	msg >> size;
+		//
+		//	for (int i = 0; i < size; i++)
+		//	{
+		//		char value;
+		//		msg >> value;
+		//
+		//		seedName.push_back(value);
+		//	}
+		//
+		//	msg >> height >> width;
+		//
+		//	Init(seedName, width, height);
+		//}	
+		//break;
 		case NetworkMessageTypes::ServerSendWorldFull:
 		{
 			int width = 0;
@@ -134,7 +134,7 @@ void IMM::Game::HandleNetworkMessages()
 				msg >> world[i];
 			}
 
-			World::Main()->SetWorld(width, height, world, "");
+			World::Main()->Init(width, height, world, "");
 
 			Tiles::LoadTiles();
 			renderer.SetCamera();
