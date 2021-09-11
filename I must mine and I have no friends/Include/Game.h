@@ -4,6 +4,7 @@
 #include "../Renderer.h"
 #include "../TilePhysics.h"
 #include "../TileController.h"
+#include "../PerlinNoise.h"
 
 using namespace IMM;
 

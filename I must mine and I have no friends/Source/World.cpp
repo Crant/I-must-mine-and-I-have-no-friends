@@ -1,5 +1,8 @@
 #include "../Include/World.h"
 
+#include <queue>
+#include <memory>
+
 using namespace IMM;
 
 
@@ -47,7 +50,7 @@ void World::SetTile(olc::vf2d pos, TileType value)
 }
 void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATION 
 {
-    nWorld[index].type = value;
+    nWorld[std::clamp(index, 0, nHeight * nWidth - 1)].type = value;
 }
 TileType* World::GetTile(int index)
 {
@@ -114,7 +117,6 @@ bool World::IsBlock(olc::vf2d pos)
 {
     return (int)nWorld[Index(pos)].type >= 1;
 }
-
 bool World::IsBlock(float x, float y)
 {
     return (int)nWorld[Index(x, y)].type >= 1;
@@ -123,6 +125,169 @@ bool World::IsBlock(int index)
 {
     return (int)nWorld[std::clamp(index, 0, nWidth * nHeight)].type >= 1;
 }
+std::shared_ptr<std::vector<int>> World::FloodFill(int x, int y)
+{
+    std::shared_ptr<std::vector<int>> nFilledArea = std::make_shared<std::vector<int>>();
+    std::unique_ptr<int[]> pFlags = std::make_unique<int[]>(nSize);
+    std::queue<int> nQueue;
+    nQueue.push(Index(x, y));
+    
+    while (!nQueue.empty())
+    {
+        int nTile = nQueue.front();
+        nFilledArea->push_back(nTile);
+        nQueue.pop();
+
+        if (pFlags[std::clamp(nTile + 1, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile + 1, 0, nSize - 1)))
+        {
+            pFlags[std::clamp(nTile + 1, 0, nSize - 1)] = 1;
+            nQueue.push(std::clamp(nTile + 1, 0, nSize - 1));
+        }
+        if (pFlags[std::clamp(nTile - 1, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile - 1, 0, nSize - 1)))
+        {
+            pFlags[std::clamp(nTile - 1, 0, nSize - 1)] = 1;
+            nQueue.push(std::clamp(nTile - 1, 0, nSize - 1));
+        }
+        if (pFlags[std::clamp(nTile + nHeight, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile + nHeight, 0, nSize - 1)))
+        {
+            pFlags[std::clamp(nTile + nHeight, 0, nSize - 1)] = 1;
+            nQueue.push(std::clamp(nTile + nHeight, 0, nSize - 1));
+        }
+        if (pFlags[std::clamp(nTile - nHeight, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile - nHeight, 0, nSize - 1)))
+        {
+            pFlags[std::clamp(nTile - nHeight, 0, nSize - 1)] = 1;
+            nQueue.push(std::clamp(nTile - nHeight, 0, nSize - 1));
+        }
+    }
+    return nFilledArea;
+}
+std::shared_ptr<std::vector<std::vector<int>>> World::GetRegions()
+{
+    std::shared_ptr<std::vector<std::vector<int>>> vRegions = std::make_shared<std::vector<std::vector<int>>>();
+    std::unique_ptr<int[]> pFlags = std::make_unique<int[]>(nSize);
+
+    for (size_t x = 0; x < nWidth; x++)
+    {
+        for (size_t y = 0; y < nHeight; y++)
+        {
+            if (pFlags[Index(x, y)] == 0 && !IsBlock(x, y))
+            {
+                vRegions->push_back(*FloodFill(x, y));
+
+                for (size_t i = 0; i < vRegions->back().size(); i++)
+                {
+                    pFlags[vRegions->back()[i]] = 1;
+                }
+            }
+        }
+    }
+    return vRegions;
+}
+void World::RemoveRegions()
+{
+    std::vector<std::vector<int>> vAllRegions = *GetRegions();
+    std::shared_ptr<std::vector<std::vector<int>>> vRemainRegions = std::make_shared<std::vector<std::vector<int>>>();
+
+    for (auto it = std::begin(vAllRegions); it != std::end(vAllRegions); it++)
+    {
+        if (it->size() < 150)
+        {
+            for (auto sit = std::begin(*it); sit != std::end(*it); sit++)
+            {
+                SetTile(*sit, TileType::Dirt);
+            }
+        }
+        else
+        {
+            vRemainRegions->push_back(*it);
+        }
+    }
+    std::vector<int> funfun;
+    for (auto it = std::begin(*vRemainRegions); it != std::end(*vRemainRegions); it++)
+    {
+        int& nRegionA = it->back();
+        int& nRegionB = it->back();
+        for (auto it = std::begin(*vRemainRegions); it != std::end(*vRemainRegions); it++)
+        {
+
+        }
+    }
+    //for (auto it = std::begin(*vRemainRegions); it != std::end(*vRemainRegions); it++)
+    //{
+    //    //CreateRegion(*it);
+    //    Region* cRegion = new Region(*it);
+    //    
+    //}
+
+}
+void World::CreateRegion(std::vector<int>& vRegionTiles)
+{
+    //std::unique_ptr<std::vector<int>> vEdgeTiles = std::make_unique<std::vector<int>>();
+    //std::unique_ptr<Region> cRegion = std::make_unique<Region>();
+    //cRegion->vRegionTiles = vRegionTiles;
+    //for (int i = 0; i < vRegionTiles.size(); i++)
+    //{
+    //        if (IsBlock(i + 1) || IsBlock(i - 1) || IsBlock(i + nHeight) || IsBlock(i - nHeight))
+    //        {
+    //            //vEdgeTiles->push_back(std::clamp(i, 0, nSize - 1));
+    //            cRegion->vEdgeTiles.push_back(std::clamp(i, 0, nSize - 1));
+    //        }
+    //        //else if (IsBlock(i - 1))
+    //        //{
+    //        //    cRegion->vEdgeTiles.push_back(std::clamp(i, 0, nSize - 1));
+    //        //}
+    //        //else if (IsBlock(i + nHeight))
+    //        //{
+    //        //    cRegion->vEdgeTiles.push_back(std::clamp(i, 0, nSize - 1));
+    //        //}
+    //        //else if (IsBlock(i - nHeight))
+    //        //{
+    //        //    cRegion->vEdgeTiles.push_back(std::clamp(i, 0, nSize - 1));
+    //        //}
+    //}
+    //cRegions.push_back(*cRegion);
+}
+
+//struct Region
+//{
+//    std::vector<int> vRegionTiles;
+//    std::vector<int> vEdgeTiles;
+//    std::unique_ptr<std::vector<std::vector<int>>>  vCnctRegions;
+//
+//    Region(std::vector<int> vRegionTiles)
+//    {
+//        this->vRegionTiles = vRegionTiles;
+//
+//        for (size_t i = 0; i < vRegionTiles.size(); i++)
+//        {
+//            if (vRegionTiles[std::clamp(i + 1, 0, World::GetSize() - 1)] == 0 && !IsBlock(std::clamp(nTile + 1, 0, nSize - 1)))
+//            {
+//                pFlags[std::clamp(nTile + 1, 0, nSize - 1)] = 1;
+//                nQueue.push(std::clamp(nTile + 1, 0, nSize - 1));
+//            }
+//            if (pFlags[std::clamp(nTile - 1, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile - 1, 0, nSize - 1)))
+//            {
+//                pFlags[std::clamp(nTile - 1, 0, nSize - 1)] = 1;
+//                nQueue.push(std::clamp(nTile - 1, 0, nSize - 1));
+//            }
+//            if (pFlags[std::clamp(nTile + nHeight, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile + nHeight, 0, nSize - 1)))
+//            {
+//                pFlags[std::clamp(nTile + nHeight, 0, nSize - 1)] = 1;
+//                nQueue.push(std::clamp(nTile + nHeight, 0, nSize - 1));
+//            }
+//            if (pFlags[std::clamp(nTile - nHeight, 0, nSize - 1)] == 0 && !IsBlock(std::clamp(nTile - nHeight, 0, nSize - 1)))
+//            {
+//                pFlags[std::clamp(nTile - nHeight, 0, nSize - 1)] = 1;
+//                nQueue.push(std::clamp(nTile - nHeight, 0, nSize - 1));
+//            }
+//        }
+//
+//    }
+//};
+
+
+
+
 void World::SetNeighbours(float x, float y)
 {
     int nTileNeighbours = 0;
@@ -260,4 +425,35 @@ TileNeighbours World::SetNeighboursNotRecursive(int index)
         nTileNeighbours += 8;
     }
     return (TileNeighbours)nTileNeighbours;
+}
+void Region::ConnectRegions(Region& cRegionA, Region& cRegionB)
+{
+    cRegionA.vConnectedRegions->push_back(cRegionB);
+    cRegionB.vConnectedRegions->push_back(cRegionA);
+}
+//bool Region::IsConnected(Region& cOtherRegion)
+//{
+//    auto aResult = std::find(this->vConnectedRegions->begin(), this->vConnectedRegions->end(), cOtherRegion);
+//    if ()
+//        return true;
+//    else
+//        return false;
+//}
+Region::Region(std::vector<int>& vRegionTiles)
+{
+    this->vRegionTiles = vRegionTiles;
+    this->vEdgeTiles = new std::vector<int>;
+    this->vConnectedRegions = new std::vector<Region>;
+
+    for (int i = 0; i < vRegionTiles.size(); i++)
+    {
+        if (World::Main()->IsBlock(i + 1) || World::Main()->IsBlock(i - 1) || World::Main()->IsBlock(i + World::Main()->GetHeight()) || World::Main()->IsBlock(i - World::Main()->GetHeight()))
+        {
+            vEdgeTiles->push_back(i);
+        }
+    }
+}
+Region::~Region()
+{
+    delete vEdgeTiles;
 }

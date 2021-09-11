@@ -4,6 +4,8 @@
 
 namespace IMM 
 {
+
+
 	class World
 	{
 	public:
@@ -43,11 +45,16 @@ namespace IMM
 		void SetNeighbours(float x, float y);
 		void SetNeighbours(olc::vf2d pos);
 		void SetNeighbours(int index);
+		std::shared_ptr<std::vector<int>> FloodFill(int x, int y);
+		void RemoveRegions();
+		std::shared_ptr<std::vector<std::vector<int>>> GetRegions();
+		void CreateRegion(std::vector<int>& vRegionTiles);
 
 	private:
 		 static inline World* Instance;
 		 Tile* nWorld;
 		 std::string sWorldName;
+		 //std::shared_ptr<std::vector<int>> nFloodFill = std::make_shared<std::vector<int>>();
 
 		 int nWidth = 0;
 		 int nHeight = 0;
@@ -57,6 +64,23 @@ namespace IMM
 		 TileNeighbours SetNeighboursNotRecursive(float x, float y);
 		 TileNeighbours SetNeighboursNotRecursive(olc::vf2d pos);
 		 TileNeighbours SetNeighboursNotRecursive(int index);
+
+		 //std::vector<Region> cRegions;
+	};
+
+	class Region
+	{
+	public:
+		Region(std::vector<int>& vRegionTiles);
+		~Region();
+		std::vector<int> vRegionTiles;
+		std::vector<int>* vEdgeTiles;
+		std::vector<Region>* vConnectedRegions;
+
+		static void ConnectRegions(Region& cRegionA, Region& cRegionB);
+		bool IsConnected(Region& cOtherRegion);
+	private:
+
 	};
 }
 

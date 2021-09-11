@@ -125,6 +125,9 @@
     <ClInclude Include="Include\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PerlinNoise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\Debug\I must mine and I have no friends.pdb" />

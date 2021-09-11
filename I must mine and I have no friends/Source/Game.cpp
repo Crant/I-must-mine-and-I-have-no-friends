@@ -5,9 +5,9 @@ bool Game::OnUserCreate()
 	// Called once at the start, so create things here
 
 	Assets::get().LoadSprites();
-	GridGenerator gridGen("Bruh", worldWidth, worldHeight, this);
+	GridGenerator gridGen("REEE", worldWidth, worldHeight, this);
 	Tiles::LoadTiles();
-	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
+	
 	renderer.SetCamera();
 	return true;
 }

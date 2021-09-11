@@ -39,9 +39,10 @@ namespace IMM
 		
 		
 		*/
-		int tileSize = 16;
+		int tileSize = 8;
 		int pixelSize = 32;
 		float tileScale = 0.0f;
+		float fCameraSpeed = 50.0f;
 
 		olc::Sprite* sDirt;
 		olc::Decal* dDirt;
@@ -49,6 +50,9 @@ namespace IMM
 
 		void MoveCamera();
 		void RenderCamera();
+
+		std::shared_ptr<std::vector<int>> Cool = nullptr;
+		std::shared_ptr<std::vector<std::vector<int>>> Cooler = nullptr;
 	};
 
 }
