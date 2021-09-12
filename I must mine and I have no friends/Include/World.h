@@ -7,8 +7,9 @@ namespace IMM
 	class World
 	{
 	public:
-		//World(int width, int height, TileType* newWorld, std::string newName);
+		World(int width, int height, Tile* newWorld);
 		World() { this->nWorld = nullptr; }
+
 		~World();
 
 		static World* Main()
@@ -18,7 +19,7 @@ namespace IMM
 
 			return Instance;
 		}
-		void Init(int width, int height, Tile* newWorld, std::string name);
+		void Init(int width, int height, Tile* newWorld);
 		void SetTile(int index, TileType value);
 		void SetTile(float x, float y, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);
@@ -31,7 +32,6 @@ namespace IMM
 		TileNeighbours GetNbour(olc::vf2d pos);
 
 		inline Tile* GetWorld() { return nWorld; }
-		std::string GetName();
 
 		int GetWidth();
 		int GetHeight();
@@ -56,7 +56,6 @@ namespace IMM
 	private:
 		 static inline World* Instance;
 		 Tile* nWorld;
-		 std::string sWorldName;
 		 //std::shared_ptr<std::vector<int>> nFloodFill = std::make_shared<std::vector<int>>();
 
 		 int nWidth = 0;

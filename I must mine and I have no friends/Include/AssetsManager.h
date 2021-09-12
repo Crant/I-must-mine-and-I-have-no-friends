@@ -47,5 +47,3 @@ namespace IMM
 		olc::Sprite* sTileSheet = nullptr;
 	};
 }
-
-

@@ -1,11 +1,13 @@
 #pragma once
-#include "olcPixelGameEngine.h"
+
 #include "World.h"
 #include "AssetsManager.h"
 #include "TileController.h"
 
 namespace IMM 
 {
+	class GameEngine;
+
 	class Renderer
 	{
 
@@ -18,7 +20,10 @@ namespace IMM
 
 		void UpdateCamera();
 		void SetCamera();
+		void SetWorld(std::shared_ptr<World> world) { mWorld = world; }
 	private:
+		std::shared_ptr<World> mWorld;
+
 		float fCameraPosX = 50.0f;
 		float fCameraPosY = 50.0f;
 

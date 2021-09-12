@@ -16,6 +16,12 @@
     <Filter Include="Source Files\Network">
       <UniqueIdentifier>{887fc7a7-b8f4-4314-be90-e31224780d54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{be2c6d7f-8621-4a22-bec6-cbb0db29d236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{876698ab-5a20-454d-9e4a-f86c95cb7051}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Assets\fuckit.png">
@@ -79,7 +85,7 @@
     <ClCompile Include="Source\DamageObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game.cpp">
+    <ClCompile Include="Source\GameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\GFX.cpp">
@@ -141,7 +147,7 @@
     <ClInclude Include="Include\DamageObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game.h">
+    <ClInclude Include="Include\GameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GFX.h">
@@ -158,6 +164,12 @@
     </ClInclude>
     <ClInclude Include="Include\NetworkMessages.h">
       <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\WorldEvents.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Safe.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

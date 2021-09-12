@@ -21,6 +21,16 @@ namespace IMM
 				randomGen = std::mt19937(seed);
 			}
 
+			unsigned int RandMax()
+			{
+				return randomGen.max();
+			}
+
+			unsigned int RandMin()
+			{
+				return randomGen.min();
+			}
+
 			int Seed()
 			{
 				return seed;

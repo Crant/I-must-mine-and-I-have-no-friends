@@ -5,15 +5,15 @@
 
 using namespace IMM;
 
+World::World(int width, int height, Tile* newWorld)
+{
+    nWidth = width;
+    nHeight = height;
+    nSize = width * height;
+    nWorld = newWorld;
 
-//World::World(int width, int height, TileType* newWorld, std::string newName)
-//{
-//    nWidth = width;
-//    nHeight = height;
-//    nWorld = newWorld;
-//    sWorldName = newName;
-//    Instance = this;
-//}
+    Instance = this;
+}
 //World* World::GetWorld()
 //{
 //    return Instance;
@@ -24,13 +24,12 @@ World::~World()
     delete[] nWorld;
     delete Instance;
 }
-void World::Init(int width, int height, Tile* newWorld, std::string newName)
+void World::Init(int width, int height, Tile* newWorld)
 {
     nWidth = width;
     nHeight = height;
     nSize = width * height;
     nWorld = newWorld;
-    sWorldName = newName;
 }
 void World::SetTile(int index, TileType value)
 {
@@ -89,10 +88,6 @@ int World::GetSize()
     return nSize;
 }
 
-std::string World::GetName()
-{
-    return sWorldName;
-}
 int World::Index(float x, float y)
 {
     return std::clamp(nHeight * (int)x + (int)y, 0, (nWidth * nHeight) - 1);

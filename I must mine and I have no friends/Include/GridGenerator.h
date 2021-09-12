@@ -1,14 +1,16 @@
 #pragma once
 #include "World.h"
+#include "Observer.h"
 
 namespace IMM 
 {
-	class GridGenerator
+	class GridGenerator : public Observed
 	{
 	public:
-
-		GridGenerator(const std::string& name, int width, int height);
+		GridGenerator();
 		~GridGenerator();
+
+		void Init(const std::string& seed, int width, int height);
 		void GenerateWorld();
 		void RandomFillMap();
 		//int FillArea(int x, int y, float nPseudoRandNumber);	
@@ -22,14 +24,14 @@ namespace IMM
 		void CreateCave(int nWidth, int nHeight, int nPosX, int nPosY);
 		
 	private:
-		std::string sName;
 		int width;
 		int height;
-		int pseudoRandomGenerator;
 		const int nFillPercentage = 55;
 
-		float* nHeightWalkPre = nullptr;
-		float* nHeightWalkPerlin = nullptr;
-		TileType* nTemporaryArray = nullptr;
+		float* nHeightWalkPre;
+		float* nHeightWalkPerlin;
+		TileType* nTemporaryArray;
+
+		std::shared_ptr<World> mWorld;
 	};
 }

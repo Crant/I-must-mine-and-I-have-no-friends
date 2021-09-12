@@ -19,14 +19,3 @@
 #include <asio.hpp>
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
-
-namespace IMM
-{
-	namespace Network
-	{
-		enum class NetworkMessageTypes : uint32_t
-		{
-			MovePlayer
-		};
-	}
-}

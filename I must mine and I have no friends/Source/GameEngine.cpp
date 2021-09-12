@@ -1,11 +1,11 @@
-#include "Game.h"
+#include "GameEngine.h"
+#include "Renderer.h"
 #include "NetworkMessages.h"
+#include "WorldEvents.h"
+#include "safe.h"
 
-Game::Game()
+GameEngine::GameEngine()
 {
-	mClient = nullptr;
-	mServer = nullptr;
-
 	mIsServer = false;
 
 	mGameState = GameState::MainMenuState;
@@ -16,64 +16,58 @@ Game::Game()
 	sAppName = "I must mine and i have no friends";
 }
 
-Game::~Game()
+GameEngine::~GameEngine()
 {
-	if (mClient != nullptr)
-	{
-		mClient->Disconnect();
-
-		delete mClient;
-	}
-	if (mServer != nullptr)
-	{
-		mServer->Stop();
-		delete mServer;
-	}		
+	//IMM::Utils::SAFE_DELETE(Instance);
 }
 
-bool Game::IsServer()
+bool GameEngine::IsServer()
 {
 	return mIsServer;
 }
 
-void Game::GetMainMenuInput()
+void GameEngine::GetMainMenuInput()
 {
 	if (GetKey(olc::Key::H).bPressed)
 	{
 		mIsServer = true;
 
-		mServer = new Server(61001);
+		mServer = std::make_unique<Server>(61001);
 		mServer->Start();
 
-		mClient = new Client();
+		mClient = std::make_unique<Client>();
 		mClient->Connect("127.0.0.1", 61001);
 
 		mGameState = GameState::InitWorldState;
 
 		Init("0123456789", 500, 500);
 	}
-	else if (GetKey(::olc::Key::J).bPressed)
+	else if (GetKey(olc::Key::J).bPressed)
 	{
-		mClient = new Client();
+		mClient = std::make_unique<Client>();
 		mClient->Connect("127.0.0.1", 61001);
 
 		mGameState = GameState::InitWorldState;
 	}
 }
 
-void IMM::Game::Init(const std::string& seedName, int worldWidth, int worldHeight)
+void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeight)
 {
 	this->worldWidth = worldWidth;
 	this->worldHeight = worldHeight;
 
-	GridGenerator gridGen = GridGenerator(seedName, worldWidth, worldHeight);
+	GridGenerator gridGen = GridGenerator();
+
+	gridGen.AddObserver(this);
+	gridGen.Init(seedName, worldWidth, worldHeight);
+
 	Tiles::LoadTiles();
 	renderer.SetCamera();
 
 	mGameState = GameState::GameLoopState;
 }
 
-void IMM::Game::HandleNetworkMessages()
+void GameEngine::HandleNetworkMessages()
 {
 	//Check if there are any messages to read.
 	while (!mClient->Incoming().empty())
@@ -133,7 +127,9 @@ void IMM::Game::HandleNetworkMessages()
 				msg >> world[i];
 			}
 
-			World::Main()->Init(width, height, world, "");
+			mWorld = std::make_shared<World>(width, height, world);
+
+			renderer.SetWorld(mWorld);
 
 			Tiles::LoadTiles();
 			renderer.SetCamera();
@@ -156,17 +152,29 @@ void IMM::Game::HandleNetworkMessages()
 	
 }
 
-bool Game::OnUserCreate()
+void GameEngine::OnEvent(Event* e)
+{
+	if (WorldCreatedEvent* WCE = dynamic_cast<WorldCreatedEvent*>(e))
+	{
+		mWorld = WCE->world;
+
+		renderer.SetWorld(mWorld);
+		mServer->SetWorld(mWorld);
+	}
+}
+
+bool GameEngine::OnUserCreate()
 {
 	// Called once at the start, so create things here
 
 	
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
+	//renderer.SetGameEngine();
 	return true;
 }
 
-bool Game::OnUserUpdate(float fElapsedTime)
+bool GameEngine::OnUserUpdate(float fElapsedTime)
 {
 	// called once per frame
 	Clear(olc::DARK_BLUE);
@@ -191,7 +199,7 @@ bool Game::OnUserUpdate(float fElapsedTime)
 	return true;
 }
 
-bool Game::GameLoop()
+bool GameEngine::GameLoop()
 {
 	if (mIsServer)
 		mServer->Update(-1, false);
@@ -214,21 +222,18 @@ bool Game::GameLoop()
 	return true;
 }
 
-void Game::PingServer()
+void GameEngine::PingServer()
 {
-	if (!mIsServer)
-	{
-		mPingTimer += GetElapsedTime();
+	mPingTimer += GetElapsedTime();
 
-		if (mPingTimer >= mPingDelay)
-		{
-			mClient->PingServer();
-			mPingTimer = 0.0f;
-		}
+	if (mPingTimer >= mPingDelay)
+	{
+		mClient->PingServer();
+		mPingTimer = 0.0f;
 	}
 }
 
-void Game::OnUserFixedUpdate()
+void GameEngine::OnUserFixedUpdate()
 {
 	fTimer += GetElapsedTime();
 	if (fTimer > fFixedUpdate)

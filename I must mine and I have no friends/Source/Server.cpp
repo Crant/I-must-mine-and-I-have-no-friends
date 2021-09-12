@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "Game.h"
+#include "GameEngine.h"
 
 IMM::Server::Server(uint16_t nPort) : IMM::Network::ServerInterface<NetworkMessageTypes>(nPort)
 {
@@ -51,26 +51,26 @@ void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMess
 
 		}
 		break;
-		case NetworkMessageTypes::ClientRequestWorldInfo:
-		{
-			std::cout << "[" << client->GetID() << "]: Requested World Info\n";
-
-			IMM::Network::Message<NetworkMessageTypes> msg;
-			msg.mHeader.mID = NetworkMessageTypes::ServerSendWorldSeed;
-
-			std::string seedName = World::Main()->GetName();
-
-			msg << World::Main()->GetWidth();
-			msg << World::Main()->GetHeight();
-
-			for (int i = seedName.size() - 1; i >= 0; i--)
-			{
-				msg << seedName[i];
-			}
-			msg << seedName.size();
-			
-			MessageClient(client, msg);
-		}
+		//case NetworkMessageTypes::ClientRequestWorldInfo:
+		//{
+		//	std::cout << "[" << client->GetID() << "]: Requested World Info\n";
+		//
+		//	IMM::Network::Message<NetworkMessageTypes> msg;
+		//	msg.mHeader.mID = NetworkMessageTypes::ServerSendWorldSeed;
+		//
+		//	std::string seedName = World::Main()->GetName();
+		//
+		//	msg << World::Main()->GetWidth();
+		//	msg << World::Main()->GetHeight();
+		//
+		//	for (int i = seedName.size() - 1; i >= 0; i--)
+		//	{
+		//		msg << seedName[i];
+		//	}
+		//	msg << seedName.size();
+		//	
+		//	MessageClient(client, msg);
+		//}
 		break;
 		case NetworkMessageTypes::ClientRequestWorldData:
 		{
@@ -79,16 +79,16 @@ void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMess
 			IMM::Network::Message<NetworkMessageTypes> msg;
 			msg.mHeader.mID = NetworkMessageTypes::ServerSendWorldFull;
 
-			Tile* worldData = World::Main()->GetWorld();
-			int worldSize = World::Main()->GetSize();
+			Tile* worldData = mWorld->GetWorld();
+			int worldSize = mWorld->GetSize();
 			for (int i = worldSize; i >= 0; i--)
 			{
 				msg << worldData[i];
 				//msg << worldData[i].type << worldData[i].Nbrs;
 			}
 			
-			msg << World::Main()->GetWidth();
-			msg << World::Main()->GetHeight();
+			msg << mWorld->GetWidth();
+			msg << mWorld->GetHeight();
 
 			MessageClient(client, msg);
 		}

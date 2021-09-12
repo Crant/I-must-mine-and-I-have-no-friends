@@ -9,6 +9,7 @@
 #include "Server.h"
 #include "Client.h"
 #include "PerlinNoise.h"
+#include "Observer.h"
 
 namespace IMM
 {
@@ -19,17 +20,17 @@ namespace IMM
 		InitWorldState,
 	};
 
-	class Game : public olc::PixelGameEngine
+	class GameEngine : public olc::PixelGameEngine, public Observer
 	{
 	public:
-		Game();
+		GameEngine();
 
-		virtual ~Game();
+		virtual ~GameEngine();
 
-		static Game* Main()
+		static GameEngine* Main()
 		{
 			if (Instance == nullptr)
-				Instance = new Game();
+				Instance = new GameEngine();
 
 			return Instance;
 		}
@@ -48,8 +49,14 @@ namespace IMM
 		bool GameLoop();
 		void HandleNetworkMessages();
 		void PingServer();
+
+	protected:
+		virtual void OnEvent(Event* e);
+
 	private:
-		static inline Game* Instance;
+		static inline GameEngine* Instance;
+
+		std::shared_ptr<World> mWorld;
 
 		GameState mGameState;
 		Renderer renderer;
@@ -68,8 +75,8 @@ namespace IMM
 		//Network
 		bool mIsServer;
 
-		Client* mClient;
-		Server* mServer;
+		std::unique_ptr<Client> mClient;
+		std::unique_ptr<Server> mServer;
 
 		float mPingDelay;
 		float mPingTimer;

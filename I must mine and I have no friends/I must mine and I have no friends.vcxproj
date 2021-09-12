@@ -30,7 +30,7 @@
     <ClCompile Include="Source\Client.cpp" />
     <ClCompile Include="Source\DamageAble.cpp" />
     <ClCompile Include="Source\DamageObj.cpp" />
-    <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\GameEngine.cpp" />
     <ClCompile Include="Source\GFX.cpp" />
     <ClCompile Include="Source\GridGenerator.cpp" />
     <ClCompile Include="Source\Item.cpp" />
@@ -54,7 +54,7 @@
     <ClInclude Include="Include\Client.h" />
     <ClInclude Include="Include\DamageAble.h" />
     <ClInclude Include="Include\DamageObj.h" />
-    <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\GameEngine.h" />
     <ClInclude Include="Include\GFX.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\Item.h" />
@@ -65,11 +65,13 @@
     <ClInclude Include="Include\Player.h" />
     <ClInclude Include="Include\RandomGen.h" />
     <ClInclude Include="Include\Renderer.h" />
+    <ClInclude Include="Include\Safe.h" />
     <ClInclude Include="Include\Server.h" />
     <ClInclude Include="Include\TileController.h" />
     <ClInclude Include="Include\TilePhysics.h" />
     <ClInclude Include="Include\Tiles.h" />
     <ClInclude Include="Include\World.h" />
+    <ClInclude Include="Include\WorldEvents.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -131,15 +133,21 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\SDK\asio-1.18.2\include;F:\Documents\Visual Studio\Projects\I must mine and I have no friends\NetworkCommon\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\asio-1.18.2\include;$(SolutionDir)NetworkCommon\Include;$(SolutionDir)I must mine and I have no friends\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\PixelGame\SDK\asio-1.18.2\include\asio;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\asio-1.18.2\include;$(SolutionDir)NetworkCommon\Include;$(SolutionDir)I must mine and I have no friends\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\PixelGame\SDK\asio-1.18.2\include\asio;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\asio-1.18.2\include;$(SolutionDir)NetworkCommon\Include;$(SolutionDir)I must mine and I have no friends\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -177,6 +185,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /Y "$(SolutionDir)WorkingDir\Assets\*" "$(OutDir)Assets\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -191,7 +202,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /Y "$(ProjectDir)Resources\Assets\*" "$(TargetDir)Resources\Assets\"</Command>
+      <Command>xcopy /d /Y "$(SolutionDir)WorkingDir\Assets\*" "$(OutDir)Assets\"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -214,6 +225,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /Y "$(SolutionDir)WorkingDir\Assets\*" "$(OutDir)Assets\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
