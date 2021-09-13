@@ -1,11 +1,11 @@
 #pragma once
 
 #include "olcPixelGameEngine.h"
-#include "Renderer.h"
+//#include "Renderer.h"
 
 class Player
 {
-	Renderer clientRenderer;
+	//Renderer clientRenderer;
 
 public:
 	void UpdatePlayer();//KALLAS VARJE FRAME

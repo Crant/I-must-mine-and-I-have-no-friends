@@ -40,7 +40,6 @@
     <ClCompile Include="Source\PerlinNoise.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\RandomGen.cpp" />
-    <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Server.cpp" />
     <ClCompile Include="Source\TileController.cpp" />
     <ClCompile Include="Source\TilePhysics.cpp" />
@@ -64,7 +63,6 @@
     <ClInclude Include="Include\PerlinNoise.h" />
     <ClInclude Include="Include\Player.h" />
     <ClInclude Include="Include\RandomGen.h" />
-    <ClInclude Include="Include\Renderer.h" />
     <ClInclude Include="Include\Safe.h" />
     <ClInclude Include="Include\Server.h" />
     <ClInclude Include="Include\TileController.h" />

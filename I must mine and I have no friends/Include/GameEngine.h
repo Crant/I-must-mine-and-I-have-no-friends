@@ -3,7 +3,6 @@
 #include "olcPixelGameEngine.h"
 #include "World.h"
 #include "GridGenerator.h"
-#include "Renderer.h"
 #include "TilePhysics.h"
 #include "TileController.h"
 #include "Server.h"
@@ -20,20 +19,42 @@ namespace IMM
 		InitWorldState,
 	};
 
+	class Player
+	{
+	public:
+		Player()
+		{
+			mPos = olc::vf2d(.0f, .0f);
+			mVel = olc::vf2d(50.0f, 50.0f);
+		}
+		olc::vf2d mPos;
+		olc::vf2d mVel;
+	};
+	//TEMP
+	struct MousePositionWorld
+	{
+		float x = 0;
+		float y = 0;
+	};
+	//TEMP
+	struct CameraPositionWorld
+	{
+		float x = 0;
+		float y = 0;
+	};
+	//TEMP
+	struct VisibleTiles
+	{
+		int x = 0;
+		int y = 0;
+	};
+
 	class GameEngine : public olc::PixelGameEngine, public Observer
 	{
 	public:
 		GameEngine();
 
 		virtual ~GameEngine();
-
-		static GameEngine* Main()
-		{
-			if (Instance == nullptr)
-				Instance = new GameEngine();
-
-			return Instance;
-		}
 
 	public:
 		bool IsServer();
@@ -50,6 +71,12 @@ namespace IMM
 		void HandleNetworkMessages();
 		void PingServer();
 
+		//GFX
+		void Render();
+		void InitCameraSettings();
+		void CheckMovement();
+		void RandomInputs();
+
 	protected:
 		virtual void OnEvent(Event* e);
 
@@ -59,7 +86,7 @@ namespace IMM
 		std::shared_ptr<World> mWorld;
 
 		GameState mGameState;
-		Renderer renderer;
+		//Renderer renderer;
 		TilePhysics physX;
 		TileController tileControl;
 
@@ -72,6 +99,17 @@ namespace IMM
 		olc::Sprite* sprSht;
 		olc::Decal* decSht;
 
+		//TEMP
+		std::unique_ptr<Player> mTempPlayer;
+		CameraPositionWorld mCamera;
+		MousePositionWorld mMousePos;
+		VisibleTiles mVisibleTiles;
+
+		int mTileSize = 8;
+		int mPixelSize = 32;
+		float mTileScale = 0.0f;
+		float mOffsetX;
+		float mOffsetY;
 		//Network
 		bool mIsServer;
 

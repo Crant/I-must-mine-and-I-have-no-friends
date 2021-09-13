@@ -6,8 +6,10 @@
 
 int main()
 {
-	if (GameEngine::Main()->Construct(640, 480, 2, 2, false))
-		GameEngine::Main()->Start();
+	IMM::GameEngine gameEngine = IMM::GameEngine();
+
+	if (gameEngine.Construct(640, 480, 2, 2, false))
+		gameEngine.Start();
 
 	//_CrtDumpMemoryLeaks();
 

@@ -2,8 +2,6 @@
 #include "Tiles.h"
 #include "olcPixelGameEngine.h"
 
-using namespace IMM;
-
 namespace IMM
 {
 	class Assets

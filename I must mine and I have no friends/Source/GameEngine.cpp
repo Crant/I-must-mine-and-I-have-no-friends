@@ -1,8 +1,10 @@
 #include "GameEngine.h"
-#include "Renderer.h"
 #include "NetworkMessages.h"
 #include "WorldEvents.h"
 #include "safe.h"
+#include "AssetsManager.h"
+
+using namespace IMM;
 
 GameEngine::GameEngine()
 {
@@ -62,7 +64,9 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 	gridGen.Init(seedName, worldWidth, worldHeight);
 
 	Tiles::LoadTiles();
-	renderer.SetCamera();
+
+	InitCameraSettings();
+	//renderer.SetCamera();
 
 	mGameState = GameState::GameLoopState;
 }
@@ -129,17 +133,17 @@ void GameEngine::HandleNetworkMessages()
 
 			mWorld = std::make_shared<World>(width, height, world);
 
-			renderer.SetWorld(mWorld);
+			//renderer.SetWorld(mWorld);
 
 			Tiles::LoadTiles();
-			renderer.SetCamera();
-
+			//renderer.SetCamera();
+			InitCameraSettings();
 			mGameState = GameState::GameLoopState;
 		}
 		break;
 		case NetworkMessageTypes::ServerAccept:
 		{
-			// Server has responded to a ping request				
+			// Server has Accepted the connection			
 			std::cout << "Server Accepted Connection\n";
 			if (!mIsServer)
 				mClient->RequestWorldData();
@@ -158,7 +162,7 @@ void GameEngine::OnEvent(Event* e)
 	{
 		mWorld = WCE->world;
 
-		renderer.SetWorld(mWorld);
+		//renderer.SetWorld(mWorld);
 		mServer->SetWorld(mWorld);
 	}
 }
@@ -167,7 +171,7 @@ bool GameEngine::OnUserCreate()
 {
 	// Called once at the start, so create things here
 
-	
+	mTempPlayer = std::make_unique<Player>();
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
@@ -212,9 +216,13 @@ bool GameEngine::GameLoop()
 
 	HandleNetworkMessages();
 
-	renderer.UpdateCamera();
+	//renderer.UpdateCamera();
+
+	CheckMovement();
 
 	OnUserFixedUpdate();
+	
+	Render();
 
 	if (GetKey(olc::Key::ENTER).bHeld)
 		return false;
@@ -241,5 +249,115 @@ void GameEngine::OnUserFixedUpdate()
 		TileController::CheckActiveTiles();
 		//physX.UpdatePhysics(this);
 		fTimer = 0.0f;
+	}
+}
+
+void GameEngine::Render()
+{
+	mOffsetX = mCamera.x - (float)mVisibleTiles.x;
+	mOffsetY = mCamera.y - (float)mVisibleTiles.y;
+
+	float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
+	float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
+
+	//if (fOffsetX < 0) fOffsetX = 0;
+	//if (fOffsetY < 0) fOffsetY = 0;
+	//if (fOffsetX > World::Main()->GetWidth() - nVisibleTilesX) fOffsetX = World::Main()->GetWidth() - nVisibleTilesX;
+	//if (fOffsetY > World::Main()->GetHeight() - nVisibleTilesY) fOffsetY = World::Main()->GetHeight() - nVisibleTilesY;
+
+
+
+	for (int x = -1; x < mVisibleTiles.x + 1; x++)
+	{
+		for (int y = -1; y < mVisibleTiles.y + 1; y++)
+		{
+			if (mWorld->IsBlock(x + mOffsetX, y + mOffsetY))
+			{
+				TileType* tile = mWorld->GetTile(olc::vf2d(x + mOffsetX, y + mOffsetY));
+				int tileNbour = (int)mWorld->GetNbour(olc::vf2d(x + mOffsetX, y + mOffsetY));
+				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
+
+				DrawPartialDecal(
+					pos,
+					Assets::Main()->GetSpriteDecal(tile),
+					olc::vi2d(0, mPixelSize * tileNbour),
+					olc::vi2d(mPixelSize, mPixelSize),
+					olc::vf2d(mTileScale, mTileScale));
+			}
+		}
+	}
+	if (mTempPlayer->mPos.x + 40 < 0)
+		mTempPlayer->mPos.x = 40;
+
+	if (mTempPlayer->mPos.y + 40 < 0)
+		mTempPlayer->mPos.y = 40;
+
+	if (mTempPlayer->mPos.x > mWorld->GetWidth())
+		mTempPlayer->mPos.x = mWorld->GetWidth();
+
+	if (mTempPlayer->mPos.y > mWorld->GetHeight())
+		mTempPlayer->mPos.y = mWorld->GetHeight();
+}
+
+void GameEngine::InitCameraSettings()
+{
+	mVisibleTiles.x = ScreenWidth() / mTileSize;
+	mVisibleTiles.y = ScreenHeight() / mTileSize;
+
+	mTileScale = ((float)mTileSize / (float)mPixelSize);
+}
+
+void GameEngine::CheckMovement()
+{
+	//SKA FLYTTAS
+	mMousePos.x = ((float)GetMouseX() / mTileSize) + mOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
+	mMousePos.y = ((float)GetMouseY() / mTileSize) + mOffsetY;
+
+
+	if (IsFocused())
+	{
+		if (GetKey(olc::Key::W).bHeld)
+		{
+			mTempPlayer->mPos.y -= mTempPlayer->mVel.y * GetElapsedTime();
+		}
+		if (GetKey(olc::Key::A).bHeld)
+		{
+			mTempPlayer->mPos.x -= mTempPlayer->mVel.y * GetElapsedTime();
+		}
+		if (GetKey(olc::Key::D).bHeld)
+		{
+			mTempPlayer->mPos.x += mTempPlayer->mVel.y * GetElapsedTime();
+		}
+		if (GetKey(olc::Key::S).bHeld)
+		{
+			mTempPlayer->mPos.y += mTempPlayer->mVel.y * GetElapsedTime();
+		}
+
+		mCamera.x = mTempPlayer->mPos.x;
+		mCamera.y = mTempPlayer->mPos.y;
+		RandomInputs();
+	}
+}
+
+void GameEngine::RandomInputs()
+{
+	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY()), std::to_string(mCamera.x));
+	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(mCamera.y));
+
+	if (GetMouse(1).bHeld && !(mWorld->IsBlock(mMousePos.x, mMousePos.y)))
+	{
+		TileController::CreateBlock(olc::vf2d(mMousePos.x, mMousePos.y), TileType::Dirt);
+	}
+	//if (Game::Main()->GetMouse(0).bHeld && World::Main()->IsBlock(fMousePosX, fMousePosY) && fTimer > 0.2f)
+	//{
+	//	Cool = World::Main()->FloodFill(fMousePosX, fMousePosY, Cool);
+	//	//TileController::DamageBlock(World::Main()->Coordinates(World::Main()->Index(fMousePosX, fMousePosY)), 0.5f);
+	//	fTimer = 0.0f;
+	//}
+	if (GetMouse(0).bHeld)
+	{
+		//Cooler = World::Main()->GetRegions(fMousePosX, fMousePosY);
+		//Cooler = World::Main()->GetRegions();
+		mWorld->RemoveRegions();
 	}
 }
