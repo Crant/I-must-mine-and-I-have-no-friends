@@ -20,6 +20,7 @@ GameEngine::GameEngine()
 
 GameEngine::~GameEngine()
 {
+	mPerf->GenerateReport();
 	//IMM::Utils::SAFE_DELETE(Instance);
 }
 
@@ -41,14 +42,14 @@ void GameEngine::GetMainMenuInput()
 		mClient->Connect("127.0.0.1", 61001);
 
 		mGameState = GameState::InitWorldState;
-
+		mPerf->SetFilePath("Perf_Server.txt");
 		Init("0123456789", 500, 500);
 	}
 	else if (GetKey(olc::Key::J).bPressed)
 	{
 		mClient = std::make_unique<Client>();
 		mClient->Connect("127.0.0.1", 61001);
-
+		mPerf->SetFilePath("Perf_Client.txt");
 		mGameState = GameState::InitWorldState;
 	}
 }
@@ -61,7 +62,9 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 	GridGenerator gridGen = GridGenerator();
 
 	gridGen.AddObserver(this);
+	mPerf->PreMeasure("Init World", 0);
 	gridGen.Init(seedName, worldWidth, worldHeight);
+	mPerf->PostMeasure("Init World", 0);
 
 	Tiles::LoadTiles();
 
@@ -71,12 +74,126 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 	mGameState = GameState::GameLoopState;
 }
 
+void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>& msg)
+{
+	switch (msg.mHeader.mID)
+	{
+	case NetworkMessageTypes::ServerSendTileChange:
+	{
+		olc::vi2d tilePos;
+		IMM::TileType tileType;
+
+		msg >> tileType >> tilePos;
+
+		mWorld->SetTile(tilePos, tileType);
+	}
+	break;
+	case NetworkMessageTypes::MessageAll:
+
+		break;
+	case NetworkMessageTypes::ServerPing:
+	{
+		// Server has responded to a ping request
+		std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+		std::chrono::system_clock::time_point timeThen;
+		msg >> timeThen;
+		std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
+	}
+	break;
+	case NetworkMessageTypes::ServerSendWorldChanges:
+	{
+		mGameState = GameState::GameLoopState;
+	}
+	break;
+	//case NetworkMessageTypes::ServerSendWorldSeed:
+	//{
+	//	std::string seedName = "";
+	//	int width = 0;
+	//	int height = 0;
+	//	int size = 0;
+	//	msg >> size;
+	//
+	//	for (int i = 0; i < size; i++)
+	//	{
+	//		char value;
+	//		msg >> value;
+	//
+	//		seedName.push_back(value);
+	//	}
+	//
+	//	msg >> height >> width;
+	//
+	//	Init(seedName, width, height);
+	//}	
+	//break;
+	case NetworkMessageTypes::ServerSendWorldFull:
+	{
+		mPerf->PreMeasure("Init world from server", 0);
+		int width = 0;
+		int height = 0;
+
+		msg >> height >> width;
+
+		Tile* world = new Tile[width * height];
+		for (int i = 0; i < width * height; i++)
+		{
+			msg >> world[i];
+		}
+
+		mWorld = std::make_shared<World>(width, height, world);
+
+		mPerf->PostMeasure("Init world from server", 0);
+		//renderer.SetWorld(mWorld);
+
+		Tiles::LoadTiles();
+		//renderer.SetCamera();
+		InitCameraSettings();
+		mGameState = GameState::GameLoopState;
+	}
+	break;
+	case NetworkMessageTypes::ServerAccept:
+	{
+		// Server has Accepted the connection			
+		std::cout << "Server Accepted Connection\n";
+		if (!mIsServer)
+			mClient->RequestWorldData();
+	}
+	break;
+	default:
+		break;
+	}
+}
+
 void GameEngine::HandleNetworkMessages()
 {
 	//Check if there are any messages to read.
 	while (!mClient->Incoming().empty())
 	{
-		IMM::Network::Message<NetworkMessageTypes> msg = mClient->Incoming().pop_front().msg;
+		IMM::Network::OwnedMessage<NetworkMessageTypes> aMsg = mClient->Incoming().pop_front();
+		IMM::Network::Message<NetworkMessageTypes> msg = aMsg.msg;
+		
+		HandleNetworkMessage(msg);
+	}
+}
+
+void GameEngine::ReadOnHoldMessages()
+{
+	//Check if there are any messages to read.
+	while (!mClient->GetOnHoldMsgs().empty())
+	{
+		IMM::Network::OwnedMessage<NetworkMessageTypes> aMsg = mClient->GetOnHoldMsgs().pop_front();
+
+		HandleNetworkMessage(aMsg.msg);
+	}
+}
+
+void GameEngine::CheckForWorldInitMessage()
+{
+	//Check if there are any messages to read.
+	while (!mClient->Incoming().empty())
+	{
+		IMM::Network::OwnedMessage<NetworkMessageTypes> aMsg = mClient->Incoming().pop_front();
+		IMM::Network::Message<NetworkMessageTypes> msg = aMsg.msg;
 
 		switch (msg.mHeader.mID)
 		{
@@ -92,34 +209,9 @@ void GameEngine::HandleNetworkMessages()
 			std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
 		}
 		break;
-		case NetworkMessageTypes::ServerSendWorldChanges:
-		{
-			mGameState = GameState::GameLoopState;
-		}
-		break;
-		//case NetworkMessageTypes::ServerSendWorldSeed:
-		//{
-		//	std::string seedName = "";
-		//	int width = 0;
-		//	int height = 0;
-		//	int size = 0;
-		//	msg >> size;
-		//
-		//	for (int i = 0; i < size; i++)
-		//	{
-		//		char value;
-		//		msg >> value;
-		//
-		//		seedName.push_back(value);
-		//	}
-		//
-		//	msg >> height >> width;
-		//
-		//	Init(seedName, width, height);
-		//}	
-		//break;
 		case NetworkMessageTypes::ServerSendWorldFull:
 		{
+			mPerf->PreMeasure("Init world from server", 0);
 			int width = 0;
 			int height = 0;
 
@@ -132,7 +224,7 @@ void GameEngine::HandleNetworkMessages()
 			}
 
 			mWorld = std::make_shared<World>(width, height, world);
-
+			mPerf->PostMeasure("Init world from server", 0);
 			//renderer.SetWorld(mWorld);
 
 			Tiles::LoadTiles();
@@ -141,29 +233,23 @@ void GameEngine::HandleNetworkMessages()
 			mGameState = GameState::GameLoopState;
 		}
 		break;
-		case NetworkMessageTypes::ServerAccept:
-		{
-			// Server has Accepted the connection			
-			std::cout << "Server Accepted Connection\n";
-			if (!mIsServer)
-				mClient->RequestWorldData();
-		}
-		break;
 		default:
+			mClient->PutMsgOnHold(aMsg);
 			break;
 		}
 	}
-	
 }
 
 void GameEngine::OnEvent(Event* e)
 {
-	if (WorldCreatedEvent* WCE = dynamic_cast<WorldCreatedEvent*>(e))
+	if (IMM::Events::WorldCreatedEvent* WCE = dynamic_cast<IMM::Events::WorldCreatedEvent*>(e))
 	{
 		mWorld = WCE->world;
 
 		//renderer.SetWorld(mWorld);
 		mServer->SetWorld(mWorld);
+
+		mWorld->AddObserver(mServer.get());
 	}
 }
 
@@ -171,6 +257,8 @@ bool GameEngine::OnUserCreate()
 {
 	// Called once at the start, so create things here
 
+	mPerf = std::make_unique<IMM::Utils::PerformanceTest>();
+	
 	mTempPlayer = std::make_unique<Player>();
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
@@ -214,15 +302,18 @@ bool GameEngine::GameLoop()
 
 	PingServer();
 
+	mPerf->PreMeasure("Handle Net Messages", 1);
 	HandleNetworkMessages();
-
+	mPerf->PostMeasure("Handle Net Messages", 1);
 	//renderer.UpdateCamera();
 
 	CheckMovement();
 
 	OnUserFixedUpdate();
 	
+	mPerf->PreMeasure("Render", 2);
 	Render();
+	mPerf->PostMeasure("Render", 2);
 
 	if (GetKey(olc::Key::ENTER).bHeld)
 		return false;
@@ -246,7 +337,7 @@ void GameEngine::OnUserFixedUpdate()
 	fTimer += GetElapsedTime();
 	if (fTimer > fFixedUpdate)
 	{
-		TileController::CheckActiveTiles();
+		mWorld->CheckDamagedTiles();
 		//physX.UpdatePhysics(this);
 		fTimer = 0.0f;
 	}
@@ -309,10 +400,9 @@ void GameEngine::InitCameraSettings()
 
 void GameEngine::CheckMovement()
 {
-	//SKA FLYTTAS
+	//SKA TROLIGEN FLYTTAS
 	mMousePos.x = ((float)GetMouseX() / mTileSize) + mOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
 	mMousePos.y = ((float)GetMouseY() / mTileSize) + mOffsetY;
-
 
 	if (IsFocused())
 	{
@@ -346,7 +436,9 @@ void GameEngine::RandomInputs()
 
 	if (GetMouse(1).bHeld && !(mWorld->IsBlock(mMousePos.x, mMousePos.y)))
 	{
-		TileController::CreateBlock(olc::vf2d(mMousePos.x, mMousePos.y), TileType::Dirt);
+		mClient->ChangeTileRequest(mMousePos.x, mMousePos.y, TileType::Dirt);
+
+		//mWorld->CreateBlock(olc::vf2d(mMousePos.x, mMousePos.y), TileType::Dirt);
 	}
 	//if (Game::Main()->GetMouse(0).bHeld && World::Main()->IsBlock(fMousePosX, fMousePosY) && fTimer > 0.2f)
 	//{

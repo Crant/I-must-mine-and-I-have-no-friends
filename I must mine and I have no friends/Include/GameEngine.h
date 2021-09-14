@@ -4,11 +4,11 @@
 #include "World.h"
 #include "GridGenerator.h"
 #include "TilePhysics.h"
-#include "TileController.h"
 #include "Server.h"
 #include "Client.h"
 #include "PerlinNoise.h"
 #include "Observer.h"
+#include "PerformanceTest.h"
 
 namespace IMM
 {
@@ -66,12 +66,31 @@ namespace IMM
 	private:
 		// Temp, Pick if Host (H) or client (J)
 		void GetMainMenuInput();
+		/*! Initialize the world and other variables*/
 		void Init(const std::string& seedName, int worldWidth, int worldHeight);
 		bool GameLoop();
+
+		//////////////////////
+		//					//
+		//	   Network		//
+		//			  		//
+		//////////////////////
+		/*! Read every Network Message*/
 		void HandleNetworkMessages();
+		/*! Read the network messages and waits for world data and puts the rest on hold*/
+		void CheckForWorldInitMessage();
+		/*! Reads messages that were put on hold*/
+		void ReadOnHoldMessages();
+		/*! Handles a network message*/
+		void HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>& msg);
+		/*! Ping the server*/
 		void PingServer();
 
-		//GFX
+		//////////////////////
+		//					//
+		//	   GFX			//
+		//			  		//
+		//////////////////////
 		void Render();
 		void InitCameraSettings();
 		void CheckMovement();
@@ -81,14 +100,13 @@ namespace IMM
 		virtual void OnEvent(Event* e);
 
 	private:
-		static inline GameEngine* Instance;
+		std::unique_ptr<IMM::Utils::PerformanceTest> mPerf;
 
 		std::shared_ptr<World> mWorld;
 
 		GameState mGameState;
 		//Renderer renderer;
 		TilePhysics physX;
-		TileController tileControl;
 
 		uint32_t worldWidth = 500;
 		uint32_t worldHeight = 500;

@@ -11,8 +11,11 @@ enum class NetworkMessageTypes : uint32_t
 	ServerSendWorldSeed,
 	ServerSendWorldFull,
 	ServerSendWorldChanges,
+	ServerSendWorldWidth,
+	ServerSendTileChange,
 	ClientRequestWorldInfo,
 	ClientRequestWorldData,
 	ClientRequestWorldChanges,
-	ServerSendWorldWidth,
+	ClientChangeTileRequest,
+	
 };

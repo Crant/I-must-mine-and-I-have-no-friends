@@ -1,10 +1,12 @@
 #pragma once
+
 #include "olcPixelGameEngine.h";
 #include "Tiles.h"
+#include "Observer.h"
 
 namespace IMM 
 {
-	class World
+	class World : public Observed
 	{
 	public:
 		World(int width, int height, Tile* newWorld);
@@ -53,9 +55,21 @@ namespace IMM
 		std::shared_ptr<std::vector<std::vector<int>>> GetRegions();
 		void CreateRegion(std::vector<int>& vRegionTiles);
 
+		void CheckDamagedTiles();
+		void DamageBlock(olc::vf2d blockPos, float dmg);
+		void DamageBlockAOE(olc::vf2d blockPos, float dmg, float aoe);
+
+		void CreateBlock(olc::vf2d blockPos, TileType tt);
+		void CreateBlock(float blockXPos, float blockYPos, TileType tt);
+		void CreateBlock(int index, TileType tt);
+		void RemoveBlock(olc::vf2d blockPos);
+		void RemoveBlock(float blockXPos, float blockYPos);
+		void RemoveBlock(int index);
+
 	private:
 		 static inline World* Instance;
 		 Tile* nWorld;
+		 std::unordered_map<int, TileData> mDamagedTiles;
 		 //std::shared_ptr<std::vector<int>> nFloodFill = std::make_shared<std::vector<int>>();
 
 		 int nWidth = 0;

@@ -40,7 +40,7 @@ void GridGenerator::Init(const std::string& seed, int width, int height)
     GenerateWorld();
     GenerateNeighbours();
 
-    WorldCreatedEvent WCE(mWorld);
+    IMM::Events::WorldCreatedEvent WCE(mWorld);
 
     NotifyObservers(&WCE);
 }

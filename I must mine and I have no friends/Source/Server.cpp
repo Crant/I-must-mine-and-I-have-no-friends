@@ -1,5 +1,7 @@
 #include "Server.h"
 #include "GameEngine.h"
+#include "WorldEvents.h"
+#include "Tiles.h"
 
 IMM::Server::Server(uint16_t nPort) : IMM::Network::ServerInterface<NetworkMessageTypes>(nPort)
 {
@@ -17,13 +19,26 @@ void IMM::Server::OnClientValidated(std::shared_ptr<IMM::Network::Connection<Net
 
 bool IMM::Server::OnClientConnect(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client)
 {
-	//Server cap or other stuff
+	//Server cap or other st65uff
 	return true;
 }
 
 void IMM::Server::OnClientDisconnect(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client)
 {
 	std::cout << "Removing client [" << client->GetID() << "]\n";
+}
+
+void IMM::Server::OnEvent(Event* e)
+{
+	if (IMM::Events::TileChangedEvent* TCE = dynamic_cast<IMM::Events::TileChangedEvent*>(e))
+	{
+		IMM::Network::Message<NetworkMessageTypes> msg;
+		msg.mHeader.mID = NetworkMessageTypes::ServerSendTileChange;
+
+		msg << TCE->tilePos << TCE->tileType;
+
+		MessageAllClients(msg);
+	}
 }
 
 void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client, IMM::Network::Message<NetworkMessageTypes>& msg)
@@ -38,7 +53,21 @@ void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMess
 			client->Send(msg);
 		}
 		break;
+		case NetworkMessageTypes::ClientChangeTileRequest:
+		{
+			float tileX;
+			float tileY;
 
+			IMM::TileType tileType;
+
+			msg >> tileY >> tileX >> tileType;
+
+			if (tileType == TileType::Empty)
+				mWorld->RemoveBlock(tileX, tileY);
+			else
+				mWorld->CreateBlock(tileX, tileY, tileType);
+		}
+		break;
 		case NetworkMessageTypes::MessageAll:
 		{
 			std::cout << "[" << client->GetID() << "]: Message All\n";

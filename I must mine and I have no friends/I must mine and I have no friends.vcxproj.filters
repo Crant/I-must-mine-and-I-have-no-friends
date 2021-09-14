@@ -22,6 +22,9 @@
     <Filter Include="Header Files\Utils">
       <UniqueIdentifier>{876698ab-5a20-454d-9e4a-f86c95cb7051}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{b46d31be-7574-49bf-ade8-ab4c58b53090}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Assets\fuckit.png">
@@ -53,9 +56,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\RandomGen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TileController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\TilePhysics.cpp">
@@ -97,6 +97,9 @@
     <ClCompile Include="Source\NetServer.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PerformanceTest.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\GridGenerator.h">
@@ -115,9 +118,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\RandomGen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\TileController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\TilePhysics.h">
@@ -163,6 +163,12 @@
       <Filter>Header Files\Events</Filter>
     </ClInclude>
     <ClInclude Include="Include\Safe.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\PerformanceTest.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Debug.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
