@@ -62,9 +62,9 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 	GridGenerator gridGen = GridGenerator();
 
 	gridGen.AddObserver(this);
-	mPerf->PreMeasure("Init World", 0);
+	mPerf->PreMeasure("Init World", 3);
 	gridGen.Init(seedName, worldWidth, worldHeight);
-	mPerf->PostMeasure("Init World", 0);
+	mPerf->PostMeasure("Init World", 3);
 
 	Tiles::LoadTiles();
 
@@ -128,7 +128,7 @@ void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>
 	//break;
 	case NetworkMessageTypes::ServerSendWorldFull:
 	{
-		mPerf->PreMeasure("Init world from server", 0);
+		mPerf->PreMeasure("Init world from server", 3);
 		int width = 0;
 		int height = 0;
 
@@ -142,7 +142,7 @@ void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>
 
 		mWorld = std::make_shared<World>(width, height, world);
 
-		mPerf->PostMeasure("Init world from server", 0);
+		mPerf->PostMeasure("Init world from server", 3);
 		//renderer.SetWorld(mWorld);
 
 		Tiles::LoadTiles();
@@ -302,18 +302,18 @@ bool GameEngine::GameLoop()
 
 	PingServer();
 
-	mPerf->PreMeasure("Handle Net Messages", 1);
+	mPerf->PreMeasure("Handle Net Messages", 2);
 	HandleNetworkMessages();
-	mPerf->PostMeasure("Handle Net Messages", 1);
+	mPerf->PostMeasure("Handle Net Messages", 2);
 	//renderer.UpdateCamera();
 
 	CheckMovement();
 
 	OnUserFixedUpdate();
 	
-	mPerf->PreMeasure("Render", 2);
+	mPerf->PreMeasure("Render", 0);
 	Render();
-	mPerf->PostMeasure("Render", 2);
+	mPerf->PostMeasure("Render", 0);
 
 	if (GetKey(olc::Key::ENTER).bHeld)
 		return false;
