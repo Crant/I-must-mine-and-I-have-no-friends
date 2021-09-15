@@ -3,7 +3,6 @@
 #include "WorldEvents.h"
 #include "safe.h"
 #include "AssetsManager.h"
-
 using namespace IMM;
 
 GameEngine::GameEngine()
@@ -31,6 +30,11 @@ bool GameEngine::IsServer()
 
 void GameEngine::GetMainMenuInput()
 {
+	
+
+	tempBtn->Render(this);
+	tempBtn->Hovered(GetMouseX(), GetMouseY());
+
 	if (GetKey(olc::Key::H).bPressed)
 	{
 		mIsServer = true;
@@ -263,6 +267,7 @@ bool GameEngine::OnUserCreate()
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
+	tempBtn = new Button("Assets/hostgameimg.png", olc::vf2d(50, 50), olc::vf2d(0.5f, 0.5f));
 	return true;
 }
 
@@ -356,8 +361,7 @@ void GameEngine::Render()
 	//if (fOffsetX > World::Main()->GetWidth() - nVisibleTilesX) fOffsetX = World::Main()->GetWidth() - nVisibleTilesX;
 	//if (fOffsetY > World::Main()->GetHeight() - nVisibleTilesY) fOffsetY = World::Main()->GetHeight() - nVisibleTilesY;
 
-
-
+	
 	for (int x = -1; x < mVisibleTiles.x + 1; x++)
 	{
 		for (int y = -1; y < mVisibleTiles.y + 1; y++)
@@ -367,7 +371,7 @@ void GameEngine::Render()
 				TileType* tile = mWorld->GetTile(olc::vf2d(x + mOffsetX, y + mOffsetY));
 				int tileNbour = (int)mWorld->GetNbour(olc::vf2d(x + mOffsetX, y + mOffsetY));
 				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
-
+				
 				DrawPartialDecal(
 					pos,
 					Assets::Main()->GetSpriteDecal(tile),
@@ -436,7 +440,7 @@ void GameEngine::RandomInputs()
 
 	if (GetMouse(1).bHeld && !(mWorld->IsBlock(mMousePos.x, mMousePos.y)))
 	{
-		mClient->ChangeTileRequest(mMousePos.x, mMousePos.y, TileType::Dirt);
+		mClient->RequestTileChange(mMousePos.x, mMousePos.y, TileType::Dirt);
 
 		//mWorld->CreateBlock(olc::vf2d(mMousePos.x, mMousePos.y), TileType::Dirt);
 	}

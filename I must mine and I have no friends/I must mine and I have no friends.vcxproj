@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClCompile Include="Source\AssetsManager.cpp" />
     <ClCompile Include="Source\BaseUnit.cpp" />
+    <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\Client.cpp" />
     <ClCompile Include="Source\DamageAble.cpp" />
     <ClCompile Include="Source\DamageObj.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="Source\GridGenerator.cpp" />
     <ClCompile Include="Source\Item.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\MainMenu.cpp" />
     <ClCompile Include="Source\NetServer.cpp" />
     <ClCompile Include="Source\olcPixelGameEngine.cpp" />
     <ClCompile Include="Source\PerformanceTest.cpp" />
@@ -50,6 +52,7 @@
   <ItemGroup>
     <ClInclude Include="Include\AssetsManager.h" />
     <ClInclude Include="Include\BaseUnit.h" />
+    <ClInclude Include="Include\Button.h" />
     <ClInclude Include="Include\Client.h" />
     <ClInclude Include="Include\DamageAble.h" />
     <ClInclude Include="Include\DamageObj.h" />
@@ -58,6 +61,7 @@
     <ClInclude Include="Include\GFX.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\Item.h" />
+    <ClInclude Include="Include\MainMenu.h" />
     <ClInclude Include="Include\NetworkMessages.h" />
     <ClInclude Include="Include\Observer.h" />
     <ClInclude Include="Include\olcPixelGameEngine.h" />

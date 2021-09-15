@@ -25,6 +25,18 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{b46d31be-7574-49bf-ade8-ab4c58b53090}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{ea3dd818-1160-4373-98fd-671ce97030a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{fed79f07-aa00-4345-9321-615f52aca6f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Menu">
+      <UniqueIdentifier>{1a2e90ed-f107-4887-bd08-a35603a6da42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Menu">
+      <UniqueIdentifier>{201e2fec-d9fa-45b8-8e62-db753d825074}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Assets\fuckit.png">
@@ -100,6 +112,12 @@
     <ClCompile Include="Source\PerformanceTest.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Button.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MainMenu.cpp">
+      <Filter>Source Files\Menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\GridGenerator.h">
@@ -170,6 +188,12 @@
     </ClInclude>
     <ClInclude Include="Include\Debug.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Button.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MainMenu.h">
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

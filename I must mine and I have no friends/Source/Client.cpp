@@ -34,7 +34,7 @@ void Client::RequestWorldData()
 	msg.mHeader.mID = NetworkMessageTypes::ClientRequestWorldData;
 	Send(msg);
 }
-void Client::ChangeTileRequest(float tileX, float tileY, IMM::TileType tt)
+void Client::RequestTileChange(float tileX, float tileY, IMM::TileType tt)
 {
 	IMM::Network::Message<NetworkMessageTypes> msg;
 	msg.mHeader.mID = NetworkMessageTypes::ClientChangeTileRequest;

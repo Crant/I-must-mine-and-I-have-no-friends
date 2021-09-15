@@ -9,6 +9,7 @@
 #include "PerlinNoise.h"
 #include "Observer.h"
 #include "PerformanceTest.h"
+#include "MainMenu.h"
 
 namespace IMM
 {
@@ -122,6 +123,7 @@ namespace IMM
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;
+		Button* tempBtn;
 
 		int mTileSize = 8;
 		int mPixelSize = 32;

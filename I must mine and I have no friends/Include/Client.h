@@ -16,7 +16,7 @@ namespace IMM
 		void MessageAll();
 		void RequestWorldInfo();
 		void RequestWorldData();
-		void ChangeTileRequest(float tileX, float tileY, IMM::TileType tt);
+		void RequestTileChange(float tileX, float tileY, IMM::TileType tt);
 		void PutMsgOnHold(IMM::Network::OwnedMessage<NetworkMessageTypes> msg) { mOnHoldQ.push_back(msg); }
 
 		IMM::Network::TsQueue<IMM::Network::OwnedMessage<NetworkMessageTypes>>& GetOnHoldMsgs() { return mOnHoldQ; }
