@@ -3,17 +3,17 @@
 #include "olcPixelGameEngine.h"
 #include "Button.h"
 #include "Observer.h"
-class MainMenu : public Observed
+namespace IMM
 {
-public:
-	MainMenu(int screenWidth, int screenHeight);
-	void Update(olc::PixelGameEngine* pge);
-	void Render(olc::PixelGameEngine* pge);
+	class MainMenu : public Observed
+	{
+	public:
+		MainMenu(int screenWidth, int screenHeight);
+		void Update(olc::PixelGameEngine* pge);
+		void Render(olc::PixelGameEngine* pge);
 
-protected:
-	virtual void OnEvent(Event* e);
-
-private:
-	std::unique_ptr<Button> mHostGameButton;
-	std::unique_ptr<Button> mJoinGameButton;
-};
+	private:
+		std::unique_ptr<Button> mHostGameButton;
+		std::unique_ptr<Button> mJoinGameButton;
+	};
+}

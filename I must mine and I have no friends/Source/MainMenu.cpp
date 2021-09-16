@@ -4,7 +4,7 @@
 #define DESIGN_SCREEN_WIDTH 1920.0f
 #define DESIGN_SCREEN_HEIGHT 1080.0f
 
-MainMenu::MainMenu(int screenWidth, int screenHeight)
+IMM::MainMenu::MainMenu(int screenWidth, int screenHeight)
 {
 	float screenWidthScale = (float)screenWidth / DESIGN_SCREEN_WIDTH;
 	float screenHeightScale = (float)screenHeight / DESIGN_SCREEN_HEIGHT;
@@ -26,7 +26,7 @@ MainMenu::MainMenu(int screenWidth, int screenHeight)
 		olc::vf2d(screenWidthScale, screenHeightScale));
 }
 
-void MainMenu::Update(olc::PixelGameEngine* pge)
+void IMM::MainMenu::Update(olc::PixelGameEngine* pge)
 {
 	//Hovered
 
@@ -62,13 +62,8 @@ void MainMenu::Update(olc::PixelGameEngine* pge)
 	//}
 }
 
-void MainMenu::Render(olc::PixelGameEngine* pge)
+void IMM::MainMenu::Render(olc::PixelGameEngine* pge)
 {
 	mHostGameButton->Render(pge);
 	mJoinGameButton->Render(pge);
-}
-
-void MainMenu::OnEvent(Event* e)
-{
-
 }
