@@ -3,6 +3,8 @@
 #include "WorldEvents.h"
 #include "safe.h"
 #include "AssetsManager.h"
+#include "MenuEvents.h"
+
 using namespace IMM;
 
 GameEngine::GameEngine()
@@ -26,36 +28,6 @@ GameEngine::~GameEngine()
 bool GameEngine::IsServer()
 {
 	return mIsServer;
-}
-
-void GameEngine::GetMainMenuInput()
-{
-	
-
-	tempBtn->Render(this);
-	tempBtn->Hovered(GetMouseX(), GetMouseY());
-
-	if (GetKey(olc::Key::H).bPressed)
-	{
-		mIsServer = true;
-
-		mServer = std::make_unique<Server>(61001);
-		mServer->Start();
-
-		mClient = std::make_unique<Client>();
-		mClient->Connect("127.0.0.1", 61001);
-
-		mGameState = GameState::InitWorldState;
-		mPerf->SetFilePath("Perf_Server.txt");
-		Init("0123456789", 500, 500);
-	}
-	else if (GetKey(olc::Key::J).bPressed)
-	{
-		mClient = std::make_unique<Client>();
-		mClient->Connect("127.0.0.1", 61001);
-		mPerf->SetFilePath("Perf_Client.txt");
-		mGameState = GameState::InitWorldState;
-	}
 }
 
 void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeight)
@@ -255,6 +227,28 @@ void GameEngine::OnEvent(Event* e)
 
 		mWorld->AddObserver(mServer.get());
 	}
+	else if (IMM::Events::HostButtonPressedEvent* HBPE = dynamic_cast<IMM::Events::HostButtonPressedEvent*>(e))
+	{
+		mIsServer = true;
+
+		mServer = std::make_unique<Server>(61001);
+		mServer->Start();
+
+		mClient = std::make_unique<Client>();
+		mClient->Connect("127.0.0.1", 61001);
+
+		mGameState = GameState::InitWorldState;
+		mPerf->SetFilePath("Perf_Server.txt");
+		Init("123456789", 500, 500);
+
+	}
+	else if (IMM::Events::JoinButtonPressedEvent* JBPE = dynamic_cast<IMM::Events::JoinButtonPressedEvent*>(e))
+	{
+		mClient = std::make_unique<Client>();
+		mClient->Connect("127.0.0.1", 61001);
+		mPerf->SetFilePath("Perf_Client.txt");
+		mGameState = GameState::InitWorldState;
+	}
 }
 
 bool GameEngine::OnUserCreate()
@@ -267,7 +261,8 @@ bool GameEngine::OnUserCreate()
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
-	tempBtn = new Button("Assets/hostgameimg.png", olc::vf2d(50, 50), olc::vf2d(0.5f, 0.5f));
+	mMainMenu = std::make_unique<MainMenu>(ScreenWidth(), ScreenHeight());
+	mMainMenu->AddObserver(this);
 	return true;
 }
 
@@ -283,7 +278,9 @@ bool GameEngine::OnUserUpdate(float fElapsedTime)
 		break;
 	case GameState::MainMenuState:
 		//Render Menu
-		GetMainMenuInput(); // TEMP server / client choice
+		//GetMainMenuInput(); // TEMP server / client choice
+		mMainMenu->Update(this);
+		mMainMenu->Render(this);
 		break;
 	case GameState::InitWorldState:
 		PingServer();

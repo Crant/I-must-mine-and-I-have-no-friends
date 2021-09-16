@@ -195,5 +195,8 @@
     <ClInclude Include="Include\MainMenu.h">
       <Filter>Header Files\Menu</Filter>
     </ClInclude>
+    <ClInclude Include="Include\MenuEvents.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

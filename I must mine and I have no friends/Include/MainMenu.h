@@ -1,12 +1,19 @@
 #pragma once
 
+#include "olcPixelGameEngine.h"
 #include "Button.h"
-
-class MainMenu
+#include "Observer.h"
+class MainMenu : public Observed
 {
 public:
-	MainMenu();
+	MainMenu(int screenWidth, int screenHeight);
+	void Update(olc::PixelGameEngine* pge);
+	void Render(olc::PixelGameEngine* pge);
+
+protected:
+	virtual void OnEvent(Event* e);
 
 private:
-	Button* mHostGameButton;
+	std::unique_ptr<Button> mHostGameButton;
+	std::unique_ptr<Button> mJoinGameButton;
 };

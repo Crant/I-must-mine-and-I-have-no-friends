@@ -15,9 +15,10 @@ namespace IMM
 				randomGen = std::mt19937(seed);
 			}
 
-			void Srand(std::string pSeed)
+			void Srand(const std::string& pSeed)
 			{
-				seed = sscanf_s(pSeed.c_str(), "%d", &seed);
+				seed = stoi(pSeed);
+				//sscanf_s(pSeed.c_str(), "%d", &seed);
 				randomGen = std::mt19937(seed);
 			}
 

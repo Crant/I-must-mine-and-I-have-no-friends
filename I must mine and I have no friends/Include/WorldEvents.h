@@ -27,5 +27,4 @@ namespace IMM
 			IMM::TileType tileType;
 		};
 	}
-	
 }

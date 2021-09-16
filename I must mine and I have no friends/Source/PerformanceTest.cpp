@@ -7,7 +7,7 @@ IMM::Utils::PerformanceTest::PerformanceTest()
 	LARGE_INTEGER li;
 	QueryPerformanceFrequency(&li);
 	mPCFreq = float(li.QuadPart) / 1000.0f;
-	this->filePath = "MPR.txt";
+	this->filePath = "Perf_Client.txt";
 }
 
 IMM::Utils::PerformanceTest::~PerformanceTest()

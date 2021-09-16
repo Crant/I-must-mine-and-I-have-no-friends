@@ -13,6 +13,11 @@ public:
 	bool Pressed(const float mouseX, const float mouseY);
 
 	void Render(olc::PixelGameEngine* pge);
+
+	int GetWidth() { return mButtonImg->sprite->width; }
+	int GetHeight() { return mButtonImg->sprite->height; }
+	int GetScaledWidth() { return mButtonImg->sprite->width * mScale.x; }
+	int GetScaledHeight() { return mButtonImg->sprite->height * mScale.y; }
 private:
 	olc::Sprite* mButtonSprite;
 	olc::Decal* mButtonImg;

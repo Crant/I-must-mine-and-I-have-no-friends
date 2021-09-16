@@ -31,13 +31,11 @@ bool Button::Hovered(const float mouseX, const float mouseY)
 		mPosition.y <= mouseY &&
 		mouseY <= mPosition.y + height)
 	{
-		std::cout << "Inside Button \n";
-		mTint = olc::BLUE;
+		mTint = olc::GREY;
+		return true;
 	}
-	else
-	{
-		mTint = olc::WHITE;
-	}
+
+	mTint = olc::WHITE;
 	return false;
 }
 

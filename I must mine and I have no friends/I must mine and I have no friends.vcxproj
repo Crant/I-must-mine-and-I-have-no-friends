@@ -62,6 +62,7 @@
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\Item.h" />
     <ClInclude Include="Include\MainMenu.h" />
+    <ClInclude Include="Include\MenuEvents.h" />
     <ClInclude Include="Include\NetworkMessages.h" />
     <ClInclude Include="Include\Observer.h" />
     <ClInclude Include="Include\olcPixelGameEngine.h" />

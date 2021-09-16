@@ -65,8 +65,6 @@ namespace IMM
 		void OnUserFixedUpdate();
 
 	private:
-		// Temp, Pick if Host (H) or client (J)
-		void GetMainMenuInput();
 		/*! Initialize the world and other variables*/
 		void Init(const std::string& seedName, int worldWidth, int worldHeight);
 		bool GameLoop();
@@ -123,7 +121,9 @@ namespace IMM
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;
-		Button* tempBtn;
+		
+		//Menu
+		std::unique_ptr<MainMenu> mMainMenu;
 
 		int mTileSize = 8;
 		int mPixelSize = 32;
