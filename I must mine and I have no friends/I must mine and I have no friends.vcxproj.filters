@@ -177,9 +177,6 @@
     <ClInclude Include="Include\NetworkMessages.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Include\WorldEvents.h">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Safe.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
@@ -196,6 +193,24 @@
       <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="Include\MenuEvents.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\PlayerEvents.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ClientEvents.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ServerFramePacket.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameEvents.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\WorldEvents.h">
       <Filter>Header Files\Events</Filter>
     </ClInclude>
   </ItemGroup>

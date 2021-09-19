@@ -4,6 +4,9 @@
 #include "safe.h"
 #include "AssetsManager.h"
 #include "MenuEvents.h"
+#include "PlayerEvents.h"
+#include "ClientEvents.h"
+#include "ServerFramePacket.h"
 
 using namespace IMM;
 
@@ -49,11 +52,28 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 
 	mGameState = GameState::GameLoopState;
 }
-
+//Client
 void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>& msg)
 {
 	switch (msg.mHeader.mID)
 	{
+	case NetworkMessageTypes::ServerSendUnitUpdates:
+	{
+		int updates = 0;
+
+		msg >> updates;
+
+		for (int i = 0; i < updates; i++)
+		{
+			ServerFramePacket sfp;
+
+			msg >> sfp;
+
+			mPlayers[sfp.GetID()]->SetPosition(sfp.GetPosition());
+			mPlayers[sfp.GetID()]->SetDirection(sfp.GetDirection());
+		}
+	}
+	break;
 	case NetworkMessageTypes::ServerSendTileChange:
 	{
 		olc::vi2d tilePos;
@@ -131,6 +151,14 @@ void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>
 	{
 		// Server has Accepted the connection			
 		std::cout << "Server Accepted Connection\n";
+
+		msg >> mLocalPlayerID;
+
+		mPlayers[mLocalPlayerID] = std::make_unique<Player>(mLocalPlayerID, "",
+			"Assets/player.png", olc::vf2d(50.0f, 50.0f), olc::vf2d(0.1f, 0.1f));
+
+		mPlayers[mLocalPlayerID]->AddObserver(this);
+
 		if (!mIsServer)
 			mClient->RequestWorldData();
 	}
@@ -139,7 +167,7 @@ void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>
 		break;
 	}
 }
-
+//Client
 void GameEngine::HandleNetworkMessages()
 {
 	//Check if there are any messages to read.
@@ -151,7 +179,7 @@ void GameEngine::HandleNetworkMessages()
 		HandleNetworkMessage(msg);
 	}
 }
-
+//Client
 void GameEngine::ReadOnHoldMessages()
 {
 	//Check if there are any messages to read.
@@ -162,7 +190,7 @@ void GameEngine::ReadOnHoldMessages()
 		HandleNetworkMessage(aMsg.msg);
 	}
 }
-
+//Client
 void GameEngine::CheckForWorldInitMessage()
 {
 	//Check if there are any messages to read.
@@ -218,7 +246,16 @@ void GameEngine::CheckForWorldInitMessage()
 
 void GameEngine::OnEvent(Event* e)
 {
-	if (IMM::Events::WorldCreatedEvent* WCE = dynamic_cast<IMM::Events::WorldCreatedEvent*>(e))
+	if (IMM::Events::PlayerMoveEvent* PME = dynamic_cast<IMM::Events::PlayerMoveEvent*>(e))
+	{
+		mClient->SendDirectionChange(PME->direction.x, PME->direction.y);
+	}//Server Only Event
+	else if (IMM::Events::ClientDirectionChangeEvent* CDCE = dynamic_cast<IMM::Events::ClientDirectionChangeEvent*>(e))
+	{
+		if(CDCE->clientID != mLocalPlayerID)
+			mPlayers[CDCE->clientID]->UpdateDirection(olc::vf2d(CDCE->direction));
+	}
+	else if (IMM::Events::WorldCreatedEvent* WCE = dynamic_cast<IMM::Events::WorldCreatedEvent*>(e))
 	{
 		mWorld = WCE->world;
 
@@ -226,7 +263,7 @@ void GameEngine::OnEvent(Event* e)
 		mServer->SetWorld(mWorld);
 
 		mWorld->AddObserver(mServer.get());
-	}
+	}//Server Only Event
 	else if (IMM::Events::HostButtonPressedEvent* HBPE = dynamic_cast<IMM::Events::HostButtonPressedEvent*>(e))
 	{
 		mIsServer = true;
@@ -234,14 +271,15 @@ void GameEngine::OnEvent(Event* e)
 		mServer = std::make_unique<Server>(61001);
 		mServer->Start();
 
+		mServer->AddObserver(this);
+
 		mClient = std::make_unique<Client>();
 		mClient->Connect("127.0.0.1", 61001);
 
 		mGameState = GameState::InitWorldState;
 		mPerf->SetFilePath("Perf_Server.txt");
 		Init("123456789", 500, 500);
-
-	}
+	}//Client Only Event
 	else if (IMM::Events::JoinButtonPressedEvent* JBPE = dynamic_cast<IMM::Events::JoinButtonPressedEvent*>(e))
 	{
 		mClient = std::make_unique<Client>();
@@ -257,7 +295,6 @@ bool GameEngine::OnUserCreate()
 
 	mPerf = std::make_unique<IMM::Utils::PerformanceTest>();
 	
-	mTempPlayer = std::make_unique<Player>();
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
@@ -311,6 +348,10 @@ bool GameEngine::GameLoop()
 
 	CheckMovement();
 
+	mPerf->PreMeasure("Update GameObjects", 0);
+	UpdateGameObjects();
+	mPerf->PostMeasure("Update GameObjects", 0);
+
 	OnUserFixedUpdate();
 	
 	mPerf->PreMeasure("Render", 0);
@@ -321,6 +362,27 @@ bool GameEngine::GameLoop()
 		return false;
 
 	return true;
+}
+
+void IMM::GameEngine::UpdateGameObjects()
+{
+	for (auto it = mPlayers.begin(); it != mPlayers.end(); it++)
+	{
+		it->second->Update(this, GetElapsedTime());
+	}
+
+	olc::vf2d playerPosition = mPlayers[mLocalPlayerID]->GetPosition();
+	if (playerPosition.x + 40 < 0)
+		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(40, playerPosition.y));
+
+	if (playerPosition.y + 40 < 0)
+		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(playerPosition.x, 40));
+
+	if (playerPosition.x > mWorld->GetWidth())
+		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(mWorld->GetWidth(), playerPosition.y));
+
+	if (playerPosition.y > mWorld->GetHeight())
+		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(playerPosition.x, mWorld->GetHeight()));
 }
 
 void GameEngine::PingServer()
@@ -334,12 +396,33 @@ void GameEngine::PingServer()
 	}
 }
 
+void GameEngine::SendUnitUpdates()
+{
+	std::vector<ServerFramePacket> packets;
+	for (auto it = mPlayers.begin(); it != mPlayers.end(); it++)
+	{
+		ServerFramePacket sfp = ServerFramePacket(
+			it->second->GetPosition(), 
+			it->second->GetDirection(),
+			it->first);
+		
+		packets.push_back(sfp);
+	}
+
+	if (packets.size() > 0)
+		mServer->SendUnitUpdates(packets);
+}
+
 void GameEngine::OnUserFixedUpdate()
 {
 	fTimer += GetElapsedTime();
 	if (fTimer > fFixedUpdate)
 	{
 		mWorld->CheckDamagedTiles();
+		
+		if (mIsServer)
+			SendUnitUpdates();
+
 		//physX.UpdatePhysics(this);
 		fTimer = 0.0f;
 	}
@@ -378,17 +461,11 @@ void GameEngine::Render()
 			}
 		}
 	}
-	if (mTempPlayer->mPos.x + 40 < 0)
-		mTempPlayer->mPos.x = 40;
 
-	if (mTempPlayer->mPos.y + 40 < 0)
-		mTempPlayer->mPos.y = 40;
-
-	if (mTempPlayer->mPos.x > mWorld->GetWidth())
-		mTempPlayer->mPos.x = mWorld->GetWidth();
-
-	if (mTempPlayer->mPos.y > mWorld->GetHeight())
-		mTempPlayer->mPos.y = mWorld->GetHeight();
+	for (auto it = mPlayers.begin(); it != mPlayers.end(); it++)
+	{
+		it->second->Render(this);
+	}
 }
 
 void GameEngine::InitCameraSettings()
@@ -404,28 +481,33 @@ void GameEngine::CheckMovement()
 	//SKA TROLIGEN FLYTTAS
 	mMousePos.x = ((float)GetMouseX() / mTileSize) + mOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
 	mMousePos.y = ((float)GetMouseY() / mTileSize) + mOffsetY;
-
 	if (IsFocused())
 	{
+		olc::vf2d dir = olc::vf2d(0.0f, 0.0f);
 		if (GetKey(olc::Key::W).bHeld)
 		{
-			mTempPlayer->mPos.y -= mTempPlayer->mVel.y * GetElapsedTime();
+			dir -= olc::vf2d(0.0f, 1.0f);
+			//mTempPlayer->mPos.y -= mTempPlayer->mVel.y * GetElapsedTime();
+		}
+		else if (GetKey(olc::Key::S).bHeld)
+		{
+			dir += olc::vf2d(0.0f, 1.0f);
+			//mTempPlayer->mPos.y += mTempPlayer->mVel.y * GetElapsedTime();
 		}
 		if (GetKey(olc::Key::A).bHeld)
 		{
-			mTempPlayer->mPos.x -= mTempPlayer->mVel.y * GetElapsedTime();
+			dir -= olc::vf2d(1.0f, 0);
+			//mTempPlayer->mPos.x -= mTempPlayer->mVel.y * GetElapsedTime();
 		}
-		if (GetKey(olc::Key::D).bHeld)
+		else if (GetKey(olc::Key::D).bHeld)
 		{
-			mTempPlayer->mPos.x += mTempPlayer->mVel.y * GetElapsedTime();
+			dir += olc::vf2d(1.0f, 0);
+			//mTempPlayer->mPos.x += mTempPlayer->mVel.y * GetElapsedTime();
 		}
-		if (GetKey(olc::Key::S).bHeld)
-		{
-			mTempPlayer->mPos.y += mTempPlayer->mVel.y * GetElapsedTime();
-		}
-
-		mCamera.x = mTempPlayer->mPos.x;
-		mCamera.y = mTempPlayer->mPos.y;
+		
+		mPlayers[mLocalPlayerID]->UpdateDirection(dir);
+		mCamera.x = mPlayers[mLocalPlayerID]->GetPosition().x;
+		mCamera.y = mPlayers[mLocalPlayerID]->GetPosition().y;
 		RandomInputs();
 	}
 }

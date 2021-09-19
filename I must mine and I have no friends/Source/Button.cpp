@@ -1,30 +1,25 @@
 #include "Button.h"
 #include "Safe.h"
 
-Button::Button()
+Button::Button(
+	const std::string& imgPath, 
+	const olc::vf2d& pos, 
+	const olc::vf2d& scale, 
+	const olc::Pixel& tint) : GameObject(imgPath, pos)
 {
-	mButtonImg = nullptr;
-	mButtonSprite = nullptr;
-}
-
-Button::Button(const std::string& imgPath, const olc::vf2d& pos, const olc::vf2d& scale, const olc::Pixel& tint)
-{
-	mButtonSprite = new olc::Sprite(imgPath);
-	mButtonImg = new olc::Decal(mButtonSprite);
-	mPosition = pos;
 	mScale = scale;
 	mTint = tint;
 }
 
 Button::~Button()
 {
-	IMM::Utils::SAFE_DELETE(mButtonImg);
+	
 }
 
 bool Button::Hovered(const float mouseX, const float mouseY)
 {
-	float width = mButtonImg->sprite->width * mScale.x;
-	float height = mButtonImg->sprite->height * mScale.y;
+	float width = mDecal->sprite->width * mScale.x;
+	float height = mDecal->sprite->height * mScale.y;
 
 	if (mPosition.x <= mouseX &&
 		mouseX <= mPosition.x + width &&
@@ -44,7 +39,11 @@ bool Button::Pressed(const float mouseX, const float mouseY)
 	return false;
 }
 
+void Button::Update(olc::PixelGameEngine* pge, float dt)
+{
+}
+
 void Button::Render(olc::PixelGameEngine* pge)
 {
-	pge->DrawDecal(mPosition, mButtonImg, mScale, mTint);
+	pge->DrawDecal(mPosition, mDecal.get(), mScale, mTint);
 }

@@ -10,6 +10,7 @@
 #include "Observer.h"
 #include "PerformanceTest.h"
 #include "MainMenu.h"
+#include "Player.h"
 
 namespace IMM
 {
@@ -20,17 +21,6 @@ namespace IMM
 		InitWorldState,
 	};
 
-	class Player
-	{
-	public:
-		Player()
-		{
-			mPos = olc::vf2d(.0f, .0f);
-			mVel = olc::vf2d(50.0f, 50.0f);
-		}
-		olc::vf2d mPos;
-		olc::vf2d mVel;
-	};
 	//TEMP
 	struct MousePositionWorld
 	{
@@ -69,6 +59,8 @@ namespace IMM
 		void Init(const std::string& seedName, int worldWidth, int worldHeight);
 		bool GameLoop();
 
+		void UpdateGameObjects();
+
 		//////////////////////
 		//					//
 		//	   Network		//
@@ -84,6 +76,8 @@ namespace IMM
 		void HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>& msg);
 		/*! Ping the server*/
 		void PingServer();
+		/*! Send Updates for unit positions and stuff to the clients*/
+		void SendUnitUpdates();
 
 		//////////////////////
 		//					//
@@ -116,8 +110,10 @@ namespace IMM
 		olc::Sprite* sprSht;
 		olc::Decal* decSht;
 
+		//maps an Server_ID to a Player
+		std::unordered_map<uint32_t, std::unique_ptr<Player>> mPlayers;
+		uint32_t mLocalPlayerID;
 		//TEMP
-		std::unique_ptr<Player> mTempPlayer;
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;

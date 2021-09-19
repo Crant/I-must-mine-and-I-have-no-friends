@@ -14,6 +14,7 @@ namespace IMM
 		void PingServer();
 
 		void MessageAll();
+		void SendDirectionChange(float dirX, float dirY);
 		void RequestWorldInfo();
 		void RequestWorldData();
 		void RequestTileChange(float tileX, float tileY, IMM::TileType tt);

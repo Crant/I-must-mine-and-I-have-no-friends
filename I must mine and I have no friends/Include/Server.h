@@ -3,18 +3,21 @@
 #include "NetworkMessages.h"
 #include "World.h"
 #include "Observer.h"
+#include "ServerFramePacket.h"
 
 namespace IMM
 {
-	class Server : public IMM::Network::ServerInterface<NetworkMessageTypes>, public Observer
+	class Server : public IMM::Network::ServerInterface<NetworkMessageTypes>, public Observer, public Observed
 	{
 	public:
 		Server(uint16_t nPort);
 
 		void SetWorld(std::shared_ptr<World> world) { mWorld = world; }
 
-
 		virtual void OnClientValidated(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client);
+		
+		void SendUnitUpdates(const std::vector<ServerFramePacket>& sfp);
+	
 	protected:
 		virtual bool OnClientConnect(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client);
 

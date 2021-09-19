@@ -1,6 +1,7 @@
 #include "Server.h"
 #include "GameEngine.h"
 #include "WorldEvents.h"
+#include "ClientEvents.h"
 #include "Tiles.h"
 
 IMM::Server::Server(uint16_t nPort) : IMM::Network::ServerInterface<NetworkMessageTypes>(nPort)
@@ -14,6 +15,7 @@ void IMM::Server::OnClientValidated(std::shared_ptr<IMM::Network::Connection<Net
 	// them they can continue to communicate
 	IMM::Network::Message<NetworkMessageTypes> msg;
 	msg.mHeader.mID = NetworkMessageTypes::ServerAccept;
+	msg << client->GetID();
 	client->Send(msg);
 }
 
@@ -41,6 +43,22 @@ void IMM::Server::OnEvent(Event* e)
 	}
 }
 
+void IMM::Server::SendUnitUpdates(const std::vector<ServerFramePacket>& sfp)
+{
+	// Construct a new message and send it to all clients
+	IMM::Network::Message<NetworkMessageTypes> msg;
+	msg.mHeader.mID = NetworkMessageTypes::ServerSendUnitUpdates;
+
+	for (auto it = sfp.begin(); it != sfp.end(); it++)
+	{
+		msg << (*it);
+	}
+
+	msg << sfp.size();
+
+	MessageAllClients(msg, mDeqConnections[0]);
+}
+
 void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client, IMM::Network::Message<NetworkMessageTypes>& msg)
 {
 	switch (msg.mHeader.mID)
@@ -51,6 +69,14 @@ void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMess
 
 			// Simply bounce message back to client
 			client->Send(msg);
+		}
+		break;
+		case NetworkMessageTypes::ClientDirectionChange:
+		{
+			IMM::Events::ClientDirectionChangeEvent CDCE;
+			CDCE.clientID = client->GetID();
+			msg >> CDCE.direction;
+			NotifyObservers(&CDCE);
 		}
 		break;
 		case NetworkMessageTypes::ClientChangeTileRequest:

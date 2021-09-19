@@ -21,6 +21,16 @@ void Client::MessageAll()
 	Send(msg);
 }
 
+void IMM::Client::SendDirectionChange(float dirX, float dirY)
+{
+	IMM::Network::Message<NetworkMessageTypes> msg;
+	msg.mHeader.mID = NetworkMessageTypes::ClientDirectionChange;
+	
+	msg << dirY << dirX;
+
+	Send(msg);
+}
+
 void Client::RequestWorldInfo()
 {
 	IMM::Network::Message<NetworkMessageTypes> msg;

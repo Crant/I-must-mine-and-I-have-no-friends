@@ -54,10 +54,13 @@
     <ClInclude Include="Include\BaseUnit.h" />
     <ClInclude Include="Include\Button.h" />
     <ClInclude Include="Include\Client.h" />
+    <ClInclude Include="Include\ClientEvents.h" />
     <ClInclude Include="Include\DamageAble.h" />
     <ClInclude Include="Include\DamageObj.h" />
     <ClInclude Include="Include\Debug.h" />
     <ClInclude Include="Include\GameEngine.h" />
+    <ClInclude Include="Include\GameEvents.h" />
+    <ClInclude Include="Include\GameObject.h" />
     <ClInclude Include="Include\GFX.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\Item.h" />
@@ -69,9 +72,11 @@
     <ClInclude Include="Include\PerformanceTest.h" />
     <ClInclude Include="Include\PerlinNoise.h" />
     <ClInclude Include="Include\Player.h" />
+    <ClInclude Include="Include\PlayerEvents.h" />
     <ClInclude Include="Include\RandomGen.h" />
     <ClInclude Include="Include\Safe.h" />
     <ClInclude Include="Include\Server.h" />
+    <ClInclude Include="Include\ServerFramePacket.h" />
     <ClInclude Include="Include\TilePhysics.h" />
     <ClInclude Include="Include\Tiles.h" />
     <ClInclude Include="Include\World.h" />
