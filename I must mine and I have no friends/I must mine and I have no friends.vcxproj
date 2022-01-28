@@ -25,6 +25,8 @@
     <Image Include="Resources\Assets\fuckit.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RandomGen.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Source\AssetsManager.cpp" />
     <ClCompile Include="Source\BaseUnit.cpp" />
     <ClCompile Include="Source\Button.cpp" />
@@ -50,6 +52,7 @@
     <ClCompile Include="Source\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Building.h" />
     <ClInclude Include="Include\AssetsManager.h" />
     <ClInclude Include="Include\BaseUnit.h" />
     <ClInclude Include="Include\Button.h" />
@@ -76,6 +79,8 @@
     <ClInclude Include="Include\Tiles.h" />
     <ClInclude Include="Include\World.h" />
     <ClInclude Include="Include\WorldEvents.h" />
+    <ClInclude Include="MapGenerator.h" />
+    <ClInclude Include="MapManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

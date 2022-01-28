@@ -2,14 +2,16 @@
 
 #include "olcPixelGameEngine.h"
 #include "World.h"
-#include "GridGenerator.h"
+//#include "GridGenerator.h"
 #include "TilePhysics.h"
+#include "Tiles.h"
 #include "Server.h"
 #include "Client.h"
 #include "PerlinNoise.h"
 #include "Observer.h"
 #include "PerformanceTest.h"
 #include "MainMenu.h"
+#include "../MapGenerator.h"
 
 namespace IMM
 {
@@ -91,6 +93,9 @@ namespace IMM
 		//			  		//
 		//////////////////////
 		void Render();
+		void CheckWrapping(int ix, int& ox);
+		void CheckWrapping(float ix, float& ox);
+		int CheckNeighbour(int x, int y, bool recursive);
 		void InitCameraSettings();
 		void CheckMovement();
 		void RandomInputs();
@@ -107,8 +112,8 @@ namespace IMM
 		//Renderer renderer;
 		TilePhysics physX;
 
-		uint32_t worldWidth = 500;
-		uint32_t worldHeight = 500;
+		uint32_t worldWidth = 512;
+		uint32_t worldHeight = 512;
 
 		const float fFixedUpdate = 0.02f;
 		float fTimer;
@@ -138,5 +143,11 @@ namespace IMM
 
 		float mPingDelay;
 		float mPingTimer;
+
+		//Generation
+		std::shared_ptr<MapGenerator> mMapGen;
+		float* nPerlinBlocks = nullptr; //Temporär för att hitta värdet av perlin noiset för vilka block som ska spawnas
+		unsigned int* nBlockSeeds; //Seeds för varje block i världen 
+		
 	};
 }

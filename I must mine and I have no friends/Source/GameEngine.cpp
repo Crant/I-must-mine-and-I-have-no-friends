@@ -35,12 +35,13 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 	this->worldWidth = worldWidth;
 	this->worldHeight = worldHeight;
 
-	GridGenerator gridGen = GridGenerator();
-
-	gridGen.AddObserver(this);
-	mPerf->PreMeasure("Init World", 3);
-	gridGen.Init(seedName, worldWidth, worldHeight);
-	mPerf->PostMeasure("Init World", 3);
+	//GridGenerator gridGen = GridGenerator();
+	nPerlinBlocks = mMapGen->GenerateMap(seedName, worldWidth, worldHeight, MapType::EarthlikePlanet);
+	nBlockSeeds = Random::GetWorldBlockSeeds(seedName, worldWidth, worldHeight); //Se alltid till att blockseeds lagras efter världen är skapad
+	//gridGen.AddObserver(this);
+	//mPerf->PreMeasure("Init World", 3);
+	//gridGen.Init(seedName, worldWidth, worldHeight);
+	//mPerf->PostMeasure("Init World", 3);
 
 	Tiles::LoadTiles();
 
@@ -239,7 +240,7 @@ void GameEngine::OnEvent(Event* e)
 
 		mGameState = GameState::InitWorldState;
 		mPerf->SetFilePath("Perf_Server.txt");
-		Init("123456789", 500, 500);
+		Init("EltonJohn", 1024, 1024);
 
 	}
 	else if (IMM::Events::JoinButtonPressedEvent* JBPE = dynamic_cast<IMM::Events::JoinButtonPressedEvent*>(e))
@@ -262,6 +263,8 @@ bool GameEngine::OnUserCreate()
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
 	mMainMenu = std::make_unique<MainMenu>(ScreenWidth(), ScreenHeight());
+	mMapGen = std::make_shared<MapGenerator>();
+	mMapGen->AddObserver(this);
 	mMainMenu->AddObserver(this);
 	return true;
 }
@@ -345,60 +348,93 @@ void GameEngine::OnUserFixedUpdate()
 	}
 }
 
-void GameEngine::Render()
-{
-	mOffsetX = mCamera.x - (float)mVisibleTiles.x;
-	mOffsetY = mCamera.y - (float)mVisibleTiles.y;
-
-	float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
-	float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
-
-	//if (fOffsetX < 0) fOffsetX = 0;
-	//if (fOffsetY < 0) fOffsetY = 0;
-	//if (fOffsetX > World::Main()->GetWidth() - nVisibleTilesX) fOffsetX = World::Main()->GetWidth() - nVisibleTilesX;
-	//if (fOffsetY > World::Main()->GetHeight() - nVisibleTilesY) fOffsetY = World::Main()->GetHeight() - nVisibleTilesY;
-
-	
-	for (int x = -1; x < mVisibleTiles.x + 1; x++)
-	{
-		for (int y = -1; y < mVisibleTiles.y + 1; y++)
-		{
-			if (mWorld->IsBlock(x + mOffsetX, y + mOffsetY))
-			{
-				TileType* tile = mWorld->GetTile(olc::vf2d(x + mOffsetX, y + mOffsetY));
-				int tileNbour = (int)mWorld->GetNbour(olc::vf2d(x + mOffsetX, y + mOffsetY));
-				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
-				
-				DrawPartialDecal(
-					pos,
-					Assets::Main()->GetSpriteDecal(tile),
-					olc::vi2d(0, mPixelSize * tileNbour),
-					olc::vi2d(mPixelSize, mPixelSize),
-					olc::vf2d(mTileScale, mTileScale));
-			}
-		}
-	}
-	if (mTempPlayer->mPos.x + 40 < 0)
-		mTempPlayer->mPos.x = 40;
-
-	if (mTempPlayer->mPos.y + 40 < 0)
-		mTempPlayer->mPos.y = 40;
-
-	if (mTempPlayer->mPos.x > mWorld->GetWidth())
-		mTempPlayer->mPos.x = mWorld->GetWidth();
-
-	if (mTempPlayer->mPos.y > mWorld->GetHeight())
-		mTempPlayer->mPos.y = mWorld->GetHeight();
-}
-
-void GameEngine::InitCameraSettings()
-{
-	mVisibleTiles.x = ScreenWidth() / mTileSize;
-	mVisibleTiles.y = ScreenHeight() / mTileSize;
-
-	mTileScale = ((float)mTileSize / (float)mPixelSize);
-}
-
+//void GameEngine::Render()
+//{
+//	mOffsetX = mCamera.x - (float)mVisibleTiles.x;
+//	mOffsetY = mCamera.y - (float)mVisibleTiles.y;
+//
+//	float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
+//	float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
+//
+//	//if (fOffsetX < 0) fOffsetX = 0;
+//	//if (fOffsetY < 0) fOffsetY = 0;
+//	//if (fOffsetX > World::Main()->GetWidth() - nVisibleTilesX) fOffsetX = World::Main()->GetWidth() - nVisibleTilesX;
+//	//if (fOffsetY > World::Main()->GetHeight() - nVisibleTilesY) fOffsetY = World::Main()->GetHeight() - nVisibleTilesY;
+//
+//	
+//	//for (int x = -1; x < mVisibleTiles.x + 1; x++)
+//	//{
+//	//	for (int y = -1; y < mVisibleTiles.y + 1; y++)
+//	//	{
+//	//		float ox = x + mOffsetX;
+//
+//	//		if (mWorld->IsBlock(x + mOffsetX, y + mOffsetY))
+//	//		{
+//
+//	//			TileType* tile = mWorld->GetTile(olc::vf2d(x + mOffsetX, y + mOffsetY));
+//	//			int tileNbour = (int)mWorld->GetNbour(olc::vf2d(x + mOffsetX, y + mOffsetY));
+//	//			olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
+//	//			
+//	//			DrawPartialDecal(
+//	//				pos,
+//	//				Assets::Main()->GetSpriteDecal(tile),
+//	//				olc::vi2d(0, mPixelSize * tileNbour),
+//	//				olc::vi2d(mPixelSize, mPixelSize),
+//	//				olc::vf2d(mTileScale, mTileScale));
+//	//		}
+//	//	}
+//	//}
+//	//if (mTempPlayer->mPos.x + 40 < 0)
+//	//	mTempPlayer->mPos.x = 40;
+//
+//	//if (mTempPlayer->mPos.y + 40 < 0)
+//	//	mTempPlayer->mPos.y = 40;
+//
+//	//if (mTempPlayer->mPos.x > mWorld->GetWidth())
+//	//	mTempPlayer->mPos.x = mWorld->GetWidth();
+//
+//	//if (mTempPlayer->mPos.y > mWorld->GetHeight())
+//	//	mTempPlayer->mPos.y = mWorld->GetHeight();
+//
+//	for (int x = -1; x < mVisibleTiles.x + 1; x++)
+//	{
+//		for (int y = -1; y < mVisibleTiles.y + 1; y++)
+//		{
+//			float ox = x + mOffsetX;
+//
+//			CheckWrapping(ox, ox);
+//
+//			if (mWorld->IsBlock(ox, y + mOffsetY))
+//			{
+//
+//				TileType* tile = mWorld->GetTile(olc::vf2d(ox, y + mOffsetY));
+//				int tileNbour = (int)mWorld->GetNbour(olc::vf2d(ox, y + mOffsetY));
+//				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
+//
+//				DrawPartialDecal(
+//					pos,
+//					Assets::Main()->GetSpriteDecal(tile),
+//					olc::vi2d(0, mPixelSize * tileNbour),
+//					olc::vi2d(mPixelSize, mPixelSize),
+//					olc::vf2d(mTileScale, mTileScale));
+//			}
+//		}
+//	}
+//}
+//void GameEngine::CheckWrapping(float ix, float& ox)
+//{
+//	ox = ix;
+//
+//	if (ix < 0.0f)
+//	{
+//		ox = ix + (float)World::Main()->GetWidth();
+//	}
+//    if (ix >= (float)World::Main()->GetWidth())
+//	{
+//		ox = ix - (float)World::Main()->GetWidth();
+//	}
+//}
+//int GameEngine::
 void GameEngine::CheckMovement()
 {
 	//SKA TROLIGEN FLYTTAS
@@ -424,16 +460,22 @@ void GameEngine::CheckMovement()
 			mTempPlayer->mPos.y += mTempPlayer->mVel.y * GetElapsedTime();
 		}
 
+		CheckWrapping(mTempPlayer->mPos.x, mTempPlayer->mPos.x);
+		CheckWrapping(mMousePos.x, mMousePos.x);
+
 		mCamera.x = mTempPlayer->mPos.x;
 		mCamera.y = mTempPlayer->mPos.y;
+
 		RandomInputs();
 	}
 }
 
 void GameEngine::RandomInputs()
 {
-	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY()), std::to_string(mCamera.x));
-	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(mCamera.y));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY()), std::to_string(mMousePos.x));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(mMousePos.y));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY()), std::to_string(mCamera.x));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(mCamera.y));
 
 	if (GetMouse(1).bHeld && !(mWorld->IsBlock(mMousePos.x, mMousePos.y)))
 	{
@@ -451,6 +493,8 @@ void GameEngine::RandomInputs()
 	{
 		//Cooler = World::Main()->GetRegions(fMousePosX, fMousePosY);
 		//Cooler = World::Main()->GetRegions();
-		mWorld->RemoveRegions();
+
+
+		//mWorld->RemoveRegions();
 	}
 }

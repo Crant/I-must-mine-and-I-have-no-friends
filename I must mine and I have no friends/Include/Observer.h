@@ -68,7 +68,7 @@ protected:
 	{
 	}
 
-	inline void NotifyObservers(Event* e)
+    inline void NotifyObservers(Event* e)
 	{
 		if (zObservers.size())
 		{

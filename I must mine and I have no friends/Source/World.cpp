@@ -40,7 +40,7 @@ void World::SetTile(int index, TileType value)
     NotifyObservers(&TCE);
 
     nWorld[index].type = value;
-    SetNeighbours(index);
+    //SetNeighbours(index);
 }
 void World::SetTile(float x, float y, TileType value)
 {
@@ -50,7 +50,7 @@ void World::SetTile(float x, float y, TileType value)
     NotifyObservers(&TCE);
 
     nWorld[Index(x, y)].type = value;
-    SetNeighbours(x, y);
+    //SetNeighbours(x, y);                                                              // Neighbours kollas i renderer och behövs ej
 }
 void World::SetTile(olc::vf2d pos, TileType value)
 {
@@ -60,9 +60,9 @@ void World::SetTile(olc::vf2d pos, TileType value)
     NotifyObservers(&TCE);
 
     nWorld[Index(pos)].type = value;
-    SetNeighbours(pos);
+    //SetNeighbours(pos);
 }
-void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATION 
+void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATION. Decrepit behövs inte längre
 {
     nWorld[std::clamp(index, 0, nHeight * nWidth - 1)].type = value;
 }
@@ -106,11 +106,11 @@ int World::GetSize()
 
 int World::Index(float x, float y)
 {
-    return std::clamp(nHeight * (int)x + (int)y, 0, (nWidth * nHeight) - 1);
+    return std::clamp(nHeight * (int)x + (int)y, 0, (nWidth * nHeight));
 }
 int World::Index(olc::vf2d pos)
 {
-    return std::clamp(nHeight * (int)pos.x + (int)pos.y, 0, (nWidth * nHeight) - 1);
+    return std::clamp(nHeight * (int)pos.x + (int)pos.y, 0, (nWidth * nHeight));
 }
 olc::vi2d World::Coordinates(int flatIndex)
 {

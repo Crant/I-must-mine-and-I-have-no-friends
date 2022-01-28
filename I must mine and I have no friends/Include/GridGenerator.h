@@ -16,6 +16,7 @@ namespace IMM
 		//int FillArea(int x, int y, float nPseudoRandNumber);	
 		void SmoothMap();
 		int GetSurroundingWallCount(int gridX, int gridY);
+		int GetSurroundingTileTypes(int gridX, int gridY);
 		void GenerateNeighbours();
 		void PerlinTry();
 		void PerlinNoise1D(int nCount, float* fSeed, int nOctaves, float* fOutput);
