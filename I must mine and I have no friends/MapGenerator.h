@@ -3,11 +3,12 @@
 #include "World.h"
 #include "Observer.h"
 #include <fstream>
-#include "Include/RandomGen.h"
 #include "Include/WorldEvents.h"
+#include "Maths.h"
 
 
 using namespace IMM;
+using namespace Maths;
 
 namespace IMM
 {
@@ -68,9 +69,9 @@ namespace IMM
 			//Random::Srand(seed);
 
 			float* nPerlinWalk = new float[nWidth * nHeight];		 //Perlin noise För ytan av planeten
-			nPerlinWalk = Random::Get1DPerlinNoise(seed, nWidth, nHeight); //Måste initializas utanför switch casen för nån jävla anledning
+			nPerlinWalk = Maths::Get1DPerlinNoise(seed, nWidth, nHeight); //Måste initializas utanför switch casen för nån jävla anledning
 			float* nPerlinBlockTypes = new float[nWidth * nHeight];        //Perlin noise i 2D som bestämmer vilka sorters block som ska placeras ut vart
-			nPerlinBlockTypes = Random::Get2DPerlinNoise(seed, nWidth, nHeight); //
+			nPerlinBlockTypes = Maths::Get2DPerlinNoise(seed, nWidth, nHeight); //
 
 			switch (eMap)
 			{
@@ -81,20 +82,18 @@ namespace IMM
 					for (size_t y = 0; y < nHeight; y++)
 					{
 
-						if (y < nPerlinWalk[x])							// Fyller i endast om värdet är lägre än Y
-						{
-							mWorld->SetTile(x * nHeight + y, TileType::Empty);
+						if (y < nPerlinWalk[x] || nPerlinBlockTypes[x * nHeight + y] < 0.45f)							//Fyller i endast om värdet är lägre än Y
+						{																								//
+							mWorld->SetTile(x * nHeight + y, TileType::Empty);											//
 						}
 						else
 						{
-							float fModified = (float)y / ((float)nHeight);
-							fModified = 0.2f * fModified;
-							//mWorld->SetTile(x * nHeight + y, TileType::Dirt);
-						    //fModified = nPerlinBlockTypes[x * nHeight + y] + fModified;							
-							//fModified -= 0.5f;
+							//float fModified = (float)y / ((float)nHeight);
+							//fModified = 0.2f * fModified;
 
-							//mWorld->SetTile(x * nHeight + y, CalculateBlockType(fModified, MapType::EarthlikePlanet));
-							mWorld->SetTile(x * nHeight + y, CalculateBlockType(nPerlinBlockTypes[x * nHeight + y] + fModified, MapType::EarthlikePlanet));
+							float fModified = Maths::CalculateRange((float)y, nHeight / 2, 0.f, 0.f, 1.f, Maths::SmoothStop);
+
+							mWorld->SetTile(x * nHeight + y, CalculateBlockType(nPerlinBlockTypes[x * nHeight + y], MapType::EarthlikePlanet));
 						}
 					}
 				}
@@ -146,19 +145,19 @@ namespace IMM
 
 
 
-				if (nPerlinValue > 0.7f)
+				if (nPerlinValue > 0.8f)
 				{
 					return TileType::Anthracite;
 				}
-				else if (nPerlinValue > 0.65f)
+				else if (nPerlinValue > 0.7f)
 				{
 					return TileType::Basalt;
 				}
-				else if (nPerlinValue > 0.6f)
+				else if (nPerlinValue > 0.5f)
 				{
 					return TileType::Granite;
 				}
-				else if (nPerlinValue > 0.55f)
+				else if (nPerlinValue > 0.4f)
 				{
 					return TileType::Clay;
 				}
@@ -166,25 +165,25 @@ namespace IMM
 				{
 					return TileType::Dirt;
 				}
-				//if (nPerlinValue > 0.95f)
+				//if (nPerlinValue > 0.52f)
 				//{
 				//	return TileType::Anthracite;
 				//}
-				//else if (nPerlinValue > 0.5f)
+				//else if (nPerlinValue > 0.51f)
 				//{
-				//	return TileType::Basalt;
+				//	return TileType::Dirt;
 				//}
-				//else if (nPerlinValue > 0.25f)
+				//else if (nPerlinValue > 0.5f)
 				//{
 				//	return TileType::Granite;
 				//}
-				//else if (nPerlinValue > 0.125f)
+				//else if (nPerlinValue > 0.49f)
 				//{
 				//	return TileType::Clay;
 				//}
 				//else
 				//{
-				//	return TileType::Dirt;
+				//	return TileType::Basalt;
 				//}
 				
 				break;

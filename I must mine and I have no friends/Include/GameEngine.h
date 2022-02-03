@@ -12,6 +12,9 @@
 #include "PerformanceTest.h"
 #include "MainMenu.h"
 #include "../MapGenerator.h"
+#include "../Collision.h"   
+
+//OM DU VILL INKLUDERA EN HEADER HÄR SOM OCKSÅ HAR TILLGÅNG TILL GAME ENGINE SÅ MÅSTE ALLA DEFINITIONER GÖRAS I CPP FILEN INTE HEADERN 
 
 namespace IMM
 {
@@ -51,7 +54,14 @@ namespace IMM
 		int x = 0;
 		int y = 0;
 	};
+	struct DynamicRect
+	{
+		olc::vf2d vPos;
+		olc::vf2d vSize;
+		olc::vf2d vVelocity;
 
+		float fSpeed;
+	};
 	class GameEngine : public olc::PixelGameEngine, public Observer
 	{
 	public:

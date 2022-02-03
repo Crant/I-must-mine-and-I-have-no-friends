@@ -1,5 +1,6 @@
 #include "Tiles.h"
 #include "../Include/RandomGen.h"
+#include "../Maths.h"
 
 using namespace IMM;
 
@@ -29,19 +30,19 @@ std::unique_ptr<BlockYield> AllBlocks::GetBlockYield(float fPerlinSeed)
 {
 	auto yieldPtr = std::make_unique<BlockYield>();
 
-	float fCommonYield = Random::BellCurve2(fPerlinSeed, 0.3f, 0.7f);
+	float fCommonYield = Maths::BellCurve2(fPerlinSeed, 0.3f, 0.7f);
 	yieldPtr->sCommonYield = *CalculateBlockYield(fCommonYield);
 
-	float fGoodUncommonYield = Random::BellCurve2(fPerlinSeed, 0.5f, 0.7f);
+	float fGoodUncommonYield = Maths::BellCurve2(fPerlinSeed, 0.5f, 0.7f);
 	yieldPtr->sGoodUncommonYield = *CalculateBlockYield(fGoodUncommonYield);
 
-	float fBadUncommonYield = Random::BellCurve2(fPerlinSeed, 0.3f, 0.5f);
+	float fBadUncommonYield = Maths::BellCurve2(fPerlinSeed, 0.3f, 0.5f);
 	yieldPtr->sBadUncommonYield = *CalculateBlockYield(fBadUncommonYield);
 
-	float fGoodRareYield = Random::BellCurve2(fPerlinSeed, 0.6f, 0.8f);
+	float fGoodRareYield = Maths::BellCurve2(fPerlinSeed, 0.6f, 0.8f);
 	yieldPtr->sGoodRareYield = *CalculateBlockYield(fGoodRareYield);
 
-	float fBadRareYield = Random::BellCurve2(fPerlinSeed, 0.2f, 0.4f);
+	float fBadRareYield = Maths::BellCurve2(fPerlinSeed, 0.2f, 0.4f);
 	yieldPtr->sBadRareYield = *CalculateBlockYield(fBadRareYield);
 
 	return yieldPtr;

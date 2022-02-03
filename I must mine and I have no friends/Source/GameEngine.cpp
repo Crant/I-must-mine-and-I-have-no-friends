@@ -37,7 +37,7 @@ void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeig
 
 	//GridGenerator gridGen = GridGenerator();
 	nPerlinBlocks = mMapGen->GenerateMap(seedName, worldWidth, worldHeight, MapType::EarthlikePlanet);
-	nBlockSeeds = Random::GetWorldBlockSeeds(seedName, worldWidth, worldHeight); //Se alltid till att blockseeds lagras efter världen är skapad
+	nBlockSeeds = Maths::GetWorldBlockSeeds(seedName, worldWidth, worldHeight); //Se alltid till att blockseeds lagras efter världen är skapad
 	//gridGen.AddObserver(this);
 	//mPerf->PreMeasure("Init World", 3);
 	//gridGen.Init(seedName, worldWidth, worldHeight);
@@ -240,7 +240,7 @@ void GameEngine::OnEvent(Event* e)
 
 		mGameState = GameState::InitWorldState;
 		mPerf->SetFilePath("Perf_Server.txt");
-		Init("EltonJohn", 1024, 1024);
+		Init("OOOhyer", 1024, 1024);
 
 	}
 	else if (IMM::Events::JoinButtonPressedEvent* JBPE = dynamic_cast<IMM::Events::JoinButtonPressedEvent*>(e))
