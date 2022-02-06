@@ -9,9 +9,9 @@ void Tiles::LoadTiles()
 	mTypeToData[TileType::Dirt] = TileData(1.0f, 1.0f);
 	mTypeToData[TileType::Granite] = TileData(100.0f, 100.0f);
 }
-TileData Tiles::GetData(TileType* tile)
+TileData Tiles::GetData(TileType tile)
 {
-	return mTypeToData[*tile];
+	return mTypeToData[tile];
 }
 void AllBlocks::LoadBlocks()
 {

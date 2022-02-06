@@ -15,7 +15,7 @@ void TilePhysics::UpdatePhysics(olc::PixelGameEngine* pge)
 		{
 			if (World::Main()->IsBlock(x, y) && !(World::Main()->IsBlock(x, y - 1)))
 			{
-				World::Main()->SetTile(x, y - 1, *World::Main()->GetTile(x, y));
+				World::Main()->SetTile(x, y - 1, World::Main()->GetTile(x, y));
 				World::Main()->SetTile(x, y, TileType::Empty);
 			}
 		}

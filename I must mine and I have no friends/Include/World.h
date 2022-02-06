@@ -26,9 +26,9 @@ namespace IMM
 		void SetTile(float x, float y, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);
 		void SetTileGeneration(int index, TileType value);
-		TileType* GetTile(int index);
-		TileType* GetTile(int x, int y);
-		TileType* GetTile(olc::vf2d pos);
+		TileType GetTile(int index);
+		TileType GetTile(int x, int y);
+		TileType GetTile(olc::vf2d pos);
 		TileNeighbours GetNbour(int index);
 		TileNeighbours GetNbour(int x, int y);
 		TileNeighbours GetNbour(olc::vf2d pos);
@@ -47,6 +47,12 @@ namespace IMM
 		bool IsBlock(olc::vf2d pos);
 		bool IsBlock(float x, float y);
 		bool IsBlock(int index);
+
+		void FlagBlock(int x, int y); //FOR DEBUGGING
+		void FlagBlock(float x, float y);//FOR DEBUGGING
+		void FlagBlock(const olc::vf2d& pos);//FOR DEBUGGING
+		std::vector<olc::vi2d> vBlockFlags;//FOR DEBUGGING. Töm och fyll på egen hand
+
 		void SetNeighbours(float x, float y);
 		void SetNeighbours(olc::vf2d pos);
 		void SetNeighbours(int index);

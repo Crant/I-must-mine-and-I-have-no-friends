@@ -1,5 +1,6 @@
 #include "Collision.h"
 #include "Include/World.h"
+#include "Include/Player.h"
 
 using namespace IMM;
 
@@ -20,7 +21,7 @@ bool Collision::RectVsRect(const rect& rect1, const rect& rect2)
 	return (rect1.pos.x < rect2.pos.x + rect2.size.x && rect1.pos.x + rect1.size.x > rect2.pos.x &&
 		rect1.pos.y < rect2.pos.y + rect2.size.y && rect1.pos.y + rect1.size.y > rect2.pos.y);
 }
-bool Collision::RayVsRect(const olc::vf2d& ray_origin, const olc::vf2d& ray_direction, const rect& target, olc::vf2d& contact_point, olc::vf2d& contact_normal, float& time)
+bool Collision::RayVsRect(const olc::vf2d& ray_origin, const olc::vf2d& ray_direction, const rect& target, olc::vf2d& contact_point, olc::vf2d& contact_normal, float& time) // time måste vare mindre än 1
 {
 	// 
 
@@ -140,3 +141,79 @@ olc::vf2d Col::RayVsWorld(const olc::vf2d& vRayStart, const olc::vf2d& vRayDir, 
 	//}
 	return vIntersection;
 }
+
+
+
+
+
+
+//Collision mot tiles. Se till att det faktiskt finns ett block på positionen och troligtvis kan det inte vara trunkerat till int värde
+//bool Collision::RayVsTile(const olc::vf2d& ray_origin, const olc::vf2d& ray_direction, const olc::vf2d& target, CollisionData& col)
+//{
+//
+//	olc::vf2d nearIntersect = (target - ray_origin) / ray_direction;
+//	olc::vf2d farIntersect = (target + target - ray_origin) / ray_direction;
+//	olc::vf2d contact_point;
+//	olc::vf2d contact_normal;
+//
+//	if (nearIntersect.x > farIntersect.x)
+//	{
+//		std::swap(nearIntersect.x, farIntersect.x);
+//	}
+//	if (nearIntersect.y > farIntersect.y)
+//	{
+//		std::swap(nearIntersect.y, farIntersect.y);
+//	}
+//
+//	if (nearIntersect.x > farIntersect.y || nearIntersect.y > farIntersect.x)
+//	{
+//		return false;
+//	}
+//
+//	float fTime = std::max(nearIntersect.x, nearIntersect.y);
+//	float farCol = std::min(farIntersect.x, farIntersect.y);
+//
+//	if (farCol < 0)
+//	{
+//		return false;
+//	}
+//
+//	contact_point = ray_origin + fTime * ray_direction;
+//
+//	if (nearIntersect.x > nearIntersect.y)
+//	{
+//		if (ray_direction.x < 0)
+//		{
+//			contact_normal = { 1, 0 };
+//		}
+//		else
+//		{
+//			contact_normal = { -1, 0 };
+//		}
+//	}
+//	else if (nearIntersect.x < nearIntersect.y)
+//	{
+//		if (ray_direction.y < 0)
+//		{
+//			contact_normal = { 0, 1 };
+//		}
+//		else
+//		{
+//			contact_normal = { 0, -1 };
+//		}
+//	}
+//	col.fTime = fTime;
+//	col.vContactNormal = contact_normal;
+//	col.vContactPoint = contact_point;
+//	return true;
+//}
+
+//bool Collision::PhysObjVsTile(const PhysObj& obj, const olc::vf2d& vTile)
+//{
+//	olc::vf2d vExpandedTilePos = vTile - obj.vSize / 2;
+//	olc::vf2d vExpandedTileSize = { 1 + obj.vSize.x, 1 + obj.vSize.y };
+//
+//	//CollisionData col = RayVsTile(obj.vPos + obj.vSize / 2, obj.vVel, vex);
+//	CollisionData data;
+//	return false;
+//}

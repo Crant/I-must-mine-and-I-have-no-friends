@@ -4,64 +4,60 @@
 #include "safe.h"
 #include "AssetsManager.h"
 #include "MenuEvents.h"
+#include "Include/Globals.h"
 
 using namespace IMM;
 //using namespace Col;
 
 void GameEngine::Render()
 {
-	mOffsetX = mCamera.x - (float)mVisibleTiles.x;
-	mOffsetY = mCamera.y - (float)mVisibleTiles.y;
+	//mOffsetX = mCamera.x - (float)mVisibleTiles.x;
+	//mOffsetY = mCamera.y - (float)mVisibleTiles.y;
 
-	float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
-	float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
+	//float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
+	//float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
 
-	for (int x = -1; x < mVisibleTiles.x + 1; x++)
+	olc::vf2d vTileOffset = { (GlobalState::GetCamOffset().x - (int)GlobalState::GetCamOffset().x) * GlobalState::GetTileSize() ,
+		(GlobalState::GetCamOffset().y - (int)GlobalState::GetCamOffset().y) * GlobalState::GetTileSize() };
+
+	for (int x = -1; x < GlobalState::GetVisTiles().x + 1; x++)
 	{
-		for (int y = -1; y < mVisibleTiles.y + 1; y++)
+		for (int y = -1; y < GlobalState::GetVisTiles().y + 1; y++)
 		{
-			float ox = (float)x + mOffsetX;
+			//float ox = (float)x + mOffsetX;
+
+			//CheckWrapping(ox, ox);
+
+			//if (mWorld->IsBlock(ox, y + mOffsetY))
+			//{
+
+			//	TileType tile = mWorld->GetTile(olc::vf2d(ox, y + mOffsetY));
+			//	int tileNbour = CheckNeighbour(ox, y + mOffsetY, true);
+			//	olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
+
+			//	DrawPartialDecal(
+			//		pos,
+			//		Assets::Main()->GetSpriteDecal(tile),
+			//		olc::vi2d(0, mPixelSize * tileNbour),
+			//		olc::vi2d(mPixelSize, mPixelSize),
+			//		olc::vf2d(mTileScale, mTileScale));
+			float ox = (float)x + GlobalState::GetCamOffset().x;
 
 			CheckWrapping(ox, ox);
 
-			if (mWorld->IsBlock(ox, y + mOffsetY))
+			if (mWorld->IsBlock(ox, y + GlobalState::GetCamOffset().y))
 			{
 
-				TileType* tile = mWorld->GetTile(olc::vf2d(ox, y + mOffsetY));
-				int tileNbour = CheckNeighbour(ox, y + mOffsetY, true);
-				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
+				TileType tile = mWorld->GetTile(olc::vf2d(ox, y + GlobalState::GetCamOffset().y));
+				int tileNbour = CheckNeighbour(ox, y + GlobalState::GetCamOffset().y, true);
+				olc::vf2d pos = olc::vf2d(x * GlobalState::GetTileSize() - vTileOffset.x, y * GlobalState::GetTileSize() - vTileOffset.y);
 
 				DrawPartialDecal(
 					pos,
 					Assets::Main()->GetSpriteDecal(tile),
-					olc::vi2d(0, mPixelSize * tileNbour),
-					olc::vi2d(mPixelSize, mPixelSize),
-					olc::vf2d(mTileScale, mTileScale));
-
-
-				//olc::Pixel col;
-				//int pixel_bw = (int)(nPerlinBlocks[World::Main()->Index(pos)] * 12.0f);
-				//switch (pixel_bw)
-				//{
-				//case 0: col = olc::BLACK; break;
-
-				//case 1: col = olc::Pixel(32, 32, 32); break;
-				//case 2: col = olc::VERY_DARK_GREY; break;
-				//case 3: col = olc::Pixel(96, 96, 96); break;
-				//case 4: col = olc::DARK_GREY; break;
-
-				//case 5: col = olc::Pixel(144, 144, 144); break;
-				//case 6: col = olc::Pixel(160, 160, 160); break;
-				//case 7: col = olc::Pixel(176, 176, 176); break;
-				//case 8: col = olc::GREY; break;
-
-				//case 9:  col = col = olc::Pixel(208, 208, 208); break;
-				//case 10: col = col = olc::Pixel(224, 224, 224); break;
-				//case 11: col = olc::Pixel(240, 240, 240); break;
-				//case 12: col = olc::WHITE; break;
-				//}
-
-				//Draw(x, y, col);
+					olc::vi2d(0, GlobalState::GetPixelSize() * tileNbour),
+					olc::vi2d(GlobalState::GetPixelSize(), GlobalState::GetPixelSize()),
+					olc::vf2d(GlobalState::GetTileScale(), GlobalState::GetTileScale()));
 			}
 		}
 	}
@@ -79,18 +75,46 @@ void GameEngine::Render()
 	olc::vf2d ray_direction = { mMousePos.x - ray_point.x, mMousePos.y - ray_point.y };
 	//olc::vf2d ray_dirNorm = ray_direction.norm();
 	//ray_direction = 
+	int inViewCount = 0;
+	if (cObjects.size() > 0)
+	{
 
-	
+		for (auto& obj : cObjects)
+		{
+			if (GlobalState::IsInView(obj->vPos))
+			{
+				obj->DrawSelf();
+
+				inViewCount++;
+			}
+		}
+	}
+
+
+	for (auto flag : World::Main()->vBlockFlags)
+	{
+		DrawPartialDecal(GlobalState::WorldToScreen(flag), Assets::Main()->GetSpriteDecal(TileType::Debug), olc::vi2d(0, GlobalState::GetPixelSize() * 15),
+			olc::vi2d(GlobalState::GetPixelSize(), GlobalState::GetPixelSize()),
+			olc::vf2d(GlobalState::GetTileScale(), GlobalState::GetTileScale()));
+	}
+	World::Main()->vBlockFlags.clear();
+
 
 	olc::vf2d meme = Col::RayVsWorld(ray_point, ray_direction.norm(), Maths::Distance(ray_point, olc::vf2d(mMousePos.x, mMousePos.y)));
 
 	DrawLineDecal(olc::vf2d((float)(ScreenWidth() / 2), (float)(ScreenHeight() / 2)), olc::vf2d((float)GetMouseX(), (float)GetMouseY()), olc::GREEN);
 	DrawCircle(Maths::WorldToScreen(meme, mTileSize, olc::vf2d(mOffsetX, mOffsetY)), 4.f, olc::RED);
-	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(mCamera.x));
-	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 20), std::to_string(mCamera.y));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(cObjects.size()));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 20), std::to_string(inViewCount));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 20), std::to_string(mTempPlayer->vPos.x));
+	//DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 30), std::to_string(mTempPlayer->vPos.y));
+	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(GlobalState::GetMouseWorld().x));
+	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 20), std::to_string(GlobalState::GetMouseWorld().y));
+	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 30), std::to_string(World::Main()->IsBlock(GlobalState::GetMouseWorld().x, GlobalState::GetMouseWorld().y)));
+}
+void GameEngine::StringDebugger()
+{
 
-	olc::vf2d cp, cn;
-	float t;
 }
 void GameEngine::CheckWrapping(int ix, int& ox)
 {

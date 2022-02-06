@@ -37,6 +37,7 @@
     <ClCompile Include="Source\DamageObj.cpp" />
     <ClCompile Include="Source\GameEngine.cpp" />
     <ClCompile Include="Source\GFX.cpp" />
+    <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\GridGenerator.cpp" />
     <ClCompile Include="Source\Item.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="Include\Debug.h" />
     <ClInclude Include="Include\GameEngine.h" />
     <ClInclude Include="Include\GFX.h" />
+    <ClInclude Include="Include\Globals.h" />
     <ClInclude Include="Include\GridGenerator.h" />
     <ClInclude Include="Include\Item.h" />
     <ClInclude Include="Include\MainMenu.h" />

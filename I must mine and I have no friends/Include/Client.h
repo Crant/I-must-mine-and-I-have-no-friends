@@ -5,18 +5,6 @@
 
 namespace IMM
 {
-	static class GFXGlobals
-	{
-	public:
-		GFXGlobals();
-		~GFXGlobals();
-
-		void Init(int nTileSize, olc::vf2d vCameraInit);
-
-	private:
-
-	};
-
 	class Client : public IMM::Network::ClientInterface<NetworkMessageTypes>
 	{
 	private:

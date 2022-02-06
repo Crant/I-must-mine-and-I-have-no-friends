@@ -67,17 +67,17 @@ void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATIO
     nWorld[std::clamp(index, 0, nHeight * nWidth - 1)].type = value;
 }
 
-TileType* World::GetTile(int index)
+TileType World::GetTile(int index)
 {
-    return &nWorld[index].type;
+    return nWorld[index].type;
 }
-TileType* World::GetTile(int x, int y)
+TileType World::GetTile(int x, int y)
 {
-    return &nWorld[Index(x, y)].type;
+    return nWorld[Index(x, y)].type;
 }
-TileType* World::GetTile(olc::vf2d pos)
+TileType World::GetTile(olc::vf2d pos)
 {
-    return &nWorld[Index(pos)].type;
+    return nWorld[Index(pos)].type;
 }
 TileNeighbours World::GetNbour(int index)
 {
@@ -140,6 +140,18 @@ bool World::IsBlock(float x, float y)
 bool World::IsBlock(int index)
 {
     return (int)nWorld[std::clamp(index, 0, nWidth * nHeight)].type >= 1;
+}
+void IMM::World::FlagBlock(int x, int y)
+{
+    vBlockFlags.push_back(olc::vi2d(x, y));
+}
+void IMM::World::FlagBlock(float x, float y)
+{
+    vBlockFlags.push_back(olc::vi2d((int)x, (int)y));
+}
+void IMM::World::FlagBlock(const olc::vf2d& pos)
+{
+    vBlockFlags.push_back(pos);
 }
 void World::CheckDamagedTiles()
 {

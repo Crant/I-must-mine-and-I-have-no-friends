@@ -12,7 +12,8 @@
 #include "PerformanceTest.h"
 #include "MainMenu.h"
 #include "../MapGenerator.h"
-#include "../Collision.h"   
+#include "../Collision.h"
+#include "Player.h"
 
 //OM DU VILL INKLUDERA EN HEADER HÄR SOM OCKSÅ HAR TILLGÅNG TILL GAME ENGINE SÅ MÅSTE ALLA DEFINITIONER GÖRAS I CPP FILEN INTE HEADERN 
 
@@ -25,17 +26,17 @@ namespace IMM
 		InitWorldState,
 	};
 
-	class Player
-	{
-	public:
-		Player()
-		{
-			mPos = olc::vf2d(.0f, .0f);
-			mVel = olc::vf2d(50.0f, 50.0f);
-		}
-		olc::vf2d mPos;
-		olc::vf2d mVel;
-	};
+	//class Player
+	//{
+	//public:
+	//	Player()
+	//	{
+	//		mPos = olc::vf2d(.0f, .0f);
+	//		mVel = olc::vf2d(50.0f, 50.0f);
+	//	}
+	//	olc::vf2d mPos;
+	//	olc::vf2d mVel;
+	//};
 	//TEMP
 	struct MousePositionWorld
 	{
@@ -66,7 +67,6 @@ namespace IMM
 	{
 	public:
 		GameEngine();
-
 		virtual ~GameEngine();
 
 	public:
@@ -75,6 +75,7 @@ namespace IMM
 		bool OnUserCreate() override;
 		bool OnUserUpdate(float fElapsedTime) override;
 		void OnUserFixedUpdate();
+		static inline std::list<PhysObj*> cObjects;
 
 	private:
 		/*! Initialize the world and other variables*/
@@ -122,8 +123,8 @@ namespace IMM
 		//Renderer renderer;
 		TilePhysics physX;
 
-		uint32_t worldWidth = 512;
-		uint32_t worldHeight = 512;
+		uint32_t worldWidth = 1024;
+		uint32_t worldHeight = 1024;
 
 		const float fFixedUpdate = 0.02f;
 		float fTimer;
@@ -132,7 +133,7 @@ namespace IMM
 		olc::Decal* decSht;
 
 		//TEMP
-		std::unique_ptr<Player> mTempPlayer;
+		PhysObj* mTempPlayer = nullptr;
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;
@@ -158,6 +159,10 @@ namespace IMM
 		std::shared_ptr<MapGenerator> mMapGen;
 		float* nPerlinBlocks = nullptr; //Temporär för att hitta värdet av perlin noiset för vilka block som ska spawnas
 		unsigned int* nBlockSeeds; //Seeds för varje block i världen 
+
+		//Renderer stuff
 		
+		void StringDebugger();
+
 	};
 }

@@ -24,6 +24,7 @@ namespace IMM
         Anthracite,  //COAL
 
         Magnesite, //MINERAL
+        Debug,
 	};
     enum class TileProperties : unsigned char
     {
@@ -131,7 +132,7 @@ namespace IMM
         Tiles(){}
         ~Tiles(){}
         static void LoadTiles();
-        static TileData GetData(TileType* tile);
+        static TileData GetData(TileType tile);
 
         
         //public static TileData Stone()

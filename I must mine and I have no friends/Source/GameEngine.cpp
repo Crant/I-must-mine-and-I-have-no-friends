@@ -4,6 +4,7 @@
 #include "safe.h"
 #include "AssetsManager.h"
 #include "MenuEvents.h"
+#include "Globals.h"
 
 using namespace IMM;
 
@@ -32,16 +33,10 @@ bool GameEngine::IsServer()
 
 void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeight)
 {
-	this->worldWidth = worldWidth;
-	this->worldHeight = worldHeight;
-
-	//GridGenerator gridGen = GridGenerator();
+	GlobalState::Init(mTempPlayer->vPos, ScreenWidth(), ScreenHeight(), this);
 	nPerlinBlocks = mMapGen->GenerateMap(seedName, worldWidth, worldHeight, MapType::EarthlikePlanet);
 	nBlockSeeds = Maths::GetWorldBlockSeeds(seedName, worldWidth, worldHeight); //Se alltid till att blockseeds lagras efter världen är skapad
-	//gridGen.AddObserver(this);
-	//mPerf->PreMeasure("Init World", 3);
-	//gridGen.Init(seedName, worldWidth, worldHeight);
-	//mPerf->PostMeasure("Init World", 3);
+
 
 	Tiles::LoadTiles();
 
@@ -240,7 +235,7 @@ void GameEngine::OnEvent(Event* e)
 
 		mGameState = GameState::InitWorldState;
 		mPerf->SetFilePath("Perf_Server.txt");
-		Init("OOOhyer", 1024, 1024);
+		Init("OOOhyer", worldWidth, worldHeight);
 
 	}
 	else if (IMM::Events::JoinButtonPressedEvent* JBPE = dynamic_cast<IMM::Events::JoinButtonPressedEvent*>(e))
@@ -258,7 +253,8 @@ bool GameEngine::OnUserCreate()
 
 	mPerf = std::make_unique<IMM::Utils::PerformanceTest>();
 	
-	mTempPlayer = std::make_unique<Player>();
+	mTempPlayer = new Player(olc::vf2d(worldWidth / 2, worldHeight / 2), olc::vf2d(2.f, 3.f), SpriteType::Default);
+	//cObjects.push_back(mTempPlayer);
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
@@ -438,6 +434,8 @@ void GameEngine::OnUserFixedUpdate()
 void GameEngine::CheckMovement()
 {
 	//SKA TROLIGEN FLYTTAS
+	//mMousePos.x = ((float)GetMouseX() / mTileSize) + mOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
+	//mMousePos.y = ((float)GetMouseY() / mTileSize) + mOffsetY;
 	mMousePos.x = ((float)GetMouseX() / mTileSize) + mOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
 	mMousePos.y = ((float)GetMouseY() / mTileSize) + mOffsetY;
 
@@ -445,26 +443,60 @@ void GameEngine::CheckMovement()
 	{
 		if (GetKey(olc::Key::W).bHeld)
 		{
-			mTempPlayer->mPos.y -= mTempPlayer->mVel.y * GetElapsedTime();
+			mTempPlayer->vVel.y -= 15.5f * GetElapsedTime();
 		}
 		if (GetKey(olc::Key::A).bHeld)
 		{
-			mTempPlayer->mPos.x -= mTempPlayer->mVel.y * GetElapsedTime();
+			mTempPlayer->vVel.x -= 15.5f * GetElapsedTime();
 		}
 		if (GetKey(olc::Key::D).bHeld)
 		{
-			mTempPlayer->mPos.x += mTempPlayer->mVel.y * GetElapsedTime();
+			mTempPlayer->vVel.x += 15.5f * GetElapsedTime();
 		}
 		if (GetKey(olc::Key::S).bHeld)
 		{
-			mTempPlayer->mPos.y += mTempPlayer->mVel.y * GetElapsedTime();
+			mTempPlayer->vVel.y += 15.5f * GetElapsedTime();
 		}
 
-		CheckWrapping(mTempPlayer->mPos.x, mTempPlayer->mPos.x);
+		//mTempPlayer->vPos += mTempPlayer->vVel;
+
+
+
+
+
+
+		
+		//if (mTempPlayer->vVel.x > 0.f)
+		//{
+		//	mTempPlayer->vVel.x -= 5.2f * GetElapsedTime();
+		//}
+		//else if (mTempPlayer->vVel.x < 0.f)
+		//{
+		//	mTempPlayer->vVel.x += 5.2f * GetElapsedTime();
+		//}
+		//if (mTempPlayer->vVel.y > 0.f)
+		//{
+		//	mTempPlayer->vVel.y -= 5.2f * GetElapsedTime();
+		//}
+		//else if (mTempPlayer->vVel.y < 0.f)
+		//{
+		//	mTempPlayer->vVel.y += 5.2f * GetElapsedTime();
+		//}
+
+		//if (GetKey(olc::Key::SPACE).bHeld)
+		//{
+
+  //			mTempPlayer->vVel.y -= 160.f * GetElapsedTime();
+		//}
+		//mTempPlayer->vVel.y += 30.f * GetElapsedTime();
+		CheckWrapping(mTempPlayer->vPos.x, mTempPlayer->vPos.x);
 		CheckWrapping(mMousePos.x, mMousePos.x);
 
-		mCamera.x = mTempPlayer->mPos.x;
-		mCamera.y = mTempPlayer->mPos.y;
+
+		cObjects.back()->HandleCollision();
+		GlobalState::Update(mTempPlayer->vPos);
+		mCamera.x = mTempPlayer->vPos.x;
+		mCamera.y = mTempPlayer->vPos.y;
 
 		RandomInputs();
 	}
@@ -489,11 +521,12 @@ void GameEngine::RandomInputs()
 	//	//TileController::DamageBlock(World::Main()->Coordinates(World::Main()->Index(fMousePosX, fMousePosY)), 0.5f);
 	//	fTimer = 0.0f;
 	//}
-	if (GetMouse(0).bHeld)
+	if (GetMouse(0).bPressed)
 	{
 		//Cooler = World::Main()->GetRegions(fMousePosX, fMousePosY);
 		//Cooler = World::Main()->GetRegions();
-
+		//PhysObj obj = PhysObj(GlobalState::GetMouseWorld(), olc::vf2d(2.f, 3.f),SpriteType::Default);
+		//mTempPlayer = cObjects.back();
 
 		//mWorld->RemoveRegions();
 	}
