@@ -1,7 +1,8 @@
 #pragma once
 #include "Tiles.h"
 #include "olcPixelGameEngine.h"
-#include "Player.h"
+#include "PhysicsObject.h"
+#include"Item.h"
 
 namespace IMM
 {
@@ -13,6 +14,7 @@ namespace IMM
 		void operator=(Assets const&) = delete;
 		olc::Decal* GetSpriteDecal(TileType tile);
 		olc::Decal* GetSpriteDecal(SpriteType entity);
+		olc::Decal* GetSpriteDecal(ItemType item);
 		olc::Sprite* GetTileSheet();
 		void LoadSprites();
 
@@ -25,6 +27,7 @@ namespace IMM
 
 		std::unordered_map<TileType, olc::Decal*> mTiles;
 		std::unordered_map<SpriteType, olc::Decal*>mEntities;
+		std::unordered_map<ItemType, olc::Decal*>mItems;
 		olc::Sprite* sprDemo = nullptr;
 		olc::Sprite* sTileSheet = nullptr;
 	};

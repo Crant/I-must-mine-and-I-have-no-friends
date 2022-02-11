@@ -30,15 +30,31 @@ void IMM::Server::OnClientDisconnect(std::shared_ptr<IMM::Network::Connection<Ne
 
 void IMM::Server::OnEvent(Event* e)
 {
-	if (IMM::Events::TileChangedEvent* TCE = dynamic_cast<IMM::Events::TileChangedEvent*>(e))
+	if (IMM::Events::TileChangedEvent* TCE = dynamic_cast<IMM::Events::TileChangedEvent*>(e)) // varför?
 	{
 		IMM::Network::Message<NetworkMessageTypes> msg;
 		msg.mHeader.mID = NetworkMessageTypes::ServerSendTileChange;
 
-		msg << TCE->tilePos << TCE->tileType;
+		msg << TCE->tilePos << TCE->tNewtileType;
 
 		MessageAllClients(msg);
 	}
+	//Events::Events eerer;
+	//switch (eerer)
+	//{
+	//case IMM::Events::Events::HostButtonPressedEvent:
+	//	break;
+	//case IMM::Events::Events::JoinButtonPressedEvent:
+	//	break;
+	//case IMM::Events::Events::WorldCreated:
+	//	break;
+	//case IMM::Events::Events::TilePlaced:
+	//	break;
+	//case IMM::Events::Events::TileRemoved:
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMessageTypes>> client, IMM::Network::Message<NetworkMessageTypes>& msg)

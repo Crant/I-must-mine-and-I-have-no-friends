@@ -1,5 +1,6 @@
 #include "../Include/Globals.h"
 
+
 using namespace IMM;
 
 void GlobalState::Init(const olc::vf2d& vCameraInit, int nScreenWidth, int nScreenHeight, olc::PixelGameEngine* pge)

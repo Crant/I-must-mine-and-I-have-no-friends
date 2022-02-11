@@ -49,9 +49,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\GridGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,9 +59,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\PerlinNoise.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\RandomGen.cpp">
@@ -97,9 +91,6 @@
     <ClCompile Include="Source\GameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GFX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Client.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
@@ -118,9 +109,6 @@
     <ClCompile Include="Source\MainMenu.cpp">
       <Filter>Source Files\Menu</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RandomGen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -131,6 +119,24 @@
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PhysicsObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EntityManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Inventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -148,9 +154,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\PerlinNoise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\RandomGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\TilePhysics.h">
@@ -175,12 +178,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GameEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GFX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Server.h">
@@ -229,6 +226,24 @@
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Include\Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\PhysicsObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\EntityManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GraphicsRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

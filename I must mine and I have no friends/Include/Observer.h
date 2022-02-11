@@ -4,9 +4,19 @@
 #include <map>
 
 
+enum class EventType : unsigned char
+{
+	HostButtonPressedEvent,
+	JoinButtonPressedEvent,
+	WorldCreated,
+	TilePlaced,
+	TileRemoved
+
+};
 class Event
 {
 public:
+	EventType type;
 	virtual ~Event() {}
 };
 

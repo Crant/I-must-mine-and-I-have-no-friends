@@ -8,12 +8,12 @@ namespace Maths
 		olc::vf2d vScreenMiddle;
 		int nTileSize;
 	};
-
+	static int nRandPos = 0;
 	void GenerateBlock(unsigned int seed);
 	unsigned int RandNumber(int pos, unsigned int seed); //Grundfunktionen för randomisering
 	void Srand(const std::string& seed);
-	//static unsigned int Rand() { return RandNumber(nPosInNoise++, nSeed); } //För helt random värden. Använd inte när du vill seeda planeter etc
-	//static float RandZeroToOne() { return (float)Rand() / UINT_MAX; }
+	static unsigned int Rand() { return RandNumber(nRandPos++, 13579); } //För helt random värden. Använd inte när du vill seeda planeter etc
+	static float RandZeroToOne() { return (float)Rand() / UINT_MAX; }
 	//static float RandZeroToOne(unsigned int seed) { return (float)RandNumber(seed, nSeed) / UINT_MAX; }
 	//static void ResetRand() { nPosInNoise = 0; }
 	unsigned int* GetWorldBlockSeeds(const std::string& seed, int nWidth, int nHeight);

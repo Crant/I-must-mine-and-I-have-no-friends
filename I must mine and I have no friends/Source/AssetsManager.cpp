@@ -24,9 +24,18 @@ void Assets::LoadSprites()
 	mTiles[TileType::Debug] = new olc::Decal(Debug);
 
 	//Loading Entities
+	olc::Sprite* DefaultSprite = new olc::Sprite("Assets/Default.png");
+	mEntities[SpriteType::Default] = new olc::Decal(DefaultSprite);
 
 	olc::Sprite* defaultGuy = new olc::Sprite("Assets/GubbWithArm.png");
-	mEntities[SpriteType::Default] = new olc::Decal(defaultGuy);
+	mEntities[SpriteType::Player] = new olc::Decal(defaultGuy);
+
+	//Loading ItemModels
+	olc::Sprite* MineDrill = new olc::Sprite("Assets/Drill.png");
+	mItems[ItemType::MiningLaser] = new olc::Decal(MineDrill);
+
+	olc::Sprite* GunThing = new olc::Sprite("Assets/lolgun.png");
+	mItems[ItemType::Default] = new olc::Decal(GunThing);
 }
 Assets* Assets::Main()
 {
@@ -42,6 +51,10 @@ olc::Decal* Assets::GetSpriteDecal(TileType tile)
 olc::Decal* Assets::GetSpriteDecal(SpriteType entity)
 {
 	return mEntities[entity];
+}
+olc::Decal* Assets::GetSpriteDecal(ItemType item)
+{
+	return mItems[item];
 }
 olc::Sprite* Assets::GetTileSheet()
 {

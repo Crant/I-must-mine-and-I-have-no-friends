@@ -7,11 +7,22 @@ using namespace IMM;
 void Tiles::LoadTiles()
 {
 	mTypeToData[TileType::Dirt] = TileData(1.0f, 1.0f);
+	mTypeToData[TileType::Clay] = TileData(1.0f, 1.0f);
+	mTypeToData[TileType::Sand] = TileData(1.0f, 1.0f);
+	mTypeToData[TileType::Silt] = TileData(1.0f, 1.0f);
+	mTypeToData[TileType::Basalt] = TileData(5.f, 5.f);
 	mTypeToData[TileType::Granite] = TileData(100.0f, 100.0f);
 }
 TileData Tiles::GetData(TileType tile)
 {
-	return mTypeToData[tile];
+	if (mTypeToData.count(tile))
+	{
+		return mTypeToData[tile];
+	}
+	else
+	{
+		return TileData(1.f, 1.f);
+	}
 }
 void AllBlocks::LoadBlocks()
 {

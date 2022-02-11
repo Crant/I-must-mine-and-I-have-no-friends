@@ -13,6 +13,7 @@
 #include "MainMenu.h"
 #include "../MapGenerator.h"
 #include "../Collision.h"
+#include "PhysicsObject.h"
 #include "Player.h"
 
 //OM DU VILL INKLUDERA EN HEADER HÄR SOM OCKSÅ HAR TILLGÅNG TILL GAME ENGINE SÅ MÅSTE ALLA DEFINITIONER GÖRAS I CPP FILEN INTE HEADERN 
@@ -75,11 +76,10 @@ namespace IMM
 		bool OnUserCreate() override;
 		bool OnUserUpdate(float fElapsedTime) override;
 		void OnUserFixedUpdate();
-		static inline std::list<PhysObj*> cObjects;
 
 	private:
 		/*! Initialize the world and other variables*/
-		void Init(const std::string& seedName, int worldWidth, int worldHeight);
+		void Init(const std::string& seedName, int worldWidth, int worldHeight, float fGravity);
 		bool GameLoop();
 
 		//////////////////////
@@ -103,13 +103,9 @@ namespace IMM
 		//	   GFX			//
 		//			  		//
 		//////////////////////
-		void Render();
-		void CheckWrapping(int ix, int& ox);
-		void CheckWrapping(float ix, float& ox);
+		void RenderTiles();
 		int CheckNeighbour(int x, int y, bool recursive);
-		void InitCameraSettings();
-		void CheckMovement();
-		void RandomInputs();
+		//SPRITES RENDERAS SJÄLVMANT FÖR TILLFÄLLET
 
 	protected:
 		virtual void OnEvent(Event* e);
@@ -133,7 +129,7 @@ namespace IMM
 		olc::Decal* decSht;
 
 		//TEMP
-		PhysObj* mTempPlayer = nullptr;
+		std::shared_ptr<Player> mTempPlayer;
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;
@@ -162,7 +158,8 @@ namespace IMM
 
 		//Renderer stuff
 		
-		void StringDebugger();
+		void TileDebugger();
+		void StringSpam();
 
 	};
 }

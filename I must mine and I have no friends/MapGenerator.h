@@ -63,9 +63,9 @@ namespace IMM
 			//	//Save map to disk and 
 			//}
 		}
-		float* GenerateMap(const std::string& seed, int nWidth, int nHeight, MapType eMap)
+		float* GenerateMap(const std::string& seed, int nWidth, int nHeight, MapType eMap, float fGravity)
 		{
-			mWorld = std::make_shared<World>(nWidth, nHeight, new Tile[nWidth * nHeight]);
+			mWorld = std::make_shared<World>(nWidth, nHeight, new Tile[nWidth * nHeight], fGravity);
 			//Random::Srand(seed);
 
 			float* nPerlinWalk = new float[nWidth * nHeight];		 //Perlin noise För ytan av planeten

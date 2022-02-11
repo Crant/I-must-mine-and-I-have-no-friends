@@ -1,6 +1,8 @@
 #include "World.h"
 #include "Safe.h"
 #include "WorldEvents.h"
+#include "Globals.h"
+#include "GraphicsRenderer.h"
 
 #include <queue>
 #include <memory>
@@ -12,6 +14,16 @@ World::World(int width, int height, Tile* newWorld)
     nWidth = width;
     nHeight = height;
     nSize = width * height;
+    nWorld = newWorld;
+
+    Instance = this;
+}
+World::World(int width, int height, Tile* newWorld, float fGravity)
+{
+    nWidth = width;
+    nHeight = height;
+    nSize = width * height;
+    this->fGravity = fGravity;
     nWorld = newWorld;
 
     Instance = this;
@@ -35,38 +47,34 @@ void World::Init(int width, int height, Tile* newWorld)
 void World::SetTile(int index, TileType value)
 {
     //Send Message to clients through an event to gameEngine
-    IMM::Events::TileChangedEvent TCE = IMM::Events::TileChangedEvent(Coordinates(index), value);
+    IMM::Events::TileChangedEvent TCE = IMM::Events::TileChangedEvent(Coordinates(index), value, GetTile(index));
 
     NotifyObservers(&TCE);
 
     nWorld[index].type = value;
-    //SetNeighbours(index);
 }
 void World::SetTile(float x, float y, TileType value)
 {
     //Send Message to clients through an event to gameEngine
-    IMM::Events::TileChangedEvent TCE = IMM::Events::TileChangedEvent(olc::vi2d(x, y), value);
+    IMM::Events::TileChangedEvent TCE = IMM::Events::TileChangedEvent(olc::vi2d(x, y), value, GetTile(x, y));
 
     NotifyObservers(&TCE);
 
     nWorld[Index(x, y)].type = value;
-    //SetNeighbours(x, y);                                                              // Neighbours kollas i renderer och behövs ej
 }
 void World::SetTile(olc::vf2d pos, TileType value)
 {
     //Send Message to clients through an event to gameEngine
-    IMM::Events::TileChangedEvent TCE = IMM::Events::TileChangedEvent(pos, value);
+    IMM::Events::TileChangedEvent TCE = IMM::Events::TileChangedEvent(pos, value, GetTile(pos));
 
     NotifyObservers(&TCE);
 
     nWorld[Index(pos)].type = value;
-    //SetNeighbours(pos);
 }
 void World::SetTileGeneration(int index, TileType value) //USE ONLY IN GENERATION. Decrepit behövs inte längre
 {
     nWorld[std::clamp(index, 0, nHeight * nWidth - 1)].type = value;
 }
-
 TileType World::GetTile(int index)
 {
     return nWorld[index].type;
@@ -102,6 +110,11 @@ int World::GetHeight()
 int World::GetSize()
 {
     return nSize;
+}
+
+float World::GetGravity()
+{
+    return fGravity;
 }
 
 int World::Index(float x, float y)
@@ -155,19 +168,17 @@ void IMM::World::FlagBlock(const olc::vf2d& pos)
 }
 void World::CheckDamagedTiles()
 {
-    for (std::unordered_map<int, TileData>::const_iterator it = mDamagedTiles.begin(); it != mDamagedTiles.end();)
+    for (auto it = mDamagedTiles.cbegin(); it != mDamagedTiles.cend() /* not hoisted */; /* no increment */)
     {
-        auto& key = it->first;
-        mDamagedTiles[key].fHitPoints += mDamagedTiles[key].fHitPoints * 0.02f;
-        if (mDamagedTiles[key].fHitPoints >= mDamagedTiles[key].fMaxHP)
+        mDamagedTiles[it->first]->fHitPoints += mDamagedTiles[it->first]->fHitPoints * GlobalState::GetEngine()->GetElapsedTime();
+        if (mDamagedTiles[it->first]->fHitPoints >= mDamagedTiles[it->first]->fMaxHP)
         {
-            mDamagedTiles[key].fHitPoints = mDamagedTiles[key].fMaxHP;
-            mDamagedTiles.erase(it++);
+            it = mDamagedTiles.erase(it);    // or "it = m.erase(it)" since C++11
         }
-        else if (mDamagedTiles[key].fHitPoints <= 0)
+        else if (mDamagedTiles[it->first]->fHitPoints <= 0)
         {
-            RemoveBlock(key);
-            mDamagedTiles.erase(it++);
+            RemoveBlock(it->first);
+            it = mDamagedTiles.erase(it);
         }
         else
         {
@@ -180,16 +191,14 @@ void World::DamageBlock(olc::vf2d blockPos, float dmg)
     if (!IsBlock(blockPos))
         return;
 
-    int tileIndex = Index(blockPos);
-    if (mDamagedTiles.find(tileIndex) == mDamagedTiles.end())
+    int key = Index(blockPos);
+    if (!mDamagedTiles.count(key))
     {
-        TileData* nTile = new TileData(Tiles::GetData(
-            GetTile(tileIndex)).fHitPoints, 
-            Tiles::GetData(GetTile(tileIndex)).fMaxHP);
-
-        mDamagedTiles[tileIndex] = *nTile;
+        mDamagedTiles[key] = std::make_unique<TileData>(Tiles::GetData(
+            GetTile(key)).fHitPoints,
+            Tiles::GetData(GetTile(key)).fMaxHP);
     }
-    mDamagedTiles[tileIndex].fHitPoints -= dmg;
+    mDamagedTiles[key]->fHitPoints -= dmg;
 }
 void World::DamageBlockAOE(olc::vf2d blockPos, float dmg, float aoe)
 {
@@ -197,34 +206,91 @@ void World::DamageBlockAOE(olc::vf2d blockPos, float dmg, float aoe)
 }
 void World::CreateBlock(olc::vf2d blockPos, TileType tt)
 {
-    if (!IsBlock(blockPos))
-        SetTile(blockPos, tt);
+    int index = Index(blockPos);
+    if (!IsBlock(index))
+    {
+        auto TPE = IMM::Events::TilePlacedEvent(index, tt);
+        NotifyObservers(&TPE);
+        nWorld[index].type = tt;
+    }
 }
 void World::CreateBlock(float blockXPos, float blockYPos, TileType tt)
 {
-    if (!IsBlock(blockXPos, blockYPos))
-        SetTile(blockXPos, blockYPos, tt);
+    int index = Index(blockXPos, blockYPos);
+    if (!IsBlock(index))
+    {
+        auto TPE = IMM::Events::TilePlacedEvent(index, tt);
+        NotifyObservers(&TPE);
+        nWorld[index].type = tt;
+    }
 }
 void World::CreateBlock(int index, TileType tt)
 {
     if (!IsBlock(index))
-        SetTile(index, tt);
+    {
+        auto TPE = IMM::Events::TilePlacedEvent(index, tt);
+        NotifyObservers(&TPE);
+        nWorld[index].type = tt;
+    }
 }
 void World::RemoveBlock(olc::vf2d blockPos)
 {
-    if (IsBlock(blockPos))
-        SetTile(blockPos, TileType::Empty);
+    int index = Index(blockPos.x, blockPos.y);
+    if (IsBlock(index))
+    {
+        IMM::Events::TileRemovedEvent TRE = IMM::Events::TileRemovedEvent(index, GetTile(index));
+        NotifyObservers(&TRE);
+        
+        nWorld[index].type = TileType::Empty;
+    }
+       // SetTile(blockPos, TileType::Empty);
 }
 void IMM::World::RemoveBlock(float blockXPos, float blockYPos)
 {
-    if (IsBlock(blockXPos, blockYPos))
-        SetTile(blockXPos, blockYPos, TileType::Empty);
+    int index = Index(blockXPos, blockYPos);
+    if (IsBlock(index))
+    {
+        IMM::Events::TileRemovedEvent TRE = IMM::Events::TileRemovedEvent(index, GetTile(index));
+        NotifyObservers(&TRE);
+
+        nWorld[index].type = TileType::Empty;
+    }
 }
 void World::RemoveBlock(int index)
 {
     if (IsBlock(index))
-        SetTile(index, TileType::Empty);
-    
+    {
+        IMM::Events::TileRemovedEvent TRE = IMM::Events::TileRemovedEvent(index, GetTile(index));
+        NotifyObservers(&TRE);
+
+        nWorld[index].type = TileType::Empty;
+    }
+}
+void World::CheckWrapping(int ix, int& ox)
+{
+    ox = ix;
+
+    if (ix < 0.0f)
+    {
+        ox = ix + nWidth;
+    }
+    if (ix > nWidth)
+    {
+        ox = ix - nWidth;
+    }
+}
+void World::CheckWrapping(float ix, float& ox)
+{
+    ox = ix;
+
+    if (ix < 0.0f)
+    {
+        ox = ix + nWidth;
+    }
+    if (ix > nWidth)
+    {
+        ox = ix - nWidth;
+    }
 }
 
 std::shared_ptr<std::vector<int>> World::FloodFill(int x, int y)
