@@ -15,6 +15,7 @@
 #include "../Collision.h"
 #include "PhysicsObject.h"
 #include "Player.h"
+#include "Storage.h"
 
 //OM DU VILL INKLUDERA EN HEADER HÄR SOM OCKSÅ HAR TILLGÅNG TILL GAME ENGINE SÅ MÅSTE ALLA DEFINITIONER GÖRAS I CPP FILEN INTE HEADERN 
 
@@ -130,12 +131,15 @@ namespace IMM
 
 		//TEMP
 		std::shared_ptr<Player> mTempPlayer;
+		std::shared_ptr<Storage> mTempChest;
+		std::shared_ptr<Storage> mTempChest2;
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;
 		
 		//Menu
 		std::unique_ptr<MainMenu> mMainMenu;
+		std::unique_ptr<DynamicMenu> mTestMenu;
 
 		int mTileSize = 8;
 		int mPixelSize = 32;

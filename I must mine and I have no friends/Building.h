@@ -48,6 +48,7 @@ namespace IMM
 			map[TileType::Dirt] = '1';
 
 			std::wstring sPattern;
+			std::vector<TileType> vTiles;
 
 			sPattern += L"000000";
 			sPattern += L"011110";

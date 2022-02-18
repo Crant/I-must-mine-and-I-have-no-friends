@@ -23,7 +23,7 @@ namespace IMM
         Item(const std::string& sName, ItemType eItem);
         Item(const std::string& sName, ItemType eItem, bool bIsUpdated);
         Item(const std::string& sName, ItemType eItem, bool bIsUpdated, bool bIsStackable);
-        virtual void Use(PhysUnit* cItemHolder) = 0;
+        virtual bool Use(PhysUnit* cItemHolder) = 0;
         
         ItemType GetType();
         bool IsStackable();
@@ -50,7 +50,7 @@ namespace IMM
     {
     public:
         using Item::Item;
-        void Use(PhysUnit* cItemHolder) override;
+        bool Use(PhysUnit* cItemHolder) override;
 
     private:
 
@@ -58,7 +58,7 @@ namespace IMM
     class PhysObjShooter : public Item
     {
         using Item::Item;
-        void Use(PhysUnit* cItemHolder) override;
+        bool Use(PhysUnit* cItemHolder) override;
     };
     ///////////////////
     ///
@@ -73,11 +73,12 @@ namespace IMM
     class Block : public Item, public Updated
     {
     public:
-        Block(const std::string& sName, TileType eTile, int nAmount);
-        Block(TileType eTile, int nAmount);
-        Block(TileType eTile);
-        void Use(PhysUnit* cItemHolder) override;
+        //Block(const std::string& sName, TileType eTile, int nAmount);
+        Block(TileType eTile, int index, int nAmount);
+        Block(TileType eTile, int index);
+        bool Use(PhysUnit* cItemHolder) override;
         bool UpdateSelf() override;
+        std::list<float> nBlockList; //För att kunna storea seedsen
 
     protected:
 

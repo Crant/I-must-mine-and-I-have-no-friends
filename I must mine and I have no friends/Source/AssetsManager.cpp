@@ -30,6 +30,9 @@ void Assets::LoadSprites()
 	olc::Sprite* defaultGuy = new olc::Sprite("Assets/GubbWithArm.png");
 	mEntities[SpriteType::Player] = new olc::Decal(defaultGuy);
 
+	olc::Sprite* Storage = new olc::Sprite("Assets/Storage.png");
+	mEntities[SpriteType::Storage] = new olc::Decal(Storage);
+
 	//Loading ItemModels
 	olc::Sprite* MineDrill = new olc::Sprite("Assets/Drill.png");
 	mItems[ItemType::MiningLaser] = new olc::Decal(MineDrill);

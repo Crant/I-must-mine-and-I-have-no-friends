@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Menu">
       <UniqueIdentifier>{201e2fec-d9fa-45b8-8e62-db753d825074}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\MessagesAndEvents">
+      <UniqueIdentifier>{03a38a39-c30e-48a4-b935-16f8b8312184}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Assets\fuckit.png">
@@ -138,6 +141,18 @@
     </ClCompile>
     <ClCompile Include="Source\Inventory.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MapGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EventHandling.cpp">
+      <Filter>Source Files\MessagesAndEvents</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MessageHandling.cpp">
+      <Filter>Source Files\MessagesAndEvents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +259,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Inventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\PlayerUI.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Storage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

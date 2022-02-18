@@ -53,22 +53,24 @@ TileType IMM::Item::GetTile()
 ///////
 ///////
 ///////
-void MiningLaser::Use(PhysUnit* cItemHolder)
+bool MiningLaser::Use(PhysUnit* cItemHolder)
 {
 	olc::vf2d vRangeCheck = cItemHolder->vTarget - cItemHolder->vPos;
 	if (std::abs(vRangeCheck.x) > 5 || std::abs(vRangeCheck.y) > 5)
 	{
-		return;
+		return true;
 	}
 	World::Main()->DamageBlock(cItemHolder->vTarget, 10.f * GlobalState::GetEngine()->GetElapsedTime());
+	return true;
 }
-void PhysObjShooter::Use(PhysUnit* cItemHolder)
+bool PhysObjShooter::Use(PhysUnit* cItemHolder)
 {
 	olc::vf2d vDir = cItemHolder->vTarget - cItemHolder->vPos;
 	std::shared_ptr<IMM::PhysProjectile> mTempPlayer = std::make_shared<IMM::PhysProjectile>(
 		cItemHolder->vPos, olc::vf2d(1.f, 1.f), SpriteType::Default, vDir.norm() * 70.f,
 		100.f);
 	EntityManager::AddObj(mTempPlayer);
+	return true;
 }
 ///
 ///
@@ -78,35 +80,40 @@ void PhysObjShooter::Use(PhysUnit* cItemHolder)
 /// 
 /// 
 /// 
-IMM::Block::Block(const std::string& sName, TileType eTile, int nAmount) 
-	: Item(sName, ItemType::Block, true, true)
-{
-	this->eTile = eTile;
-	this->nAmount = nAmount;
-}
-IMM::Block::Block(TileType eTile, int nAmount) :
+//IMM::Block::Block(const std::string& sName, TileType eTile, int nAmount) 
+//	: Item(sName, ItemType::Block, true, true)
+//{
+//	this->eTile = eTile;
+//	this->nAmount = nAmount;
+//}
+IMM::Block::Block(TileType eTile, int index, int nAmount) :
 	Item("Block", ItemType::Block, true, true)
 {
 	this->eTile = eTile;
-	this->nAmount = nAmount;
+	nBlockList.push_back(World::Main()->GetPerlinSeed(index));
 }
-IMM::Block::Block(TileType eTile) : 
+IMM::Block::Block(TileType eTile, int index) :
 	Item("Block", ItemType::Block, true, true)
 {
 	this->eTile = eTile;
-	nAmount = 1;
+	nBlockList.push_back(World::Main()->GetPerlinSeed(index));
 }
-void IMM::Block::Use(PhysUnit* cItemHolder)
+bool IMM::Block::Use(PhysUnit* cItemHolder)
 {
-	if (nAmount >= 0 && !World::Main()->IsBlock(cItemHolder->vTarget))
+	if (nBlockList.size() > 0 && !World::Main()->IsBlock(cItemHolder->vTarget))
 	{
-		World::Main()->CreateBlock(cItemHolder->vTarget, eTile);
-		nAmount--;
+		World::Main()->CreateBlock(cItemHolder->vTarget, eTile, nBlockList.front());
+		nBlockList.pop_front();
+		if (nBlockList.size() <= 0)
+		{
+			return false;
+		}
 	}
+	return true;
 }
 bool IMM::Block::UpdateSelf()
 {
-	if (nAmount <= 0)
+	if (nBlockList.size() <= 0)
 	{
 		return false;
 	}

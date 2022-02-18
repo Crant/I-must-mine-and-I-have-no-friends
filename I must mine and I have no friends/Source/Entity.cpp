@@ -23,3 +23,10 @@ bool Entity::UpdateSelf()
 	}
 	return true;
 }
+
+
+bool IMM::Updated::ListenToEvents(Event* e)
+{
+	return false;
+}
+

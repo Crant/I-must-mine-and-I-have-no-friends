@@ -2,7 +2,8 @@
 //#include "olcPixelGameEngine.h"
 //#include "PhysicsObject.h"
 #include "Client.h"
-#include "Inventory.h"
+//#include "Inventory.h"
+#include "Storage.h"
 
 #include <set>
 
@@ -17,6 +18,11 @@ namespace IMM
 		std::shared_ptr<Client> cPlayerClient;
 		std::shared_ptr<Item> cActiveItem;
 		std::shared_ptr<Inventory> GetInventory();
+		std::shared_ptr<DynamicMenu> cInventoryMenu;
+
+		std::list<std::shared_ptr<Storage>> vMenus;
+		void UpdateUI();
+
 
 		void UserInput();
 	protected:
@@ -26,8 +32,23 @@ namespace IMM
 		std::shared_ptr<Inventory> mInventory;
 
 
+
+		//TEST
+		
+
+
 	private:
 		const int nPickupDistance = 10;
+		int nItemPressedIndex = 0;
+		std::shared_ptr<Inventory> cFirstInvCheck;
+		std::shared_ptr<Inventory> cSecondInvCheck;
+
+		int nLastIndex = 0;
+		bool bHasReleasedItem = false;
+
+		bool UpdateMenu(std::shared_ptr<DynamicMenu> vMenu);
+		void UpdateAllMenus();
+		bool IsInInventory();
 	};
 }
 

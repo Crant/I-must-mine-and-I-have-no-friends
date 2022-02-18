@@ -12,8 +12,9 @@ namespace IMM
 		class WorldCreatedEvent : public Event
 		{
 		public:
-			WorldCreatedEvent(std::shared_ptr<IMM::World> pWorld) : world(pWorld) { }
+			WorldCreatedEvent(std::shared_ptr<IMM::World> pWorld, std::shared_ptr<std::vector<float>> pPerlins) : world(pWorld), perlins(pPerlins){ }
 			std::shared_ptr<IMM::World> world;
+			std::shared_ptr<std::vector<float>> perlins;
 		};
 
 		class TileChangedEvent : public Event
@@ -34,14 +35,15 @@ namespace IMM
 		public:
 			TileRemovedEvent(int nTilePos, IMM::TileType tOldTile) :
 				nTilePos(nTilePos),
-				tOldTile(tOldTile)
+				tOldTile(tOldTile),
+				bHasBeenPickedUp(false)
 				
 			{
 				type = EventType::TileRemoved;
 			}
-
 			int nTilePos;
 			IMM::TileType tOldTile;
+			bool bHasBeenPickedUp;
 		};
 		class TilePlacedEvent : public Event
 		{

@@ -1,5 +1,6 @@
 #pragma once
 #include "olcPixelGameEngine.h"
+#include "WorldEvents.h"
 
 //#include "GraphicsRenderer.h"
 
@@ -8,13 +9,23 @@ namespace IMM
 	enum class SpriteType : unsigned char
 	{
 		Default,
-		Player
+		Player,
+		Storage
+	};
+	enum class ObjectType : unsigned char
+	{
+		Default,
+		Item,
+		Unit,
+		Storage
 	};
 
 	class Updated
 	{
 	public:
 		virtual bool UpdateSelf() = 0;
+		virtual bool ListenToEvents(Event* e);
+		ObjectType tType = ObjectType::Default;
 	};
 
 	class Entity : public Updated, public std::enable_shared_from_this<Entity> //Entity representerar basklassen för alla spelvärldens objekt

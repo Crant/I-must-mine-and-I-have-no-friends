@@ -18,12 +18,13 @@ World::World(int width, int height, Tile* newWorld)
 
     Instance = this;
 }
-World::World(int width, int height, Tile* newWorld, float fGravity)
+World::World(int width, int height, Tile* newWorld,float fGravity, std::shared_ptr<std::vector<float>> fPerlinSeeds)
 {
     nWidth = width;
     nHeight = height;
     nSize = width * height;
     this->fGravity = fGravity;
+    this->fPerlinSeeds = fPerlinSeeds;
     nWorld = newWorld;
 
     Instance = this;
@@ -86,6 +87,20 @@ TileType World::GetTile(int x, int y)
 TileType World::GetTile(olc::vf2d pos)
 {
     return nWorld[Index(pos)].type;
+}
+float IMM::World::GetPerlinSeed(int index)
+{
+    return fPerlinSeeds->at(std::clamp(index, 0, nHeight * nWidth - 1));
+}
+float IMM::World::GetPerlinSeed(float x, float y)
+{
+    float fPerlin = fPerlinSeeds->at(Index(x, y));
+    return fPerlin;
+}
+float IMM::World::GetPerlinSeed(olc::vf2d pos)
+{
+    float fPerlin = fPerlinSeeds->at(Index(pos));
+    return fPerlin;
 }
 TileNeighbours World::GetNbour(int index)
 {
@@ -204,7 +219,7 @@ void World::DamageBlockAOE(olc::vf2d blockPos, float dmg, float aoe)
 {
 
 }
-void World::CreateBlock(olc::vf2d blockPos, TileType tt)
+void World::CreateBlock(olc::vf2d blockPos, TileType tt, float fPerlin)
 {
     int index = Index(blockPos);
     if (!IsBlock(index))
@@ -212,9 +227,10 @@ void World::CreateBlock(olc::vf2d blockPos, TileType tt)
         auto TPE = IMM::Events::TilePlacedEvent(index, tt);
         NotifyObservers(&TPE);
         nWorld[index].type = tt;
+        fPerlinSeeds->at(index) = fPerlin;
     }
 }
-void World::CreateBlock(float blockXPos, float blockYPos, TileType tt)
+void World::CreateBlock(float blockXPos, float blockYPos, TileType tt, float fPerlin)
 {
     int index = Index(blockXPos, blockYPos);
     if (!IsBlock(index))
@@ -222,15 +238,17 @@ void World::CreateBlock(float blockXPos, float blockYPos, TileType tt)
         auto TPE = IMM::Events::TilePlacedEvent(index, tt);
         NotifyObservers(&TPE);
         nWorld[index].type = tt;
+        fPerlinSeeds->at(index) = fPerlin;
     }
 }
-void World::CreateBlock(int index, TileType tt)
+void World::CreateBlock(int index, TileType tt, float fPerlin)
 {
     if (!IsBlock(index))
     {
         auto TPE = IMM::Events::TilePlacedEvent(index, tt);
         NotifyObservers(&TPE);
         nWorld[index].type = tt;
+        fPerlinSeeds->at(std::clamp(index, 0, nWidth * nHeight)) = fPerlin;
     }
 }
 void World::RemoveBlock(olc::vf2d blockPos)
@@ -242,6 +260,7 @@ void World::RemoveBlock(olc::vf2d blockPos)
         NotifyObservers(&TRE);
         
         nWorld[index].type = TileType::Empty;
+        fPerlinSeeds->at(index) = 0.0f;
     }
        // SetTile(blockPos, TileType::Empty);
 }
@@ -254,16 +273,18 @@ void IMM::World::RemoveBlock(float blockXPos, float blockYPos)
         NotifyObservers(&TRE);
 
         nWorld[index].type = TileType::Empty;
+        fPerlinSeeds->at(index) = 0.0f;
     }
 }
 void World::RemoveBlock(int index)
 {
     if (IsBlock(index))
     {
-        IMM::Events::TileRemovedEvent TRE = IMM::Events::TileRemovedEvent(index, GetTile(index));
+        IMM::Events::TileRemovedEvent TRE = IMM::Events::TileRemovedEvent(std::clamp(index, 0, nWidth * nHeight), GetTile(std::clamp(index, 0, nWidth * nHeight)));
         NotifyObservers(&TRE);
 
-        nWorld[index].type = TileType::Empty;
+        nWorld[std::clamp(index, 0, nWidth * nHeight)].type = TileType::Empty;
+        fPerlinSeeds->at(std::clamp(index, 0, nWidth * nHeight)) = 0.0f;
     }
 }
 void World::CheckWrapping(int ix, int& ox)

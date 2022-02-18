@@ -1,7 +1,9 @@
 #pragma once
 //#include "olcPixelGameEngine.h"
-#include "Entity.h"
+//#include "Entity.h"
 #include "World.h"
+#include "MainMenu.h"
+//#include "Inventory.h"
 
 using namespace IMM;
 
@@ -14,6 +16,7 @@ namespace IMM
 		void RenderTiles();
 		void RenderSprites(IMM::Entity* sprite);
 		void RenderForeground();
+		void RenderInventoryMenu(std::shared_ptr<DynamicMenu> cInvMenu);
 
 		int CheckNeighbour(int x, int y);
 		void TileDebugger();

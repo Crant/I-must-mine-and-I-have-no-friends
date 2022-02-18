@@ -138,6 +138,7 @@ PhysUnit::PhysUnit(const olc::vf2d& vInitPos, const olc::vf2d& vSize, SpriteType
 	: PhysObj(vInitPos, vSize, sModel)
 {
 	this->fHitpoints = fHitpoints;
+	Updated::tType = ObjectType::Unit;
 }
 bool PhysUnit::UpdateSelf()
 {

@@ -33,7 +33,7 @@ namespace Maths
 	float UpdateRange(float fInput, float fDesiredStart, float fDesiredEnd);
 
 	float* Get1DPerlinNoise(const std::string& seed, int nWidth, int nHeight);
-	float* Get2DPerlinNoise(const std::string& seed, int nWidth, int nHeight);
+	std::shared_ptr<std::vector<float>> Get2DPerlinNoise(const std::string& seed, int nWidth, int nHeight);
 
 	olc::vf2d LocalToWorld(const olc::vf2d& vLocalPos, int nTileSize, const olc::vf2d& vCameraOffset);
 	olc::vf2d WorldToLocal(const olc::vf2d& vWorldPos, const olc::vf2d& vCameraOffset);

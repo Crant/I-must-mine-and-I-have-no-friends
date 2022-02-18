@@ -94,14 +94,15 @@ float* Maths::Get1DPerlinNoise(const std::string& seed, int nWidth, int nHeight)
 	delete[] nRandomWalk;
 	return nPerlinWalk;
 }
-float* Maths::Get2DPerlinNoise(const std::string& seed, int nWidth, int nHeight)
+std::shared_ptr<std::vector<float>> Maths::Get2DPerlinNoise(const std::string& seed, int nWidth, int nHeight)
 {
 	//Width = Count
 	//Height = Höjden på världen oftast
 	//Octaves är 8 per default
 
-	float* nPerlinNoise2D = new float[nWidth * nHeight];
+	std::shared_ptr<std::vector<float>> fPerlinNoise2D = std::make_shared<std::vector<float>>(nWidth * nHeight);
 	float* nRandomNoise2D = new float[nWidth * nHeight];
+
 
 	std::hash<std::string> seedHasher; //Hashen för seed till randomisering
 	auto seedHash = seedHasher(seed);
@@ -139,14 +140,14 @@ float* Maths::Get2DPerlinNoise(const std::string& seed, int nWidth, int nHeight)
 				fScaleAcc += fScale;
 
 				fScale = fScale / fBias;
-			}
-			nPerlinNoise2D[x * nHeight + y] = fNoise / fScaleAcc; // kanske måste ändra till x * nheight + y istället
+			} 
+			fPerlinNoise2D->at(x * nHeight + y) = fNoise / fScaleAcc; // kanske måste ändra till x * nheight + y istället
 			//nPerlinNoise2D[y * nWidth + x] = (fNoise / fScaleAcc) * nHeight; // kanske måste ändra till x * nheight + y istället
 		}
 
 	}
 	delete[] nRandomNoise2D;
-	return nPerlinNoise2D;
+	return fPerlinNoise2D;
 }
 #pragma endregion
 #pragma region Smoothing

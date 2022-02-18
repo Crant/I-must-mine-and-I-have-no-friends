@@ -8,7 +8,7 @@ int main()
 {
 	IMM::GameEngine gameEngine = IMM::GameEngine();
 
-	if (gameEngine.Construct(640, 480, 2, 2, false))
+	if (gameEngine.Construct(768, 512, 2, 2, false))
 		gameEngine.Start();
 
 	//_CrtDumpMemoryLeaks();

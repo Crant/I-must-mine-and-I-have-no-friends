@@ -81,7 +81,7 @@ void IMM::Server::OnMessage(std::shared_ptr<IMM::Network::Connection<NetworkMess
 			if (tileType == TileType::Empty)
 				mWorld->RemoveBlock(tileX, tileY);
 			else
-				mWorld->CreateBlock(tileX, tileY, tileType);
+				mWorld->CreateBlock(tileX, tileY, tileType, 1.f);
 		}
 		break;
 		case NetworkMessageTypes::MessageAll:

@@ -9,8 +9,8 @@ namespace IMM
 	class World : public Observed
 	{
 	public:
-		World(int width, int height, Tile* newWorld);
-		World(int width, int height, Tile* newWorld, float fGravity);
+		World(int width, int height, Tile* newWorld); // old
+		World(int width, int height, Tile* newWorld, float fGravity, std::shared_ptr<std::vector<float>> fPerlinSeeds);
 		World() { this->nWorld = nullptr; }
 
 		~World();
@@ -30,6 +30,9 @@ namespace IMM
 		TileType GetTile(int index);
 		TileType GetTile(int x, int y);
 		TileType GetTile(olc::vf2d pos);
+		float GetPerlinSeed(int index);
+		float GetPerlinSeed(float x, float y);
+		float GetPerlinSeed(olc::vf2d pos);
 		TileNeighbours GetNbour(int index);
 		TileNeighbours GetNbour(int x, int y);
 		TileNeighbours GetNbour(olc::vf2d pos);
@@ -52,9 +55,9 @@ namespace IMM
 		void CheckWrapping(float x, float& ox);
 		void CheckWrapping(int x, int& ox);
 
-		void CreateBlock(olc::vf2d blockPos, TileType tt);
-		void CreateBlock(float blockXPos, float blockYPos, TileType tt);
-		void CreateBlock(int index, TileType tt);
+		void CreateBlock(olc::vf2d blockPos, TileType tt, float fPerlin);
+		void CreateBlock(float blockXPos, float blockYPos, TileType tt, float fPerlin);
+		void CreateBlock(int index, TileType tt, float fPerlin);
 		void RemoveBlock(olc::vf2d blockPos);
 		void RemoveBlock(float blockXPos, float blockYPos);
 		void RemoveBlock(int index);
@@ -81,6 +84,7 @@ namespace IMM
 		 static inline World* Instance;
 		 Tile* nWorld;
 		 std::unordered_map<int, std::unique_ptr<TileData>> mDamagedTiles;
+		 std::shared_ptr<std::vector<float>> fPerlinSeeds; //Alla blocks unika perlin värde för att generatea unika yields
 		 //std::shared_ptr<std::vector<int>> nFloodFill = std::make_shared<std::vector<int>>();
 
 		 int nWidth = 0;
