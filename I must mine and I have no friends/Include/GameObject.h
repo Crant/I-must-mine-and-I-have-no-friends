@@ -12,7 +12,7 @@ public:
 	virtual ~GameObject() {  }
 
 	virtual void Update(olc::PixelGameEngine* pge, float dt) = 0;
-	virtual void Render(olc::PixelGameEngine* pge) = 0;
+	virtual void Render(olc::PixelGameEngine* pge, float offsetX = 0.0f, float offsetY = 0.0f) = 0;
 
 	virtual const int GetWidth() const { return mDecal->sprite->width; }
 	virtual const int GetHeight() const{ return mDecal->sprite->height; }

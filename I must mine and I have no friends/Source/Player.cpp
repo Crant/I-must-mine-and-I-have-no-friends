@@ -39,5 +39,21 @@ void Player::Update(olc::PixelGameEngine* pge, float dt)
 
 void Player::Render(olc::PixelGameEngine* pge)
 {
-	pge->DrawDecal(mPosition, mDecal.get());
+	pge->DrawDecal(mPosition, mDecal.get(), mScale);
+}
+
+void Player::RenderLocal(olc::PixelGameEngine* pge, float offsetX, float offsetY)
+{
+	//olc::vf2d offset = olc::vf2d(
+	//	mDecal->sprite->width * mScale.x * 0.5f,
+	//	mDecal->sprite->height * mScale.y * 0.5f);
+	//
+	//olc::vf2d pos = olc::vf2d(
+	//	(screenWidth - offset.x) * 0.5f, 
+	//	(screenHeight - offset.y) * 0.5f);
+
+	pge->DrawDecal(olc::vf2d(
+		(mPosition.x - offsetX) * 8.0f,
+		(mPosition.y - offsetY) * 8.0f),
+		mDecal.get(), mScale);
 }

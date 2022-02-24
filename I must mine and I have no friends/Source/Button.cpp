@@ -43,7 +43,7 @@ void Button::Update(olc::PixelGameEngine* pge, float dt)
 {
 }
 
-void Button::Render(olc::PixelGameEngine* pge)
+void Button::Render(olc::PixelGameEngine* pge, float offsetX = 0.0f, float offsetY = 0.0f)
 {
 	pge->DrawDecal(mPosition, mDecal.get(), mScale, mTint);
 }

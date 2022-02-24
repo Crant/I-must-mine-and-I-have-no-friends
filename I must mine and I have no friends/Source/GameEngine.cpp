@@ -371,18 +371,23 @@ void IMM::GameEngine::UpdateGameObjects()
 		it->second->Update(this, GetElapsedTime());
 	}
 
-	olc::vf2d playerPosition = mPlayers[mLocalPlayerID]->GetPosition();
-	if (playerPosition.x + 40 < 0)
-		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(40, playerPosition.y));
+	// Clamp camera to game boundaries
+	olc::vf2d playerPos = mPlayers[mLocalPlayerID]->GetPosition();
+	if (playerPos.x < 0)
+		playerPos.x = 0;
 
-	if (playerPosition.y + 40 < 0)
-		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(playerPosition.x, 40));
+	if (playerPos.y < 0)
+		playerPos.y = 0;
 
-	if (playerPosition.x > mWorld->GetWidth())
-		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(mWorld->GetWidth(), playerPosition.y));
+	if (playerPos.x > mWorld->GetWidth())
+		playerPos.x = mWorld->GetWidth();
 
-	if (playerPosition.y > mWorld->GetHeight())
-		mPlayers[mLocalPlayerID]->SetPosition(olc::vf2d(playerPosition.x, mWorld->GetHeight()));
+	if (playerPos.y > mWorld->GetHeight())
+		playerPos.y = mWorld->GetHeight();
+
+	mPlayers[mLocalPlayerID]->SetPosition(playerPos);
+	mCamera.x = mPlayers[mLocalPlayerID]->GetPosition().x;
+	mCamera.y = mPlayers[mLocalPlayerID]->GetPosition().y;
 }
 
 void GameEngine::PingServer()
@@ -430,9 +435,23 @@ void GameEngine::OnUserFixedUpdate()
 
 void GameEngine::Render()
 {
-	mOffsetX = mCamera.x - (float)mVisibleTiles.x;
-	mOffsetY = mCamera.y - (float)mVisibleTiles.y;
+	// Calculate Top-Leftmost visible tile
+	mOffsetX = mCamera.x - (float)mVisibleTiles.x / 2.0f;
+	mOffsetY = mCamera.y - (float)mVisibleTiles.y / 2.0f;
 
+	// Clamp camera to game boundaries
+	
+	if (mOffsetX < 0)
+		mOffsetX = 0;
+	else if (mOffsetX > mWorld->GetWidth() - mVisibleTiles.x)
+		mOffsetX = mWorld->GetWidth() - mVisibleTiles.x;
+
+	if (mOffsetY < 0)
+		mOffsetY = 0;
+	else if (mOffsetY > mWorld->GetHeight() - mVisibleTiles.y)
+		mOffsetY = mWorld->GetHeight() - mVisibleTiles.y;
+
+	// Get offsets for smooth movement
 	float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
 	float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
 
@@ -441,7 +460,6 @@ void GameEngine::Render()
 	//if (fOffsetX > World::Main()->GetWidth() - nVisibleTilesX) fOffsetX = World::Main()->GetWidth() - nVisibleTilesX;
 	//if (fOffsetY > World::Main()->GetHeight() - nVisibleTilesY) fOffsetY = World::Main()->GetHeight() - nVisibleTilesY;
 
-	
 	for (int x = -1; x < mVisibleTiles.x + 1; x++)
 	{
 		for (int y = -1; y < mVisibleTiles.y + 1; y++)
@@ -451,7 +469,7 @@ void GameEngine::Render()
 				TileType* tile = mWorld->GetTile(olc::vf2d(x + mOffsetX, y + mOffsetY));
 				int tileNbour = (int)mWorld->GetNbour(olc::vf2d(x + mOffsetX, y + mOffsetY));
 				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
-				
+
 				DrawPartialDecal(
 					pos,
 					Assets::Main()->GetSpriteDecal(tile),
@@ -464,7 +482,10 @@ void GameEngine::Render()
 
 	for (auto it = mPlayers.begin(); it != mPlayers.end(); it++)
 	{
-		it->second->Render(this);
+		//if (it->first == mLocalPlayerID)
+			it->second->RenderLocal(this, mOffsetX, mOffsetY);
+		/*else
+			it->second->Render(this);*/
 	}
 }
 
@@ -506,8 +527,6 @@ void GameEngine::CheckMovement()
 		}
 		
 		mPlayers[mLocalPlayerID]->UpdateDirection(dir);
-		mCamera.x = mPlayers[mLocalPlayerID]->GetPosition().x;
-		mCamera.y = mPlayers[mLocalPlayerID]->GetPosition().y;
 		RandomInputs();
 	}
 }

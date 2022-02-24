@@ -129,7 +129,6 @@ void GridGenerator::CreateWorld()
                 nTemporaryArray[mWorld->Index(x, y)] = TileType::Dirt;
                 mWorld->SetTileGeneration(x * height + y, TileType::Dirt);
             }
-
         }
     }
 }

@@ -18,6 +18,8 @@ public:
 
 	virtual void Render(olc::PixelGameEngine* pge) override;
 
+	void RenderLocal(olc::PixelGameEngine* pge, float screenWidth, float screenHeight);
+
 	const olc::vf2d& GetDirection() const { return mDirection; }
 	void SetDirection(const olc::vf2d& direction) { mDirection = direction; }
 private:

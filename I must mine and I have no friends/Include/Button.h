@@ -12,10 +12,10 @@ public:
 	bool Hovered(const float mouseX, const float mouseY);
 	bool Pressed(const float mouseX, const float mouseY);
 
-	// Inherited via WorldObject
+	// Inherited via GameObject
 	virtual void Update(olc::PixelGameEngine* pge, float dt) override;
-	virtual void Render(olc::PixelGameEngine* pge) override;
-
+	virtual void Render(olc::PixelGameEngine* pge, float offsetX = 0.0f, float offsetY = 0.0f) override;
+	
 	int GetScaledWidth() { return mDecal->sprite->width * mScale.x; }
 	int GetScaledHeight() { return mDecal->sprite->height * mScale.y; }
 private:
