@@ -25,31 +25,44 @@
     <Image Include="Resources\Assets\fuckit.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Maths.cpp" />
+    <ClCompile Include="RandomGen.cpp" />
     <ClCompile Include="Source\AssetsManager.cpp" />
     <ClCompile Include="Source\BaseUnit.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\Client.cpp" />
     <ClCompile Include="Source\DamageAble.cpp" />
     <ClCompile Include="Source\DamageObj.cpp" />
+    <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\EntityManager.cpp" />
+    <ClCompile Include="Source\EventHandling.cpp" />
     <ClCompile Include="Source\GameEngine.cpp" />
-    <ClCompile Include="Source\GFX.cpp" />
-    <ClCompile Include="Source\GridGenerator.cpp" />
+    <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Inventory.cpp" />
     <ClCompile Include="Source\Item.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\MainMenu.cpp" />
+    <ClCompile Include="Source\MapGenerator.cpp" />
+    <ClCompile Include="Source\MessageHandling.cpp" />
     <ClCompile Include="Source\NetServer.cpp" />
     <ClCompile Include="Source\olcPixelGameEngine.cpp" />
     <ClCompile Include="Source\PerformanceTest.cpp" />
     <ClCompile Include="Source\PerlinNoise.cpp" />
+    <ClCompile Include="Source\PhysicsObject.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\RandomGen.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Server.cpp" />
+    <ClCompile Include="Source\Storage.cpp" />
     <ClCompile Include="Source\TilePhysics.cpp" />
     <ClCompile Include="Source\Tiles.cpp" />
     <ClCompile Include="Source\Weapons.cpp" />
     <ClCompile Include="Source\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Building.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="Include\AssetsManager.h" />
     <ClInclude Include="Include\BaseUnit.h" />
     <ClInclude Include="Include\Button.h" />
@@ -58,11 +71,13 @@
     <ClInclude Include="Include\DamageAble.h" />
     <ClInclude Include="Include\DamageObj.h" />
     <ClInclude Include="Include\Debug.h" />
+    <ClInclude Include="Include\Entity.h" />
+    <ClInclude Include="Include\EntityManager.h" />
     <ClInclude Include="Include\GameEngine.h" />
-    <ClInclude Include="Include\GameEvents.h" />
-    <ClInclude Include="Include\GameObject.h" />
-    <ClInclude Include="Include\GFX.h" />
+    <ClInclude Include="Include\Globals.h" />
+    <ClInclude Include="Include\GraphicsRenderer.h" />
     <ClInclude Include="Include\GridGenerator.h" />
+    <ClInclude Include="Include\Inventory.h" />
     <ClInclude Include="Include\Item.h" />
     <ClInclude Include="Include\MainMenu.h" />
     <ClInclude Include="Include\MenuEvents.h" />
@@ -71,16 +86,19 @@
     <ClInclude Include="Include\olcPixelGameEngine.h" />
     <ClInclude Include="Include\PerformanceTest.h" />
     <ClInclude Include="Include\PerlinNoise.h" />
+    <ClInclude Include="Include\PhysicsObject.h" />
     <ClInclude Include="Include\Player.h" />
-    <ClInclude Include="Include\PlayerEvents.h" />
-    <ClInclude Include="Include\RandomGen.h" />
+    <ClInclude Include="Include\PlayerUI.h" />
     <ClInclude Include="Include\Safe.h" />
     <ClInclude Include="Include\Server.h" />
-    <ClInclude Include="Include\ServerFramePacket.h" />
+    <ClInclude Include="Include\Storage.h" />
     <ClInclude Include="Include\TilePhysics.h" />
     <ClInclude Include="Include\Tiles.h" />
     <ClInclude Include="Include\World.h" />
     <ClInclude Include="Include\WorldEvents.h" />
+    <ClInclude Include="MapGenerator.h" />
+    <ClInclude Include="MapManager.h" />
+    <ClInclude Include="Maths.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -165,6 +183,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -187,6 +206,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -205,6 +225,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -227,6 +248,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

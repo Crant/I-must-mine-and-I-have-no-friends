@@ -12,12 +12,14 @@ public:
 	bool Hovered(const float mouseX, const float mouseY);
 	bool Pressed(const float mouseX, const float mouseY);
 
-	// Inherited via GameObject
-	virtual void Update(olc::PixelGameEngine* pge, float dt) override;
-	virtual void Render(olc::PixelGameEngine* pge, float offsetX = 0.0f, float offsetY = 0.0f) override;
-	
-	int GetScaledWidth() { return mDecal->sprite->width * mScale.x; }
-	int GetScaledHeight() { return mDecal->sprite->height * mScale.y; }
+	void Render(olc::PixelGameEngine* pge);
+	void UpdatePos(const olc::vf2d& vNewPos);
+	void UpdateScale(const olc::vf2d& vNewScale);
+
+	int GetWidth() { return mButtonImg->sprite->width; }
+	int GetHeight() { return mButtonImg->sprite->height; }
+	int GetScaledWidth() { return mButtonImg->sprite->width * mScale.x; }
+	int GetScaledHeight() { return mButtonImg->sprite->height * mScale.y; }
 private:
 	//std::unique_ptr<olc::Decal> mButtonImg;
 	//olc::vf2d mPosition;

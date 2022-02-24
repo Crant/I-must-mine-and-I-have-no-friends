@@ -9,7 +9,8 @@ namespace IMM
 	class World : public Observed
 	{
 	public:
-		World(int width, int height, Tile* newWorld);
+		World(int width, int height, Tile* newWorld); // old
+		World(int width, int height, Tile* newWorld, float fGravity, std::shared_ptr<std::vector<float>> fPerlinSeeds);
 		World() { this->nWorld = nullptr; }
 
 		~World();
@@ -26,9 +27,12 @@ namespace IMM
 		void SetTile(float x, float y, TileType value);
 		void SetTile(olc::vf2d pos, TileType value);
 		void SetTileGeneration(int index, TileType value);
-		TileType* GetTile(int index);
-		TileType* GetTile(int x, int y);
-		TileType* GetTile(olc::vf2d pos);
+		TileType GetTile(int index);
+		TileType GetTile(int x, int y);
+		TileType GetTile(olc::vf2d pos);
+		float GetPerlinSeed(int index);
+		float GetPerlinSeed(float x, float y);
+		float GetPerlinSeed(olc::vf2d pos);
 		TileNeighbours GetNbour(int index);
 		TileNeighbours GetNbour(int x, int y);
 		TileNeighbours GetNbour(olc::vf2d pos);
@@ -38,15 +42,31 @@ namespace IMM
 		int GetWidth();
 		int GetHeight();
 		int GetSize();
+		float GetGravity();
 		int Index(float x, float y);
 		int Index(olc::vf2d pos);
-
 		olc::vi2d Coordinates(int flatIndex);
+
 		bool IsInside(olc::vf2d tile, olc::vf2d check);
 		bool IsInside(int tileIndex, olc::vf2d check);
 		bool IsBlock(olc::vf2d pos);
 		bool IsBlock(float x, float y);
 		bool IsBlock(int index);
+		void CheckWrapping(float x, float& ox);
+		void CheckWrapping(int x, int& ox);
+
+		void CreateBlock(olc::vf2d blockPos, TileType tt, float fPerlin);
+		void CreateBlock(float blockXPos, float blockYPos, TileType tt, float fPerlin);
+		void CreateBlock(int index, TileType tt, float fPerlin);
+		void RemoveBlock(olc::vf2d blockPos);
+		void RemoveBlock(float blockXPos, float blockYPos);
+		void RemoveBlock(int index);
+
+		void FlagBlock(int x, int y); //FOR DEBUGGING
+		void FlagBlock(float x, float y);//FOR DEBUGGING
+		void FlagBlock(const olc::vf2d& pos);//FOR DEBUGGING
+		std::vector<olc::vi2d> vBlockFlags;//FOR DEBUGGING. Töm och fyll på egen hand
+
 		void SetNeighbours(float x, float y);
 		void SetNeighbours(olc::vf2d pos);
 		void SetNeighbours(int index);
@@ -59,22 +79,18 @@ namespace IMM
 		void DamageBlock(olc::vf2d blockPos, float dmg);
 		void DamageBlockAOE(olc::vf2d blockPos, float dmg, float aoe);
 
-		void CreateBlock(olc::vf2d blockPos, TileType tt);
-		void CreateBlock(float blockXPos, float blockYPos, TileType tt);
-		void CreateBlock(int index, TileType tt);
-		void RemoveBlock(olc::vf2d blockPos);
-		void RemoveBlock(float blockXPos, float blockYPos);
-		void RemoveBlock(int index);
 
 	private:
 		 static inline World* Instance;
 		 Tile* nWorld;
-		 std::unordered_map<int, TileData> mDamagedTiles;
+		 std::unordered_map<int, std::unique_ptr<TileData>> mDamagedTiles;
+		 std::shared_ptr<std::vector<float>> fPerlinSeeds; //Alla blocks unika perlin värde för att generatea unika yields
 		 //std::shared_ptr<std::vector<int>> nFloodFill = std::make_shared<std::vector<int>>();
 
 		 int nWidth = 0;
 		 int nHeight = 0;
 		 int nSize = 0;
+		 float fGravity = 0.f;
 
 		 TileNeighbours SetNeighboursNotRecursive(float x, float y);
 		 TileNeighbours SetNeighboursNotRecursive(olc::vf2d pos);

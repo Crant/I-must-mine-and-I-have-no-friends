@@ -4,9 +4,10 @@
 #include "safe.h"
 #include "AssetsManager.h"
 #include "MenuEvents.h"
-#include "PlayerEvents.h"
-#include "ClientEvents.h"
-#include "ServerFramePacket.h"
+#include "Globals.h"
+#include "EntityManager.h"
+#include "GraphicsRenderer.h"
+
 
 using namespace IMM;
 
@@ -32,262 +33,39 @@ bool GameEngine::IsServer()
 {
 	return mIsServer;
 }
-
-void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeight)
+void GameEngine::PingServer()
 {
-	this->worldWidth = worldWidth;
-	this->worldHeight = worldHeight;
+	mPingTimer += GetElapsedTime();
 
-	GridGenerator gridGen = GridGenerator();
+	if (mPingTimer >= mPingDelay)
+	{
+		mClient->PingServer();
+		mPingTimer = 0.0f;
+	}
+}
 
-	gridGen.AddObserver(this);
-	mPerf->PreMeasure("Init World", 3);
-	gridGen.Init(seedName, worldWidth, worldHeight);
-	mPerf->PostMeasure("Init World", 3);
+void GameEngine::Init(const std::string& seedName, int worldWidth, int worldHeight, float fGravity)
+{
+	mMapGen->GenerateMap(seedName, worldWidth, worldHeight, MapType::EarthlikePlanet, fGravity);
+	//nBlockSeeds = Maths::GetWorldBlockSeeds(seedName, worldWidth, worldHeight); //Se alltid till att blockseeds lagras efter vï¿½rlden ï¿½r skapad
 
 	Tiles::LoadTiles();
 
-	InitCameraSettings();
-	//renderer.SetCamera();
+	GlobalState::Init(olc::vf2d(0, 0), ScreenWidth(), ScreenHeight(), this);
+
+	mTempPlayer = std::make_shared<Player>(olc::vf2d(worldWidth / 2, worldHeight / 2), olc::vf2d(2.f, 3.f), SpriteType::Player, 10.f);
+	auto pShooiter = std::make_shared<PhysObjShooter>("PhysGun", ItemType::Default);
+	auto pminelaser = std::make_shared<MiningLaser>("MiningLaser", ItemType::MiningLaser);
+	mTempPlayer->GetInventory()->AddItemToInventory(pShooiter);
+	mTempPlayer->GetInventory()->AddItemToInventory(pminelaser);
+	EntityManager::AddObj(mTempPlayer);
+	//GlobalState::Init(mTempPlayer->vPos, ScreenWidth(), ScreenHeight(), this);
+	//mTestMenu = std::make_unique<DynamicMenu>(olc::vf2d(300, 150), mTempPlayer->GetInventory());
 
 	mGameState = GameState::GameLoopState;
 }
-//Client
-void GameEngine::HandleNetworkMessage(IMM::Network::Message<NetworkMessageTypes>& msg)
-{
-	switch (msg.mHeader.mID)
-	{
-	case NetworkMessageTypes::ServerSendUnitUpdates:
-	{
-		int updates = 0;
 
-		msg >> updates;
 
-		for (int i = 0; i < updates; i++)
-		{
-			ServerFramePacket sfp;
-
-			msg >> sfp;
-
-			mPlayers[sfp.GetID()]->SetPosition(sfp.GetPosition());
-			mPlayers[sfp.GetID()]->SetDirection(sfp.GetDirection());
-		}
-	}
-	break;
-	case NetworkMessageTypes::ServerSendTileChange:
-	{
-		olc::vi2d tilePos;
-		IMM::TileType tileType;
-
-		msg >> tileType >> tilePos;
-
-		mWorld->SetTile(tilePos, tileType);
-	}
-	break;
-	case NetworkMessageTypes::MessageAll:
-
-		break;
-	case NetworkMessageTypes::ServerPing:
-	{
-		// Server has responded to a ping request
-		std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
-		std::chrono::system_clock::time_point timeThen;
-		msg >> timeThen;
-		std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
-	}
-	break;
-	case NetworkMessageTypes::ServerSendWorldChanges:
-	{
-		mGameState = GameState::GameLoopState;
-	}
-	break;
-	//case NetworkMessageTypes::ServerSendWorldSeed:
-	//{
-	//	std::string seedName = "";
-	//	int width = 0;
-	//	int height = 0;
-	//	int size = 0;
-	//	msg >> size;
-	//
-	//	for (int i = 0; i < size; i++)
-	//	{
-	//		char value;
-	//		msg >> value;
-	//
-	//		seedName.push_back(value);
-	//	}
-	//
-	//	msg >> height >> width;
-	//
-	//	Init(seedName, width, height);
-	//}	
-	//break;
-	case NetworkMessageTypes::ServerSendWorldFull:
-	{
-		mPerf->PreMeasure("Init world from server", 3);
-		int width = 0;
-		int height = 0;
-
-		msg >> height >> width;
-
-		Tile* world = new Tile[width * height];
-		for (int i = 0; i < width * height; i++)
-		{
-			msg >> world[i];
-		}
-
-		mWorld = std::make_shared<World>(width, height, world);
-
-		mPerf->PostMeasure("Init world from server", 3);
-		//renderer.SetWorld(mWorld);
-
-		Tiles::LoadTiles();
-		//renderer.SetCamera();
-		InitCameraSettings();
-		mGameState = GameState::GameLoopState;
-	}
-	break;
-	case NetworkMessageTypes::ServerAccept:
-	{
-		// Server has Accepted the connection			
-		std::cout << "Server Accepted Connection\n";
-
-		msg >> mLocalPlayerID;
-
-		mPlayers[mLocalPlayerID] = std::make_unique<Player>(mLocalPlayerID, "",
-			"Assets/player.png", olc::vf2d(50.0f, 50.0f), olc::vf2d(0.1f, 0.1f));
-
-		mPlayers[mLocalPlayerID]->AddObserver(this);
-
-		if (!mIsServer)
-			mClient->RequestWorldData();
-	}
-	break;
-	default:
-		break;
-	}
-}
-//Client
-void GameEngine::HandleNetworkMessages()
-{
-	//Check if there are any messages to read.
-	while (!mClient->Incoming().empty())
-	{
-		IMM::Network::OwnedMessage<NetworkMessageTypes> aMsg = mClient->Incoming().pop_front();
-		IMM::Network::Message<NetworkMessageTypes> msg = aMsg.msg;
-		
-		HandleNetworkMessage(msg);
-	}
-}
-//Client
-void GameEngine::ReadOnHoldMessages()
-{
-	//Check if there are any messages to read.
-	while (!mClient->GetOnHoldMsgs().empty())
-	{
-		IMM::Network::OwnedMessage<NetworkMessageTypes> aMsg = mClient->GetOnHoldMsgs().pop_front();
-
-		HandleNetworkMessage(aMsg.msg);
-	}
-}
-//Client
-void GameEngine::CheckForWorldInitMessage()
-{
-	//Check if there are any messages to read.
-	while (!mClient->Incoming().empty())
-	{
-		IMM::Network::OwnedMessage<NetworkMessageTypes> aMsg = mClient->Incoming().pop_front();
-		IMM::Network::Message<NetworkMessageTypes> msg = aMsg.msg;
-
-		switch (msg.mHeader.mID)
-		{
-		case NetworkMessageTypes::MessageAll:
-
-			break;
-		case NetworkMessageTypes::ServerPing:
-		{
-			// Server has responded to a ping request
-			std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
-			std::chrono::system_clock::time_point timeThen;
-			msg >> timeThen;
-			std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
-		}
-		break;
-		case NetworkMessageTypes::ServerSendWorldFull:
-		{
-			mPerf->PreMeasure("Init world from server", 0);
-			int width = 0;
-			int height = 0;
-
-			msg >> height >> width;
-
-			Tile* world = new Tile[width * height];
-			for (int i = 0; i < width * height; i++)
-			{
-				msg >> world[i];
-			}
-
-			mWorld = std::make_shared<World>(width, height, world);
-			mPerf->PostMeasure("Init world from server", 0);
-			//renderer.SetWorld(mWorld);
-
-			Tiles::LoadTiles();
-			//renderer.SetCamera();
-			InitCameraSettings();
-			mGameState = GameState::GameLoopState;
-		}
-		break;
-		default:
-			mClient->PutMsgOnHold(aMsg);
-			break;
-		}
-	}
-}
-
-void GameEngine::OnEvent(Event* e)
-{
-	if (IMM::Events::PlayerMoveEvent* PME = dynamic_cast<IMM::Events::PlayerMoveEvent*>(e))
-	{
-		mClient->SendDirectionChange(PME->direction.x, PME->direction.y);
-	}//Server Only Event
-	else if (IMM::Events::ClientDirectionChangeEvent* CDCE = dynamic_cast<IMM::Events::ClientDirectionChangeEvent*>(e))
-	{
-		if(CDCE->clientID != mLocalPlayerID)
-			mPlayers[CDCE->clientID]->UpdateDirection(olc::vf2d(CDCE->direction));
-	}
-	else if (IMM::Events::WorldCreatedEvent* WCE = dynamic_cast<IMM::Events::WorldCreatedEvent*>(e))
-	{
-		mWorld = WCE->world;
-
-		//renderer.SetWorld(mWorld);
-		mServer->SetWorld(mWorld);
-
-		mWorld->AddObserver(mServer.get());
-	}//Server Only Event
-	else if (IMM::Events::HostButtonPressedEvent* HBPE = dynamic_cast<IMM::Events::HostButtonPressedEvent*>(e))
-	{
-		mIsServer = true;
-
-		mServer = std::make_unique<Server>(61001);
-		mServer->Start();
-
-		mServer->AddObserver(this);
-
-		mClient = std::make_unique<Client>();
-		mClient->Connect("127.0.0.1", 61001);
-
-		mGameState = GameState::InitWorldState;
-		mPerf->SetFilePath("Perf_Server.txt");
-		Init("123456789", 500, 500);
-	}//Client Only Event
-	else if (IMM::Events::JoinButtonPressedEvent* JBPE = dynamic_cast<IMM::Events::JoinButtonPressedEvent*>(e))
-	{
-		mClient = std::make_unique<Client>();
-		mClient->Connect("127.0.0.1", 61001);
-		mPerf->SetFilePath("Perf_Client.txt");
-		mGameState = GameState::InitWorldState;
-	}
-}
 
 bool GameEngine::OnUserCreate()
 {
@@ -295,10 +73,14 @@ bool GameEngine::OnUserCreate()
 
 	mPerf = std::make_unique<IMM::Utils::PerformanceTest>();
 	
+	//cObjects.insert(std::make_pair(mTempPlayer->vPos, mTempPlayer));
+	//cObjects.push_back(mTempPlayer);
 	//World::Main()->SetWorld(worldWidth, worldHeight, gridGen.GenerateWorld(), "Bruh");
 	Assets::Main()->LoadSprites();
 	//renderer.SetGameEngine();
 	mMainMenu = std::make_unique<MainMenu>(ScreenWidth(), ScreenHeight());
+	mMapGen = std::make_shared<MapGenerator>();
+	mMapGen->AddObserver(this);
 	mMainMenu->AddObserver(this);
 	return true;
 }
@@ -306,7 +88,7 @@ bool GameEngine::OnUserCreate()
 bool GameEngine::OnUserUpdate(float fElapsedTime)
 {
 	// called once per frame
-	Clear(olc::DARK_BLUE);
+	Clear(olc::BLACK);
 
 	switch (mGameState)
 	{
@@ -341,22 +123,41 @@ bool GameEngine::GameLoop()
 
 	PingServer();
 
-	mPerf->PreMeasure("Handle Net Messages", 2);
+	//mPerf->PreMeasure("Handle Net Messages", 2);
 	HandleNetworkMessages();
-	mPerf->PostMeasure("Handle Net Messages", 2);
+	//mPerf->PostMeasure("Handle Net Messages", 2);
 	//renderer.UpdateCamera();
-
-	CheckMovement();
+		//mPerf->PreMeasure("Render", 0);
+	GFX::RenderTiles();
+	//mPerf->PostMeasure("Render", 0);
+	EntityManager::UpdatePhysObjs();
+	GlobalState::Update(mTempPlayer->vPos); //Mï¿½ste uppdatera efter allt allt annat
+	mTempPlayer->UpdateUI(); //Samma hï¿½r fï¿½r att det inte ska rendera under saker
+	//EntityManager::UpdateEvents();
 
 	mPerf->PreMeasure("Update GameObjects", 0);
 	UpdateGameObjects();
 	mPerf->PostMeasure("Update GameObjects", 0);
 
 	OnUserFixedUpdate();
-	
-	mPerf->PreMeasure("Render", 0);
-	Render();
-	mPerf->PostMeasure("Render", 0);
+	if (mTempChest == nullptr && GetKey(olc::Key::K).bPressed)
+	{
+		mTempChest = std::make_shared<Storage>(olc::vi2d(GlobalState::GetMouseWorld().x, GlobalState::GetMouseWorld().y), olc::vi2d(3, 3), SpriteType::Storage, 9);
+		EntityManager::AddObj(mTempChest);
+		auto pShooiter = std::make_shared<PhysObjShooter>("PhysGun", ItemType::Default);
+		mTempChest->cInventory->AddItemToInventory(pShooiter);
+	}
+	else if (mTempChest2 == nullptr && GetKey(olc::Key::K).bPressed)
+	{
+		mTempChest2 = std::make_shared<Storage>(olc::vi2d(GlobalState::GetMouseWorld().x, GlobalState::GetMouseWorld().y), olc::vi2d(3, 3), SpriteType::Storage, 9);
+		EntityManager::AddObj(mTempChest2);
+		auto pShooiter = std::make_shared<PhysObjShooter>("PhysGun", ItemType::Default);
+		mTempChest2->cInventory->AddItemToInventory(pShooiter);
+	}
+
+
+	//mTestMenu->Update(this);
+	//mTestMenu->Render(this);
 
 	if (GetKey(olc::Key::ENTER).bHeld)
 		return false;
@@ -364,42 +165,7 @@ bool GameEngine::GameLoop()
 	return true;
 }
 
-void IMM::GameEngine::UpdateGameObjects()
-{
-	for (auto it = mPlayers.begin(); it != mPlayers.end(); it++)
-	{
-		it->second->Update(this, GetElapsedTime());
-	}
 
-	// Clamp camera to game boundaries
-	olc::vf2d playerPos = mPlayers[mLocalPlayerID]->GetPosition();
-	if (playerPos.x < 0)
-		playerPos.x = 0;
-
-	if (playerPos.y < 0)
-		playerPos.y = 0;
-
-	if (playerPos.x > mWorld->GetWidth())
-		playerPos.x = mWorld->GetWidth();
-
-	if (playerPos.y > mWorld->GetHeight())
-		playerPos.y = mWorld->GetHeight();
-
-	mPlayers[mLocalPlayerID]->SetPosition(playerPos);
-	mCamera.x = mPlayers[mLocalPlayerID]->GetPosition().x;
-	mCamera.y = mPlayers[mLocalPlayerID]->GetPosition().y;
-}
-
-void GameEngine::PingServer()
-{
-	mPingTimer += GetElapsedTime();
-
-	if (mPingTimer >= mPingDelay)
-	{
-		mClient->PingServer();
-		mPingTimer = 0.0f;
-	}
-}
 
 void GameEngine::SendUnitUpdates()
 {
@@ -423,6 +189,12 @@ void GameEngine::OnUserFixedUpdate()
 	fTimer += GetElapsedTime();
 	if (fTimer > fFixedUpdate)
 	{
+		//if (GetMouse(0).bHeld)
+		//{
+		//	//cObjects.insert(std::make_pair(GlobalState::GetMouseWorld(), std::make_shared<PhysObj>(GlobalState::GetMouseWorld(), olc::vf2d(1.f, 1.f), SpriteType::Default)));
+		//	//EntityManager::AddObj(std::make_shared<PhysObj>(GlobalState::GetMouseWorld(), olc::vf2d(1.f, 1.f), SpriteType::Default));
+		//	World::Main()->DamageBlock(GlobalState::GetMouseWorld(), 100.0f);
+		//}
 		mWorld->CheckDamagedTiles();
 		
 		if (mIsServer)
@@ -430,128 +202,5 @@ void GameEngine::OnUserFixedUpdate()
 
 		//physX.UpdatePhysics(this);
 		fTimer = 0.0f;
-	}
-}
-
-void GameEngine::Render()
-{
-	// Calculate Top-Leftmost visible tile
-	mOffsetX = mCamera.x - (float)mVisibleTiles.x / 2.0f;
-	mOffsetY = mCamera.y - (float)mVisibleTiles.y / 2.0f;
-
-	// Clamp camera to game boundaries
-	
-	if (mOffsetX < 0)
-		mOffsetX = 0;
-	else if (mOffsetX > mWorld->GetWidth() - mVisibleTiles.x)
-		mOffsetX = mWorld->GetWidth() - mVisibleTiles.x;
-
-	if (mOffsetY < 0)
-		mOffsetY = 0;
-	else if (mOffsetY > mWorld->GetHeight() - mVisibleTiles.y)
-		mOffsetY = mWorld->GetHeight() - mVisibleTiles.y;
-
-	// Get offsets for smooth movement
-	float fTileOffsetX = (mOffsetX - (int)mOffsetX) * mTileSize;
-	float fTileOffsetY = (mOffsetY - (int)mOffsetY) * mTileSize;
-
-	//if (fOffsetX < 0) fOffsetX = 0;
-	//if (fOffsetY < 0) fOffsetY = 0;
-	//if (fOffsetX > World::Main()->GetWidth() - nVisibleTilesX) fOffsetX = World::Main()->GetWidth() - nVisibleTilesX;
-	//if (fOffsetY > World::Main()->GetHeight() - nVisibleTilesY) fOffsetY = World::Main()->GetHeight() - nVisibleTilesY;
-
-	for (int x = -1; x < mVisibleTiles.x + 1; x++)
-	{
-		for (int y = -1; y < mVisibleTiles.y + 1; y++)
-		{
-			if (mWorld->IsBlock(x + mOffsetX, y + mOffsetY))
-			{
-				TileType* tile = mWorld->GetTile(olc::vf2d(x + mOffsetX, y + mOffsetY));
-				int tileNbour = (int)mWorld->GetNbour(olc::vf2d(x + mOffsetX, y + mOffsetY));
-				olc::vf2d pos = olc::vf2d(x * mTileSize - fTileOffsetX, y * mTileSize - fTileOffsetY);
-
-				DrawPartialDecal(
-					pos,
-					Assets::Main()->GetSpriteDecal(tile),
-					olc::vi2d(0, mPixelSize * tileNbour),
-					olc::vi2d(mPixelSize, mPixelSize),
-					olc::vf2d(mTileScale, mTileScale));
-			}
-		}
-	}
-
-	for (auto it = mPlayers.begin(); it != mPlayers.end(); it++)
-	{
-		//if (it->first == mLocalPlayerID)
-			it->second->RenderLocal(this, mOffsetX, mOffsetY);
-		/*else
-			it->second->Render(this);*/
-	}
-}
-
-void GameEngine::InitCameraSettings()
-{
-	mVisibleTiles.x = ScreenWidth() / mTileSize;
-	mVisibleTiles.y = ScreenHeight() / mTileSize;
-
-	mTileScale = ((float)mTileSize / (float)mPixelSize);
-}
-
-void GameEngine::CheckMovement()
-{
-	//SKA TROLIGEN FLYTTAS
-	mMousePos.x = ((float)GetMouseX() / mTileSize) + mOffsetX; //HUR MAN FÅR TAG I MUSPEKAREN I WORLDSPACE FRÅN SKÄRM
-	mMousePos.y = ((float)GetMouseY() / mTileSize) + mOffsetY;
-	if (IsFocused())
-	{
-		olc::vf2d dir = olc::vf2d(0.0f, 0.0f);
-		if (GetKey(olc::Key::W).bHeld)
-		{
-			dir -= olc::vf2d(0.0f, 1.0f);
-			//mTempPlayer->mPos.y -= mTempPlayer->mVel.y * GetElapsedTime();
-		}
-		else if (GetKey(olc::Key::S).bHeld)
-		{
-			dir += olc::vf2d(0.0f, 1.0f);
-			//mTempPlayer->mPos.y += mTempPlayer->mVel.y * GetElapsedTime();
-		}
-		if (GetKey(olc::Key::A).bHeld)
-		{
-			dir -= olc::vf2d(1.0f, 0);
-			//mTempPlayer->mPos.x -= mTempPlayer->mVel.y * GetElapsedTime();
-		}
-		else if (GetKey(olc::Key::D).bHeld)
-		{
-			dir += olc::vf2d(1.0f, 0);
-			//mTempPlayer->mPos.x += mTempPlayer->mVel.y * GetElapsedTime();
-		}
-		
-		mPlayers[mLocalPlayerID]->UpdateDirection(dir);
-		RandomInputs();
-	}
-}
-
-void GameEngine::RandomInputs()
-{
-	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY()), std::to_string(mCamera.x));
-	DrawStringDecal(olc::vf2d(GetMouseX() + 10, GetMouseY() + 10), std::to_string(mCamera.y));
-
-	if (GetMouse(1).bHeld && !(mWorld->IsBlock(mMousePos.x, mMousePos.y)))
-	{
-		mClient->RequestTileChange(mMousePos.x, mMousePos.y, TileType::Dirt);
-
-		//mWorld->CreateBlock(olc::vf2d(mMousePos.x, mMousePos.y), TileType::Dirt);
-	}
-	//if (Game::Main()->GetMouse(0).bHeld && World::Main()->IsBlock(fMousePosX, fMousePosY) && fTimer > 0.2f)
-	//{
-	//	Cool = World::Main()->FloodFill(fMousePosX, fMousePosY, Cool);
-	//	//TileController::DamageBlock(World::Main()->Coordinates(World::Main()->Index(fMousePosX, fMousePosY)), 0.5f);
-	//	fTimer = 0.0f;
-	//}
-	if (GetMouse(0).bHeld)
-	{
-		//Cooler = World::Main()->GetRegions(fMousePosX, fMousePosY);
-		//Cooler = World::Main()->GetRegions();
-		mWorld->RemoveRegions();
 	}
 }

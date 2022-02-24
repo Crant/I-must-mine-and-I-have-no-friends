@@ -2,15 +2,22 @@
 
 #include "olcPixelGameEngine.h"
 #include "World.h"
-#include "GridGenerator.h"
+//#include "GridGenerator.h"
 #include "TilePhysics.h"
+#include "Tiles.h"
 #include "Server.h"
 #include "Client.h"
 #include "PerlinNoise.h"
 #include "Observer.h"
 #include "PerformanceTest.h"
 #include "MainMenu.h"
+#include "../MapGenerator.h"
+#include "../Collision.h"
+#include "PhysicsObject.h"
 #include "Player.h"
+#include "Storage.h"
+
+//OM DU VILL INKLUDERA EN HEADER H�R SOM OCKS� HAR TILLG�NG TILL GAME ENGINE S� M�STE ALLA DEFINITIONER G�RAS I CPP FILEN INTE HEADERN 
 
 namespace IMM
 {
@@ -21,6 +28,17 @@ namespace IMM
 		InitWorldState,
 	};
 
+	//class Player
+	//{
+	//public:
+	//	Player()
+	//	{
+	//		mPos = olc::vf2d(.0f, .0f);
+	//		mVel = olc::vf2d(50.0f, 50.0f);
+	//	}
+	//	olc::vf2d mPos;
+	//	olc::vf2d mVel;
+	//};
 	//TEMP
 	struct MousePositionWorld
 	{
@@ -39,12 +57,18 @@ namespace IMM
 		int x = 0;
 		int y = 0;
 	};
+	struct DynamicRect
+	{
+		olc::vf2d vPos;
+		olc::vf2d vSize;
+		olc::vf2d vVelocity;
 
+		float fSpeed;
+	};
 	class GameEngine : public olc::PixelGameEngine, public Observer
 	{
 	public:
 		GameEngine();
-
 		virtual ~GameEngine();
 
 	public:
@@ -56,7 +80,7 @@ namespace IMM
 
 	private:
 		/*! Initialize the world and other variables*/
-		void Init(const std::string& seedName, int worldWidth, int worldHeight);
+		void Init(const std::string& seedName, int worldWidth, int worldHeight, float fGravity);
 		bool GameLoop();
 
 		void UpdateGameObjects();
@@ -84,10 +108,9 @@ namespace IMM
 		//	   GFX			//
 		//			  		//
 		//////////////////////
-		void Render();
-		void InitCameraSettings();
-		void CheckMovement();
-		void RandomInputs();
+		void RenderTiles();
+		int CheckNeighbour(int x, int y, bool recursive);
+		//SPRITES RENDERAS SJ�LVMANT F�R TILLF�LLET
 
 	protected:
 		virtual void OnEvent(Event* e);
@@ -101,8 +124,8 @@ namespace IMM
 		//Renderer renderer;
 		TilePhysics physX;
 
-		uint32_t worldWidth = 500;
-		uint32_t worldHeight = 500;
+		uint32_t worldWidth = 1024;
+		uint32_t worldHeight = 1024;
 
 		const float fFixedUpdate = 0.02f;
 		float fTimer;
@@ -114,12 +137,16 @@ namespace IMM
 		std::unordered_map<uint32_t, std::unique_ptr<Player>> mPlayers;
 		uint32_t mLocalPlayerID;
 		//TEMP
+		std::shared_ptr<Player> mTempPlayer;
+		std::shared_ptr<Storage> mTempChest;
+		std::shared_ptr<Storage> mTempChest2;
 		CameraPositionWorld mCamera;
 		MousePositionWorld mMousePos;
 		VisibleTiles mVisibleTiles;
 		
 		//Menu
 		std::unique_ptr<MainMenu> mMainMenu;
+		std::unique_ptr<DynamicMenu> mTestMenu;
 
 		int mTileSize = 8;
 		int mPixelSize = 32;
@@ -134,5 +161,16 @@ namespace IMM
 
 		float mPingDelay;
 		float mPingTimer;
+
+		//Generation
+		std::shared_ptr<MapGenerator> mMapGen;
+		float* nPerlinBlocks = nullptr; //Tempor�r f�r att hitta v�rdet av perlin noiset f�r vilka block som ska spawnas
+		unsigned int* nBlockSeeds; //Seeds f�r varje block i v�rlden 
+
+		//Renderer stuff
+		
+		void TileDebugger();
+		void StringSpam();
+
 	};
 }
